@@ -89,7 +89,7 @@ SuperLoopACC_init();
 #ifdef LCDUSE
 SLD_init();
 #endif
-//1
+//2
 #if defined COMMS || defined PLAYER
 	tim3Init();
 	initSpi_1();
