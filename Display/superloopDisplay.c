@@ -1,3 +1,17 @@
+/*!
+\file
+\brief High Level Display control
+
+
+*/	
+
+
+/*!
+\brief info on display for debug ACC 
+
+*/
+#define def_debug_AccDispay
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -29,17 +43,23 @@ bool SuperLoop_Disp_SleepOut(void)
 //------------------------for FSM-------------------------------------------
 static e_FSMState_SuperLoopDisplay SLD_FSM_State;
 
-//------------------------ for time ------------------------------------------
+//------------------------ for update ------------------------------------------
 static systemticks_t LastUpdateTime;
 #define DisplayUpdatePeriod 1000
 
+//--------------------------------for uGFX--------------------------------------
 GListener	gl;
-GHandle		ghLabel1, ghLabel2, ghLabel3, ghLabel4, ghLabel5, ghLabel6, ghLabel7;
+GHandle		ghLabel1, ghLabel2, ghLabel3, ghLabel4, ghLabel5, ghLabel6, ghLabel7, ghLabel8;
 GHandle		ghList1;
+static	GEvent* pe;
+//static const gOrientation	orients[] = { gOrientation0, gOrientation90, gOrientation180, gOrientation270 };
+static	unsigned which;
+
 static void createDebugLabels(void);
 //---------------------- Control grafical objects------------------------------
 int SLDw(void);
 void displayACC(void);
+int SLDwACC(void);
 //------------------------FSM control--------------------------------------------
 int SLD_DisplInit(void);
 int SLD_DisplReInit(void);
@@ -88,8 +108,12 @@ int SLD(void)
 		    state_inner=3;
 
 		case 3: 
-			SLDw();
-			if ((!bVSYS)|button_sign)
+#ifdef def_debug_AccDispay
+	    	SLDwACC();
+#else
+		    SLDw();
+#endif		
+  		if ((!bVSYS)|button_sign)
 			{
 				SLD_DisplDeInit();
 				
@@ -130,6 +154,7 @@ int SLD_DisplDeInit(void)
 
 int SLD_DisplReInit(void)
 {
+	GFXPreinit();
 	SLD_DisplInit();
 
 	return 0;
@@ -193,8 +218,16 @@ void displayACC(void)
 	gwinSetText(ghLabel6, str, TRUE);
 	
 	sprintf(str, "RSOC: %d", mFSM_BQ28z610_RSOC);
-//	gwinSetText(ghLabel8, str, TRUE);
+	gwinSetText(ghLabel8, str, TRUE);
 	
+}
+
+int SLDwACC(void)
+{ 
+	//event handling
+	pe = geventEventWait(&gl,10 ); //gDelayForever
+	displayACC();
+	return 0;
 }
 
 static void createLists(void) {
@@ -277,16 +310,22 @@ static void createLabels(void) {
 	wi.text = "00:00:00";
 	ghLabel7 = gwinLabelCreate(0, &wi);
 //	gwinLabelSetAttribute(ghLabel7,100,"Total timer:");
+
+#ifdef def_debug_AccDispay
+	wi.g.width = 220; wi.g.height = 20; wi.g.x = 120, wi.g.y = 170;
+	wi.text = "RSOC";
+	ghLabel8 = gwinLabelCreate(0, &wi);	    
+
+#endif
+
 }
 
 
-static	GEvent* pe;
-//static const gOrientation	orients[] = { gOrientation0, gOrientation90, gOrientation180, gOrientation270 };
-static	unsigned which;
+
 
 int SLD_DisplInit(void)
 { 
-	
+GFXPreinit();	
 gfxInit();	
 
 	

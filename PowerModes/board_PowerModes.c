@@ -1,4 +1,4 @@
-#include <stm32g030xx.h>
+#include "stm32g0xx.h"
 #include <stdbool.h>
 #include "board_PowerModes.h"
 #include "BoardSetup.h"
@@ -20,24 +20,11 @@ static bool SLP_WakeUP;
 *
 *
 **************************************************************************************************************************/
-void EXTI4_15_IRQHandler(void){
-	
-	uint32_t risingEdge = EXTI->RPR1;										// get all rising EXTI flags
-	uint32_t failingEdge = EXTI->FPR1;									// get all rising EXTI flags
-	
-	EXTI->RPR1 = risingEdge;														// clear all rising EXTI flags					
-  
-  if(risingEdge & EXTI_RPR1_RPIF13){            			// if EXTI13 interrupt flag set (TOUCH_DETECT)
-	//	statusFlag.TOUCH_DETECT = 1;
-	}
-	
-	if(risingEdge & EXTI_RPR1_RPIF5){            				// if EXTI5 interrupt flag set	(BUTTON PUSH)		
-		EXTI->IMR1 &= ~(EXTI_IMR1_IM5 | EXTI_IMR1_IM7);  	// EXTI interrupt masked
-	}
-	
-	if(failingEdge & EXTI_FPR1_FPIF7){            			// if EXTI7 interrupt flag set (VBUS_DETECT)
-		EXTI->IMR1 &= ~(EXTI_IMR1_IM5 | EXTI_IMR1_IM7);   // EXTI interrupt masked
-	}
+void EXTI4_15_IRQHandler(void)
+{	
+	GPIOB->BSRR = GPIO_BSRR_BR10;
+	EXTI->RPR1 |= EXTI_RPR1_RPIF5;
+	//EXTI->FPR1 |= EXTI_FPR1_FPIF5;
 }
 //***********************************************************************************************************************
 
@@ -47,7 +34,20 @@ void enterToStop(void);
 
 void SuperLoop_PowerModes_Init(void)
 	{
-		
+    RCC->IOPENR |= RCC_IOPENR_GPIOAEN;
+	GPIOA->MODER &= ~(GPIO_MODER_MODE5_Msk); /**< Power Button */
+	EXTI->EXTICR[1] &= ~0xff00;
+	//EXTI->FTSR1 |= EXTI_FTSR1_FT5;
+	EXTI->RTSR1 |= EXTI_RTSR1_RT5;
+	//EXTI->FPR1 |= EXTI_FPR1_FPIF5;
+	EXTI->RPR1 |= EXTI_RPR1_RPIF5;
+    EXTI->IMR1 = 0;
+    EXTI->EMR1 = 0;
+	EXTI->IMR1 |= EXTI_IMR1_IM5; // EXTI5 interrupts unmasked
+	EXTI->EMR1 |= EXTI_EMR1_EM5; // EXTI5 event unmasked
+	NVIC_SetPriority(EXTI4_15_IRQn, 0);
+	NVIC_EnableIRQ(EXTI4_15_IRQn);
+    
 	}		
 	
 	
@@ -75,10 +75,12 @@ void SuperLoop_PowerModes(void)
 		    SuperLoop_Acc_SleepOut();
 		    SuperLoop_Disp_SleepOut();
 	    	SuperLoop_Player_SleepOut();		
-				SLP_LastUpdateTime=SystemTicks;	
-				SLP_state=2;	
-				//break;	
-			case 2: //WakeUp?
+			SLP_LastUpdateTime=SystemTicks;
+            button_sign = 1;            
+			SLP_state=2;	
+			break;	
+			
+            case 2: //WakeUp?
 			
 				 if (SLP_WakeUP)
 				  {
@@ -110,32 +112,42 @@ void SuperLoop_PowerModes(void)
 
 void enterToStop(void)
 {
-  GPIOB->BSRR = GPIO_BSRR_BS10;
-	EXTI->EXTICR[2] &= ~(EXTI_EXTICR2_EXTI5_Msk );					// select PA5 for EXTI
-  EXTI->RTSR1 |= EXTI_RTSR1_RT5;                        	// set EXTI5 trigger to rising front
-	
-//	EXTI->FPR1 = EXTI_FPR1_FPIF7;       										// clear EXTI7, EXTI7 interrupt flags
-//	EXTI->IMR1 |= EXTI_IMR1_IM7;                            // EXTI7  interrupts unmasked
-	EXTI->RPR1 = EXTI_RPR1_RPIF5;                             // clear EXT5, EXT5 interrupt flags
-	EXTI->IMR1 |= EXTI_IMR1_IM5;          	                  // EXTI5 interrupts unmasked
-	
-	PWR->CR1 |= PWR_CR1_LPR | 															// the regulator is switched from main mode (MR) to low-power mode
-						  PWR_CR1_LPMS_0;															// select Stop 1 low-power mode
+    while (GPIOA->IDR & GPIO_IDR_ID5);
 
-	SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk; 											// Set SLEEPDEEP bit of Cortex System Control Register 
+  
+  	NVIC_DisableIRQ(TIM3_IRQn);
+	NVIC_DisableIRQ(I2C2_IRQn);
+	NVIC_DisableIRQ(I2C1_IRQn);
+	NVIC_DisableIRQ(USART1_IRQn);
+	RCC->CSR |= RCC_CSR_LSION;
+    
+
+    
+	GPIOB->BSRR = GPIO_BSRR_BS10;
+	PWR->CR1 |= PWR_CR1_LPR |	// the regulator is switched from main mode (MR) to low-power mode
+				PWR_CR1_LPMS_0; // select Stop 1 low-power mode
+	__DMB();
+	SysTick->CTRL &= ~SysTick_CTRL_TICKINT_Msk;
+	__DMB();
+
+	SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk; // Set SLEEPDEEP bit of Cortex System Control Register
+
+	__DSB();
+	__ISB();
 
 	__WFI();
-	
-			/* wakeup */
-	
-	SCB->SCR &= ~SCB_SCR_SLEEPDEEP_Msk; 										// reset SLEEPDEEP bit of Cortex System Control Register																
-	PWR->CR1 &= ~(PWR_CR1_LPMS_Msk | PWR_CR1_LPR);					// the regulator is switched from low-power mode to main mode (MR)
 
-	SystemCoreClock = setSystemClock(); 									// restore all setting after stop
-  SysTick_Config(SystemCoreClock/1000);
-
+	SCB->SCR &= ~SCB_SCR_SLEEPDEEP_Msk; // reset SLEEPDEEP bit of Cortex System Control Register
+	SysTick->CTRL |= SysTick_CTRL_TICKINT_Msk;
+	PWR->CR1 &= ~(PWR_CR1_LPMS_Msk | PWR_CR1_LPR); // the regulator is switched from low-power mode to main mode (MR)
+	setSystemClock();
 
 	GPIOB->BSRR = GPIO_BSRR_BR10;
+	NVIC_EnableIRQ(USART1_IRQn);
+	NVIC_EnableIRQ(I2C2_IRQn);
+	NVIC_EnableIRQ(I2C1_IRQn);
+	NVIC_EnableIRQ(TIM3_IRQn);
+    
 }	 
 	 
 	 

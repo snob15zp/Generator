@@ -1,9 +1,13 @@
 /*
 Setting up shared resources that are used by multiple software modules
 */
+#ifdef STM32G070xx   //STM32G070CBTx
+#include "stm32g0xx.h"
+#else
+#include <stm32g030xx.h>
+#endif
 
 #include "BoardSetup.h"
-#include "stm32g030xx.h"
 #include "fpga.h"
 
 
@@ -173,8 +177,10 @@ void boardIoPinInit(void){
                     GPIO_OSPEEDR_OSPEED7_1 |
 										GPIO_OSPEEDR_OSPEED6_1;		            // switch PB6 .. PB9 to High speed mode   
 	
-	GPIOB->AFR[0] = 6 << GPIO_AFRL_AFSEL6_Pos |           	// set PB6 as I2C2_SCL
-                  6 << GPIO_AFRL_AFSEL7_Pos;            	// set PB7 as I2C2_SDA 
+	GPIOB->AFR[0] &= ~(GPIO_AFRL_AFSEL6_Msk |           	// set PB6 as I2C2_SCL
+                     GPIO_AFRL_AFSEL7_Msk);            	// set PB7 as I2C2_SDA 
+	GPIOB->AFR[0] |= 6 << GPIO_AFRL_AFSEL6_Pos |           	// set PB6 as I2C2_SCL
+                   6 << GPIO_AFRL_AFSEL7_Pos;
 	GPIOB->AFR[1] = 6 << GPIO_AFRH_AFSEL8_Pos |           	// set PB8 as I2C2_SCL
                   6 << GPIO_AFRH_AFSEL9_Pos;            	// set PB9 as I2C2_SDA 
   
@@ -225,7 +231,12 @@ void boardIoPinInit(void){
 	GPIOB->MODER |= GPIO_MODER_MODE3_1 |
 									GPIO_MODER_MODE4_1 |
 									GPIO_MODER_MODE5_1;
-	GPIOB->AFR[0] = (0<<GPIO_AFRL_AFSEL3_Pos) |										//PB3 - SPI1 SCK
+									
+	GPIOB->AFR[0]&=~( (GPIO_AFRL_AFSEL3_Msk) |										//PB3 - SPI1 SCK
+									  (GPIO_AFRL_AFSEL3_Msk) |										//PB4 - SPI1 MISO
+									  (GPIO_AFRL_AFSEL3_Msk)										//PB5 - SPI1 MOSI	
+                  );										
+	GPIOB->AFR[0] |= (0<<GPIO_AFRL_AFSEL3_Pos) |										//PB3 - SPI1 SCK
 									(0<<GPIO_AFRL_AFSEL4_Pos) |										//PB4 - SPI1 MISO
 									(0<<GPIO_AFRL_AFSEL5_Pos);										//PB5 - SPI1 MOSI
 									

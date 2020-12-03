@@ -34,10 +34,13 @@
 #define USB_RX_BUFF_SIZE 256
 
 //extern uint8_t usbCmd;
+
+
 extern uint32_t nonEmptyBytes;
 
 extern void SLC_init(void);
-extern void SLP(void);
+extern void SLC(void);
+
 void procCmdFromUsb(void);
 void wrPage(void);
 void wrPlayFiles(void);

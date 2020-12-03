@@ -1,4 +1,4 @@
-//#define debug1
+#define debug1
 #define PowerUSE
 #define LCDUSE
 #define ACCUSE
@@ -22,7 +22,8 @@
 #endif
 
 #ifdef COMMS
-#include "bluetooth.h"
+#include "SuperLoop_Comm.h"
+//#include "bluetooth.h"
 //#include "rn4870Model.h"
 #include "uart.h"
 #include "flash.h"
@@ -78,7 +79,7 @@ __disable_irq();
 #endif
 
 #ifdef PowerUSE
-// board_PowerModes_Init();	//must be call brefore other board functions
+ SuperLoop_PowerModes_Init();	//must be call brefore other board functions
 #endif
 
 #ifdef ACCUSE
@@ -89,11 +90,11 @@ SuperLoopACC_init();
 SLD_init();
 #endif
 
-#ifdef 	COMMS && PLAYER
+#if defined COMMS || defined PLAYER
 	tim3Init();
 	initSpi_1();
-	SLC_init();
-	SLP_init();
+	//SLC_init();
+	//SLP_init();
  __flashInit();
 #endif	
 
