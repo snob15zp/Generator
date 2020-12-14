@@ -1,3 +1,17 @@
+/*!
+\file
+\brief High Level Display control
+
+
+*/	
+
+
+/*!
+\brief info on display for debug ACC 
+
+*/
+//#define def_debug_AccDispay
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -7,63 +21,17 @@
 
 extern char	heap[GFX_OS_HEAP_SIZE];
 extern gThread	hThread;
+
+uint8_t fileSect=0;
+
+
 void GFXPreinit (void)
-{ uint32_t i;
-//	defaultFgColor=GFX_WHITE;
-//	defaultStyle= &BlackWidgetStyle;
+{ 
+	uint32_t i;
+
 	for (i=0;i<GFX_OS_HEAP_SIZE;i++)
 	{heap[i]=0;};
-	
-//	for (i=0;i<(GTIMER_THREAD_WORKAREA_SIZE & (~3));i++)
-//	 waTimerThread[i]=0;
-//	
-//	for (i=0;i<sizeof(Assignments);i++)
-//	     ((char*)&Assignments)[i]=0;
-//	
-//	GDISP=0;
-//	
-//	for (i=0;i<sizeof(MouseTimer);i++)
-//	     ((char*)&MouseTimer)[i]=0;
-//	
-//	RedrawPending=0;
-//	
-//	for (i=0;i<sizeof(RedrawTimer);i++)
-//	     ((char*)&RedrawTimer)[i]=0;
-//	
-//	for (i=0;i<sizeof(_GWINList);i++)
-//	     ((char*)&_GWINList)[i]=0;
-	
-	
-//	_GWINwm=0;
-//	_gfxCurrentThread=0;
-////	deadQ;
-//	defaultBgColor=0;
-//	defaultFont=0;
-//	dhead=0;
-//	dtail=0;
-//	fontList=0;
-//	freeSlots=0;
-//	gdispInitDone;
-//	geventMutex=0;
-//	gfxInitDone;
-//	gl;
-//for (i=0;i<sizeof(gwinsem);i++)
-//	     ((char*)&gwinsem)[i]=0;
 	hThread=0;
-//	jmpmask1;
-//	jmpmask2;
-//	maincxt;
-//	mainthread;
-//	mutex;
-//	pTimerHead ;
-//	pframeinfo;
-//	readyQ;
-//	stackbase;
-//	stackdirup;
-//	ticks2ms;
-//	waitsem;
-
-
 };
 
 //------------------------- for power--------------------------------------
@@ -79,17 +47,25 @@ bool SuperLoop_Disp_SleepOut(void)
 //------------------------for FSM-------------------------------------------
 static e_FSMState_SuperLoopDisplay SLD_FSM_State;
 
-//------------------------ for time ------------------------------------------
+//------------------------ for update ------------------------------------------
 static systemticks_t LastUpdateTime;
 #define DisplayUpdatePeriod 1000
 
+//--------------------------------for uGFX--------------------------------------
 GListener	gl;
-GHandle		ghLabel1, ghLabel2, ghLabel3, ghLabel4, ghLabel5, ghLabel6, ghLabel7;
-GHandle		ghList1;
+GHandle	ghLabel1, ghLabel2, ghLabel3, ghLabel4, ghLabel5, ghLabel6, ghLabel7;
+GHandle ghLabel8, ghLabel9, ghLabel10, ghLabel11, ghLabel12;
+GHandle	ghList1;
+
+static	GEvent* pe;
+//static const gOrientation	orients[] = { gOrientation0, gOrientation90, gOrientation180, gOrientation270 };
+//static	unsigned which;
+
 static void createDebugLabels(void);
 //---------------------- Control grafical objects------------------------------
 int SLDw(void);
 void displayACC(void);
+int SLDwACC(void);
 //------------------------FSM control--------------------------------------------
 int SLD_DisplInit(void);
 int SLD_DisplReInit(void);
@@ -110,44 +86,11 @@ int SLD(void)
 			SLD_FSM_State=	e_FSMS_SLD_Off;
 			if (bVSYS)
 			{
-      //	state_inner=3;	
 				while (e_FRS_Done!=MainTransition_P_Displ(e_FSMS_SLD_On,e_FSMS_SLD_Off));
 				while (e_FRS_Done!=MainTransition_P_Displ(e_FSMS_SLD_On,e_FSMS_SLD_On));
 				delayms(100);
 				SLD_DisplInit();
-	//			gdispSetPowerMode(powerOff);
-	//			while (e_FRS_Done!=MainTransition_P_Displ(e_FSMS_SLD_Off,e_FSMS_SLD_On));
-	//			while (e_FRS_Done!=MainTransition_P_Displ(e_FSMS_SLD_Off,e_FSMS_SLD_Off));
-  //      delayms(2);  
-	//			while (e_FRS_Done!=MainTransition_P_Displ(e_FSMS_SLD_On,e_FSMS_SLD_Off));
-	//			while (e_FRS_Done!=MainTransition_P_Displ(e_FSMS_SLD_On,e_FSMS_SLD_On));
-	//			gdispSetPowerMode(powerOn);
-	//			gwinRedrawDisplay(NULL,true);
-//				while (e_FRS_Done!=MainTransition_P_Displ(e_FSMS_SLD_Off,e_FSMS_SLD_On));
-//				while (e_FRS_Done!=MainTransition_P_Displ(e_FSMS_SLD_Off,e_FSMS_SLD_Off));
-//        delayms(2);  
-//				while (e_FRS_Done!=MainTransition_P_Displ(e_FSMS_SLD_On,e_FSMS_SLD_Off));
-//				while (e_FRS_Done!=MainTransition_P_Displ(e_FSMS_SLD_On,e_FSMS_SLD_On));				
-//				gdispSetPowerMode(powerOn);
-//				gwinRedrawDisplay(NULL,true);
-//				
-				
-//				SLD_DisplInit();
-//				
-//				SLD_DisplDeInit();
-//				SLD_DisplInit();
-//				
-//				SLD_DisplDeInit();
-//				SLD_DisplInit();
-//				
-//				SLD_DisplDeInit();
-//				SLD_DisplInit();
-//				
-//				SLD_DisplDeInit();
-//				SLD_DisplInit();
-				
-				
-	//			gdispSetPowerMode(powerOn);
+
 				gwinRedrawDisplay(NULL,true);
 				
 				SLD_FSM_State=e_FSMS_SLD_On;
@@ -171,8 +114,12 @@ int SLD(void)
 		    state_inner=3;
 
 		case 3: 
-			SLDw();
-			if ((!bVSYS)|button_sign)
+#ifdef def_debug_AccDispay
+	    	SLDwACC();
+#else
+		    SLDw();
+#endif		
+  		if ((!bVSYS)|button_sign)
 			{
 				SLD_DisplDeInit();
 				
@@ -206,17 +153,6 @@ int SLD_init(void)
 int SLD_DisplDeInit(void)
 {
 	
-//	gwinDestroy(ghButton2);
-//	gwinDestroy(ghButton1);
-//	gwinDestroy(ghList1);
-//	gwinDestroy(ghLabel7);
-//	gwinDestroy(ghLabel6);
-//	gwinDestroy(ghLabel5);
-//	gwinDestroy(ghLabel4);
-//	gwinDestroy(ghLabel3);
-//	gwinDestroy(ghLabel2);
-//	gwinDestroy(ghLabel1);
-	
 	gfxDeinit();
 	
 	return 0;
@@ -224,43 +160,69 @@ int SLD_DisplDeInit(void)
 
 int SLD_DisplReInit(void)
 {
+	GFXPreinit();
 	SLD_DisplInit();
-//	gfxInit();
-//	gdispSetBacklight(50);
-//	
-//	gwinSetDefaultFont(gdispOpenFont("U11"));
-//	gwinSetDefaultStyle(&WhiteWidgetStyle, gFalse);
-//	gdispClear(GFX_WHITE);
-//	
-//	LastUpdateTime=SystemTicks;
+
 	return 0;
 }
 
-volatile struct fpgaFlags{
-	uint16_t playStart						:1;
-	uint16_t playBegin						:1;
-	uint16_t fpgaConfig						:1;
-	uint16_t playStop							:1;
-	uint16_t fpgaConfigComplete		:1;
-	uint16_t fileListUpdate				:1;
-	uint16_t labelsUpdate					:1;
-	uint16_t clockStart						:1;
-	uint16_t nextFreq							:1;
-	uint16_t endOfFile						:1;
-}fpgaFlags;
+
+volatile t_fpgaFlags fpgaFlags;
 
 uint8_t spiDispCapture;	//0 - free, 1 - busy
 uint8_t totalTimeArr[]={'0','0',':','0','0',':','0','0',0};
 uint8_t fileTimeArr[]={'0','0',':','0','0',':','0','0',0};
-uint8_t totalSec=0;
-uint8_t totalMin=0;
-uint8_t totalHour=0;
-uint8_t fileSec=0;
-uint8_t fileMin=0;
-uint8_t fileHour=0;
+extern uint8_t totalSec;
+extern uint8_t totalMin;
+extern uint8_t totalHour;
+extern uint8_t fileSec;
+extern uint8_t fileMin;
+extern uint8_t fileHour;
 volatile uint32_t playClk;
 volatile int playFileInList;
 uint8_t fileName[50];
+void displayACC(void)
+{ char str[30];	
+	if ( (SystemTicks-LastUpdateTime)<DisplayUpdatePeriod ) 
+                               {return;};
+	LastUpdateTime=SystemTicks;
+  //sprintf(str, "%d", mainFMSstate);
+	switch (mainFMSstate)
+	{
+		case e_FSM_Charge:		strcpy(str,"mainFMSstate: Charge"); 			break;
+		case 	e_FSM_Rest:    	strcpy(str,"mainFMSstate: Rest"); 				break;
+		case e_FSM_ChargeOff:	strcpy(str,"mainFMSstate: ChargeOff"); 		break;
+		case e_FSM_RestOff:  	strcpy(str,"mainFMSstate: RestOff"); 		break;
+		case e_FSM_Init: 			strcpy(str,"mainFMSstate: Init");					break;
+		default: 							strcpy(str,"mainFMSstate: Out of Range");
+	}	
+	gwinSetText(ghLabel7, str, TRUE);
+	
+	
+	sprintf(str, "V acc: %d", pv_BQ28z610_Voltage);
+	gwinSetText(ghLabel3, str, TRUE);
+
+	sprintf(str, "T acc: %d", mFSM_BQ28z610_Temperature);
+	gwinSetText(ghLabel4, str, TRUE);
+
+	sprintf(str, "V87: %d", V87);
+	gwinSetText(ghLabel5, str, TRUE);
+	
+	sprintf(str, "I acc: %d", pvIcharge-pvIdescharge);
+	gwinSetText(ghLabel6, str, TRUE);
+	
+	sprintf(str, "RSOC: %d", mFSM_BQ28z610_RSOC);
+	gwinSetText(ghLabel8, str, TRUE);
+	
+}
+
+int SLDwACC(void)
+{ 
+	//event handling
+	pe = geventEventWait(&gl,10 ); //gDelayForever
+	displayACC();
+	return 0;
+}
 
 static void createLists(void) {
 	GWidgetInit	wi;
@@ -317,41 +279,58 @@ static void createLabels(void) {
 	gwinWidgetClearInit(&wi);
 	wi.g.show = gTrue;
 	
-	wi.g.width = 220; wi.g.height = 20; wi.g.x = 10, wi.g.y = 170;
+	wi.g.width = 110; wi.g.height = 20; wi.g.x = 120, wi.g.y = 170;
 //	wi.text = "Self test: OK";
 	wi.text = "Init OK";
 	ghLabel3 = gwinLabelCreate(0, &wi);
-	gwinLabelSetAttribute(ghLabel3,100,"Self test:");
+//	gwinLabelSetAttribute(ghLabel3,100,"Self test:");
 	
-	wi.g.width = 220; wi.g.height = 20; wi.g.x = 10, wi.g.y = 190;
+	wi.g.width = 110; wi.g.height = 20; wi.g.x = 10, wi.g.y = 170;
+	wi.text = "Self test:";
+	ghLabel8 = gwinLabelCreate(0, &wi);
+	
+	wi.g.width = 110; wi.g.height = 20; wi.g.x = 120, wi.g.y = 190;
 	wi.text = "Stop";
 	ghLabel4 = gwinLabelCreate(0, &wi);
-	gwinLabelSetAttribute(ghLabel4,100,"Status:");
+//	gwinLabelSetAttribute(ghLabel4,100,"Status:");
 	
-	wi.g.width = 220; wi.g.height = 20; wi.g.x = 10, wi.g.y = 210;
+	wi.g.width = 110; wi.g.height = 20; wi.g.x = 10, wi.g.y = 190;
+	wi.text = "Status:";
+	ghLabel9 = gwinLabelCreate(0, &wi);
+	
+	wi.g.width = 110; wi.g.height = 20; wi.g.x = 120, wi.g.y = 210;
 	wi.text = "Not selected";
 	ghLabel5 = gwinLabelCreate(0, &wi);
-	gwinLabelSetAttribute(ghLabel5,100,"Program:");
+//	gwinLabelSetAttribute(ghLabel5,100,"Program:");
+
+	wi.g.width = 110; wi.g.height = 20; wi.g.x = 10, wi.g.y = 210;
+	wi.text = "Program:";
+	ghLabel10 = gwinLabelCreate(0, &wi);
 	
-	wi.g.width = 220; wi.g.height = 20; wi.g.x = 10, wi.g.y = 230;
+	wi.g.width = 110; wi.g.height = 20; wi.g.x = 120, wi.g.y = 230;
 	wi.text = "00:00:00";
 	ghLabel6 = gwinLabelCreate(0, &wi);
-	gwinLabelSetAttribute(ghLabel6,100,"Program timer:");
+//	gwinLabelSetAttribute(ghLabel6,100,"Program timer:");
+
+	wi.g.width = 110; wi.g.height = 20; wi.g.x = 10, wi.g.y = 230;
+	wi.text = "Program timer:";
+	ghLabel11 = gwinLabelCreate(0, &wi);
 	
-	wi.g.width = 220; wi.g.height = 20; wi.g.x = 10, wi.g.y = 250;
+	wi.g.width = 110; wi.g.height = 20; wi.g.x = 120, wi.g.y = 250;
 	wi.text = "00:00:00";
 	ghLabel7 = gwinLabelCreate(0, &wi);
-	gwinLabelSetAttribute(ghLabel7,100,"Total timer:");
+//	gwinLabelSetAttribute(ghLabel7,100,"Total timer:");
+
+	wi.g.width = 110; wi.g.height = 20; wi.g.x = 10, wi.g.y = 250;
+	wi.text = "Total timer:";
+	ghLabel12 = gwinLabelCreate(0, &wi);
 }
 
 
-static	GEvent* pe;
-//static const gOrientation	orients[] = { gOrientation0, gOrientation90, gOrientation180, gOrientation270 };
-static	unsigned which;
 
-int SLD_init(void)
+int SLD_DisplInit(void)
 { 
-	
+GFXPreinit();	
 gfxInit();	
 
 	
@@ -374,10 +353,12 @@ gfxInit();
 	gwinAttachListener(&gl);
 	gdispSetBacklight(50);
 	
+	fileListInit();
+	
 return 0;	
 };
 
-int SLD(void)
+int SLDw(void)
 { 
 	//event handling
 	pe = geventEventWait(&gl,10 ); //gDelayForever
@@ -387,7 +368,7 @@ int SLD(void)
 				playFileInList=gwinListGetSelected(ghList1);
 				fpgaFlags.playStart=1;
 				fpgaFlags.fpgaConfig=1;
-				fpgaFlags.labelsUpdate=1;
+//				fpgaFlags.labelsUpdate=1;
 			}
 			if (((GEventGWinButton*)pe)->gwin == ghButton2){
 				fpgaFlags.playStop=1;
@@ -398,13 +379,16 @@ int SLD(void)
 	}
 	
 	//information output to the display
-	
+	if(fpgaFlags.fileListUpdate==1){
+//		fpgaFlags.fileListUpdate=0;
+		if(fpgaFlags.addListItem==1){
+			fpgaFlags.addListItem=0;
+			gwinListAddItem(ghList1, (char*)fileName, gTrue);
+		}
+	}
 	
 	if(fpgaFlags.labelsUpdate==1){
 		fpgaFlags.labelsUpdate=0;
-		if(fpgaFlags.fileListUpdate==1){
-			gwinListAddItem(ghList1, (char*)fileName, gTrue);
-		}
 		if(fpgaFlags.fpgaConfigComplete==1){
 			gwinSetText(ghLabel3,"Config OK",gTrue);
 		}
@@ -419,6 +403,7 @@ int SLD(void)
 			fpgaFlags.playStop=0;
 			gwinSetText(ghLabel3,"Init OK",gTrue);
 			gwinSetText(ghLabel4,"Stop",gTrue);
+			gwinSetText(ghLabel5,"Not selected",gTrue);
 			gwinSetText(ghLabel6,"00:00:00",gTrue);
 			gwinSetText(ghLabel7,"00:00:00",gTrue);
 			totalSec=0;

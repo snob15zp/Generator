@@ -55,11 +55,12 @@ typedef enum
 	W25Q80,
 	W25Q16,
 	W25Q32,
+	AT25SF321,
 	W25Q64,
 	W25Q128,
 	W25Q256,
 	W25Q512,
-	
+		
 }W25QXX_ID_t;
 
 typedef struct

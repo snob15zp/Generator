@@ -1,3 +1,4 @@
+#include "Spi1.h"
 #include "SuperLoop_Player.h"
 
 uint16_t freqStartByte;
@@ -11,8 +12,12 @@ uint16_t steps;
 
 extern volatile int playFileInList;
 uint16_t playFileSector;
+uint8_t i=0;
 
-uint32_t playParamArr[7];
+
+#define  playParamArr_size 7
+
+uint32_t playParamArr[playParamArr_size];
 /*************************************
 playParamArr[0] - frequencies
 playParamArr[1] - offset
@@ -23,6 +28,18 @@ playParamArr[5] - up
 playParamArr[6] - inverse
 **************************************/
 
+uint8_t timeArr[3];
+/*******************************
+[0] - hours
+[1] - min
+[2] - sec
+*******************************/
+uint8_t totalSec=0;
+uint8_t totalMin=0;
+uint8_t totalHour=0;
+uint8_t fileSec=0;
+uint8_t fileMin=0;
+uint8_t fileHour=0;
 
 //------------------------ for power---------------------------------------------
 e_FSMState_SuperLoopPlayer SLPl_FSM_State;
@@ -67,7 +84,9 @@ void spi2Transmit(uint8_t *pData, uint16_t Size)
 	  /* Transmit data in 8 Bit mode */
 	while (TxXferCount > 0U){
 		/* Wait until TXE flag is set to send data */
-		if (SPI2->SR & SPI_SR_TXE){
+		while(!(SPI2->SR & SPI_SR_TXE)){}
+//		if (SPI2->SR & SPI_SR_TXE)
+			{
 			if (TxXferCount > 1U){
 				/* write on the data register in packing mode */
 				SPI2->DR = *((uint16_t *)pData);
@@ -178,21 +197,76 @@ void TIM3_IRQHandler(void)
 //}
 
 //As in VV2
+/**
+\brief Passive Serial FPGA configuration
+
+  FPGA_CS 					PB12  output	FPGA_CS_L/H
+	SPI2_SCK 					PB13  spi
+	SPI2_MISO					PB14	spi
+	SPI2_MOSI 				PB15	spi 
+	CONF_DONE 				PC6		input
+	nSTATUS 					PC7		input
+	nCONFIG 					PB11	output 	nCONFIG_L/H
+	Reserv=LED_TEST 	PB10	output 	FPGA_Reserv_L/H
+	FPGA_START 				PA8		output	FPGA_START_L/H
+
+If your system exceeds the fast or standard POR time, you must hold nCONFIG low
+until all the power supplies are stable.
+MSEL[2:0] Pins 000 Standard POR Delay
+
+nSTATUS and CONF_DONE driven low
+• All I/Os pins are tied to an internal weak pull-up
+• Clears configuration RAM bits
+      ->
+nSTATUS and nCONFIG released high
+CONF_DONE pulled low
+      ->
+Writes configuration data to
+FPGA
+      ->
+• nSTATUS pulled low
+• CONF_DONE remains low
+• Restarts configuration if option
+enabled		
+      ->
+CONF_DONE released high
+      ->
+• Initializes internal logic and
+registers
+• Enables I/O buffers
+      ->
+INIT_DONE released high
+(if option enabled)
+      ->
+Executes your design
+*/
 void fpgaConfig(void)											//
 {
 	uint32_t bytesCnt=0;
 	uint8_t byteBuff;
-	GPIOB->BSRR=GPIO_BSRR_BR0;							//FPGA 1.2 V on
-	nCONFIG_H;
-	while(!(GPIOC->IDR & GPIO_IDR_ID7)){}
-	delay_ms(1);
+//	byteBuff=0;
+//	spi2Transmit(&byteBuff, 1);
+	
+	SPI2->CR1 &= ~SPI_CR1_SPE;
+	SPI2->CR1 |= SPI_CR1_LSBFIRST;
+	SPI2->CR1 |= SPI_CR1_SPE;
+	
+	switchOUTStageInterfacePinsToPwr(DISABLE);//RDD DEBUG
+	delay_ms(100);// test -> ok
+	switchOUTStageInterfacePinsToPwr(ENABLE);
+	delay_ms(10);
 	spi1FifoClr();
+//	GPIOB->BSRR=GPIO_BSRR_BR0;							//FPGA 1.2 V on
+	nCONFIG_H;
+	while(!(GPIOC->IDR & GPIO_IDR_ID7)){/** \todo timeout */}
+	delay_ms(10);
 	FPGA_CS_L;															//for logger
 	for(bytesCnt=0;bytesCnt<CONF_FILE_SIZE;bytesCnt++){
 		W25qxx_ReadByte(&byteBuff,FIRST_CONF_BYTE+bytesCnt);
 		spi2Transmit(&byteBuff, 1);
-		if(GPIOC->IDR & GPIO_IDR_ID6){
-			spi2Transmit(0x00, 1);
+		if(GPIOC->IDR & GPIO_IDR_ID6)
+			{byteBuff=0;
+			spi2Transmit(&byteBuff, 1);
 //			confComplete();
 			fpgaFlags.fpgaConfigComplete=1;
 			FPGA_CS_H;
@@ -202,13 +276,15 @@ void fpgaConfig(void)											//
 			return;
 		}
 	}
+//	byteBuff=0;
+//	spi2Transmit(&byteBuff, 1);
 	FPGA_CS_H;
 //	confFailed();
 	fpgaFlags.fpgaConfigComplete=0;
 }
 
 extern uint8_t fileName[50];
-uint8_t fileSect;
+extern uint8_t fileSect;
 
 //void getFileList(void)
 //{
@@ -226,42 +302,18 @@ uint8_t fileSect;
 //
 void timeToString(uint8_t* timeArr)
 {
-	for(int i=0;i<8;i++){
-		switch(timeArr[i]){
-			case 0:
-				timeArr[i]='0';
-				break;
-			case 1:
-				timeArr[i]='1';
-				break;
-			case 2:
-				timeArr[i]='2';
-				break;
-			case 3:
-				timeArr[i]='3';
-				break;
-			case 4:
-				timeArr[i]='4';
-				break;
-			case 5:
-				timeArr[i]='5';
-				break;
-			case 6:
-				timeArr[i]='6';
-				break;
-			case 7:
-				timeArr[i]='7';
-				break;
-			case 8:
-				timeArr[i]='8';
-				break;
-			case 9:
-				timeArr[i]='9';
-				break;
-			default:
-				break;
-		}
+	for (int i = 0; i < 8; i++)
+	{
+        if( timeArr[i] < 10) 
+        {
+            timeArr[i] = timeArr[i] + '0';
+        }
+        else
+        {
+					timeArr[i] = ':';
+        }
 	}
+    timeArr[9] = 0;
 }
 
 uint16_t getPlayFileSector(int fileInList)
@@ -274,7 +326,7 @@ uint16_t getPlayFileSector(int fileInList)
 				return sect;
 			}
 		}
-	}
+	} /** \todo no return, no error detect */
 }
 
 void getControlParam(uint16_t fileSect)
@@ -291,11 +343,13 @@ void getControlParam(uint16_t fileSect)
 		byteCnt++;
 	}while(temp!='\n');
 	
+	for(int i=0;i<playParamArr_size;i++) {playParamArr[i]=0;}
+	
 	while(strCnt<7){																//fill an array of parameters
 		W25qxx_ReadByte(&temp,startAddr+byteCnt);
 		byteCnt++;
 		if((temp>='0')&&(temp<='9')){
-			tempArr[chrCnt]=temp;
+			tempArr[chrCnt]=temp; /** \todo check array overflow */
 			chrCnt++;
 			continue;
 		}
@@ -402,7 +456,7 @@ void loadFreqToFpga(uint16_t addr)
 		W25qxx_ReadByte(&temp,addr+byteCnt);
 		byteCnt++;
 		if((temp>='0')&&(temp<='9')){
-			tempArr[chrCnt]=temp;
+			tempArr[chrCnt]=temp;/** \todo check overflow array */
 			chrCnt++;
 			continue;
 		}
@@ -425,7 +479,7 @@ void loadFreqToFpga(uint16_t addr)
 		}
 	}
 	FPGA_CS_H;
-	steps=steps+1000;
+	steps=steps+1;
 }
 
 void loadMultToFpga(void)
@@ -464,11 +518,54 @@ void getCrc(void)
 //	crc=SPI2->DR;
 	FPGA_CS_H;
 }
+
+void fileListInit(void)
+{
+	fpgaFlags.fileListUpdate=1;
+//	fpgaFlags.labelsUpdate=1;
+	fileSect=0;
+}
+
+void SecToHhMmSs(uint32_t timeInSec)
+{	
+	timeArr[0]=timeInSec/3600;
+	timeArr[1]=(timeInSec/60)%60;
+	timeArr[2]=timeInSec%60;
+}
+
+void setFileTimer(void)
+{
+	SecToHhMmSs((playParamArr[1]+1)*playParamArr[3]);
+	fileHour=timeArr[0];
+	fileMin=timeArr[1];
+	fileSec=timeArr[2];
+}
+
+void setTotalTimer(void)
+{
+	uint32_t time=0;
+	
+	playParamArr[1]=0;
+	playParamArr[3]=0;
+	for(int i=0;i<50;i++){
+		if(!W25qxx_IsEmptySector(i,0)){
+			getControlParam(i);
+			time+=(playParamArr[1]+1)*playParamArr[3];
+			playParamArr[1]=0;
+			playParamArr[3]=0;
+		}
+	}
+	SecToHhMmSs(time);
+	totalHour=timeArr[0];
+	totalMin=timeArr[1];
+	totalSec=timeArr[2];
+}
+
 //-----------------------------------for main---------------------------------------
 void SLP_init(void)
 {
 	initSpi_2();
-	fpgaFlags.fileListUpdate=1;
+//	fpgaFlags.fileListUpdate=1;
 }
 
 void SLP(void)
@@ -482,7 +579,13 @@ void SLP(void)
 			fpgaFlags.fpgaConfig=0;
 			spi1FifoClr();
 			spi2FifoClr();
+			//fpgaConfig();
+			//GPIOB->BSRR=GPIO_BSRR_BS0;	//FPGA 1.2 V off
+			//delay_ms(20);
+			//spi1FifoClr();
+			//spi2FifoClr();
 			fpgaConfig();
+			fpgaFlags.labelsUpdate=1;
 			//******************************************
 //			fpgaFlags.fpgaConfigComplete=1;	//for debug
 			//******************************************
@@ -490,7 +593,9 @@ void SLP(void)
 		}
 		if(fpgaFlags.fpgaConfigComplete==1){
 			playFileSector=getPlayFileSector(playFileInList);
+			setTotalTimer();
 			getControlParam(playFileSector);
+			setFileTimer();
 			//********************************************
 			//for debug
 //			SPI2->CR1 &= ~SPI_CR1_SPE;
@@ -538,7 +643,7 @@ void SLP(void)
 		fpgaFlags.playBegin=0;
 		fpgaFlags.clockStart=0;
 		fpgaFlags.labelsUpdate=1;
-		NVIC_SystemReset();
+		//NVIC_SystemReset();
 	}
 	
 	//get list of files
@@ -546,11 +651,12 @@ void SLP(void)
 		if(!W25qxx_IsEmptySector(fileSect,0)){
 			spi1FifoClr();
 			W25qxx_ReadSector((uint8_t*)fileName,fileSect,FILE_NAME_SHIFT,FILE_NAME_BYTES);
-			fpgaFlags.labelsUpdate=1;
+			fpgaFlags.addListItem=1;
 		}
 		if(fileSect>=MAX_FILES_NUM){
 			fileSect=0;
 			fpgaFlags.fileListUpdate=0;
+			fpgaFlags.addListItem=0;
 		}
 		else{
 			fileSect++;

@@ -1,9 +1,6 @@
+#include "GlobalKey.h"
+
 //#define debug1
-#define PowerUSE
-#define LCDUSE
-#define ACCUSE
-#define COMMS
-#define PLAYER
 
 #include <string.h>
 #include "stm32g0xx.h"
@@ -22,6 +19,7 @@
 #endif
 
 #ifdef COMMS
+#include "SuperLoop_Comm.h"
 #include "bluetooth.h"
 //#include "rn4870Model.h"
 #include "uart.h"
@@ -39,7 +37,9 @@
 #include "tim3.h"
 #endif
 
-
+#ifdef MODBUS
+#include "SL_CommModbus.h"
+#endif
 
 
 
@@ -78,7 +78,7 @@ __disable_irq();
 #endif
 
 #ifdef PowerUSE
-// board_PowerModes_Init();	//must be call brefore other board functions
+ SuperLoop_PowerModes_Init();	//must be call brefore other board functions
 #endif
 
 #ifdef ACCUSE
@@ -89,12 +89,12 @@ SuperLoopACC_init();
 SLD_init();
 #endif
 
-#ifdef 	COMMS && PLAYER
+#if defined COMMS || defined PLAYER
 	tim3Init();
 	initSpi_1();
 	SLC_init();
 	SLP_init();
- __flashInit();
+// __flashInit();
 #endif	
 
 #ifdef 	COMMS 
@@ -105,15 +105,32 @@ SLC_init();
 SLP_init();
 #endif
 
-
-#ifdef LCDUSE
-SLD_init();
+#ifdef MODBUS
+SL_CommModbusInit();
 #endif
+
+
+//test flash
+//uint8_t temp_pBuffer;
+//W25qxx_EraseSector(0);
+//W25qxx_WriteByte(0x55, 0);
+//W25qxx_ReadByte(&temp_pBuffer, 0);
+//end test flash
+
+//debug FPGA config
+//fpgaConfig();
+//fpgaConfig();
+//end debug FPGA config	
 		
   while(1){
-		SLD();
-		SLC();
-		SLP();
+
+#ifdef 	COMMS 
+SLC();
+#endif
+
+#ifdef 	PLAYER 
+SLP();
+#endif
 		
 #ifdef LCDUSE
 SLD();
@@ -131,7 +148,10 @@ SuperLoopACC();
 #ifdef PowerUSE
 SuperLoop_PowerModes();			
 #endif			
-		
+
+#ifdef MODBUS
+SL_CommModbus();
+#endif
 		
   }
 }

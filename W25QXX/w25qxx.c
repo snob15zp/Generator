@@ -600,6 +600,7 @@ uint8_t W25qxx_IsEmptySector(uint32_t Sector_Address, uint32_t OffsetInByte)
 //HAL_UART_Transmit(&huart1, (uint8_t*)buf2, strlen(buf2), 100);
 
 //		HAL_SPI_Receive(W25QXX_SPI_PTR, pBuffer, s_buf, 100);
+		
 		spi1Receive(pBuffer, s_buf, 100);
 
 		W25QFLASH_CS_UNSELECT;

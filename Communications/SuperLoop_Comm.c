@@ -1,3 +1,4 @@
+#include "GlobalKey.h"
 #include "SuperLoop_Comm.h"
 
 uint8_t usbCmd;
@@ -89,17 +90,21 @@ void procCmdFromUsb(void)
 			erFlash(FIRST_CONF_SECT,LAST_CONF_SECT);
 			confSectorsStatus();
 			usbCmd=0;
+		  rxIrqCnt=0;
+			//NVIC_SystemReset();
 			return;
 		case ER_PLAY_FILES:
 			erFlash(FIRST_PLAY_SECT,LAST_PLAY_SECT);
 			playSectorsStatus();
 			usbCmd=0;
-			NVIC_SystemReset();
+		  rxIrqCnt=0;
+			//NVIC_SystemReset();
 //			fpgaFlags.fileListUpdate=1;
 			return;
 		case ER_ALL_FILES:
 			eraseFlash();
 			usbCmd=0;
+		  rxIrqCnt=0;
 			fpgaFlags.fileListUpdate=1;
 			return;
 		default:
@@ -176,19 +181,19 @@ void wrPage(void)
 	}
 }
 
-uint32_t isFlashClear(void)
-{
-	uint32_t bugs=0;
-	uint8_t byte;
-	
-	for(int i=0;i<2097152;i++){
-		W25qxx_ReadByte(&byte,i);
-		if(byte!=0xFF){
-			bugs++;
-		}
-	}
-	return bugs;
-}
+//uint32_t isFlashClear(void)
+//{
+//	uint32_t bugs=0;
+//	uint8_t byte;
+//	
+//	for(int i=0;i<2097152;i++){
+//		W25qxx_ReadByte(&byte,i);
+//		if(byte!=0xFF){
+//			bugs++;
+//		}
+//	}
+//	return bugs;
+//}
 
 void eraseFlash(void)
 {
@@ -233,10 +238,11 @@ void rdFlash(void)
 	usbCmd=0;
 }
 
-
+#ifdef COMMS
 void USART1_IRQHandler(void)
 {
-	if(USART1->ISR & USART_ISR_RXNE_RXFNE){
+	if(USART1->ISR & USART_ISR_RXNE_RXFNE)
+	{
 		USART1->ICR |= USART_ICR_ORECF;
 		USART1->RQR |= USART_RQR_RXFRQ;
 		if(rxIrqCnt<3){
@@ -298,6 +304,8 @@ void USART1_IRQHandler(void)
 		usbFlags.stopWrite=1;
 	}
 }
+#endif
+
 
 void playSectorsStatus(void)
 {

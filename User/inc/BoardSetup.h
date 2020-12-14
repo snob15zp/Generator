@@ -61,6 +61,15 @@
 //#define FLASH_MISO				  4	  // PB4 SERIAL DATA OUTPUT
 //#define FLASH_MOSI				  5	  // PB5 SERIAL DATA INPUT
 
+//for FPGA (player)
+#define FPGA_Reserv_H		GPIOB->BSRR = GPIO_BSRR_BS10
+#define FPGA_Reserv_L		GPIOB->BSRR = GPIO_BSRR_BR10
+#define nCONFIG_H				GPIOB->BSRR = GPIO_BSRR_BS11
+#define nCONFIG_L 			GPIOB->BSRR = GPIO_BSRR_BR11
+#define FPGA_CS_H				GPIOB->BSRR = GPIO_BSRR_BS12
+#define FPGA_CS_L				GPIOB->BSRR = GPIO_BSRR_BR12
+#define FPGA_START_H 		GPIOA->BSRR = GPIO_BSRR_BS8
+#define FPGA_START_L 		GPIOA->BSRR = GPIO_BSRR_BR8
 
 typedef uint32_t systemticks_t;
 		
