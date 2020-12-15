@@ -10,11 +10,7 @@
 \brief info on display for debug ACC 
 
 */
-<<<<<<< HEAD
-#define def_debug_AccDispay
-=======
 //#define def_debug_AccDispay
->>>>>>> Development070
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -57,13 +53,6 @@ static systemticks_t LastUpdateTime;
 
 //--------------------------------for uGFX--------------------------------------
 GListener	gl;
-<<<<<<< HEAD
-GHandle		ghLabel1, ghLabel2, ghLabel3, ghLabel4, ghLabel5, ghLabel6, ghLabel7, ghLabel8;
-GHandle		ghList1;
-static	GEvent* pe;
-//static const gOrientation	orients[] = { gOrientation0, gOrientation90, gOrientation180, gOrientation270 };
-static	unsigned which;
-=======
 GHandle	ghLabel1, ghLabel2, ghLabel3, ghLabel4, ghLabel5, ghLabel6, ghLabel7;
 GHandle ghLabel8, ghLabel9, ghLabel10, ghLabel11, ghLabel12;
 GHandle	ghList1;
@@ -71,7 +60,6 @@ GHandle	ghList1;
 static	GEvent* pe;
 //static const gOrientation	orients[] = { gOrientation0, gOrientation90, gOrientation180, gOrientation270 };
 //static	unsigned which;
->>>>>>> Development070
 
 static void createDebugLabels(void);
 //---------------------- Control grafical objects------------------------------
@@ -333,26 +321,12 @@ static void createLabels(void) {
 	ghLabel7 = gwinLabelCreate(0, &wi);
 //	gwinLabelSetAttribute(ghLabel7,100,"Total timer:");
 
-<<<<<<< HEAD
-#ifdef def_debug_AccDispay
-	wi.g.width = 220; wi.g.height = 20; wi.g.x = 120, wi.g.y = 170;
-	wi.text = "RSOC";
-	ghLabel8 = gwinLabelCreate(0, &wi);	    
-
-#endif
-
-}
-
-
-
-=======
 	wi.g.width = 110; wi.g.height = 20; wi.g.x = 10, wi.g.y = 250;
 	wi.text = "Total timer:";
 	ghLabel12 = gwinLabelCreate(0, &wi);
 }
 
 
->>>>>>> Development070
 
 int SLD_DisplInit(void)
 { 

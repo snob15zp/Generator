@@ -49,11 +49,7 @@
             <InvalidFlash>1</InvalidFlash>
           </TargetStatus>
           <OutputDirectory>.\Objects\</OutputDirectory>
-<<<<<<< HEAD
-          <OutputName>Generator070</OutputName>
-=======
           <OutputName>gen-g070</OutputName>
->>>>>>> Development070
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
           <CreateHexFile>0</CreateHexFile>
@@ -138,19 +134,11 @@
             <RunIndependent>0</RunIndependent>
             <UpdateFlashBeforeDebugging>1</UpdateFlashBeforeDebugging>
             <Capability>1</Capability>
-<<<<<<< HEAD
-            <DriverSelection>-1</DriverSelection>
-          </Flash1>
-          <bUseTDR>1</bUseTDR>
-          <Flash2>BIN\UL2CM3.DLL</Flash2>
-          <Flash3></Flash3>
-=======
             <DriverSelection>4096</DriverSelection>
           </Flash1>
           <bUseTDR>1</bUseTDR>
           <Flash2>BIN\UL2CM3.DLL</Flash2>
           <Flash3>"" ()</Flash3>
->>>>>>> Development070
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
           <pFcarmGrp></pFcarmGrp>
@@ -350,11 +338,7 @@
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-<<<<<<< HEAD
-              <IncludePath>..\User\inc;..\ugfx_2.9\src\gdisp;..\ugfx_2.9\src;..\ugfx_2.9;..\ugfx_2.9\src\gos;..\ugfx_2.9\src\gwin;..\ugfx_2.9\drivers\gdisp\ILI9341;..\ugfx_2.9\src\ginput;..\ugfx_2.9\drivers\ginput\toggle\Pal;..\Display;..\ugfx_2.9\drivers\ginput\touch\FT6x06;..\DriversCommon;..\PowerModes;..\W25QXX;..\Communications;..\Player;..\acc;..\PowerModes</IncludePath>
-=======
               <IncludePath>..\User\inc;..\ugfx_2.9\src\gdisp;..\ugfx_2.9\src;..\ugfx_2.9;..\ugfx_2.9\src\gos;..\ugfx_2.9\src\gwin;..\ugfx_2.9\drivers\gdisp\ILI9341;..\ugfx_2.9\src\ginput;..\ugfx_2.9\drivers\ginput\toggle\Pal;..\Display;..\ugfx_2.9\drivers\ginput\touch\FT6x06;..\DriversCommon;..\PowerModes;..\W25QXX;..\Communications;..\Player;..\acc;..\PowerModes;..\FreeModbus;..\CommModbus</IncludePath>
->>>>>>> Development070
             </VariousControls>
           </Cads>
           <Aads>
@@ -385,11 +369,7 @@
             <TextAddressRange>0x08000000</TextAddressRange>
             <DataAddressRange>0x20000000</DataAddressRange>
             <pXoBase></pXoBase>
-<<<<<<< HEAD
-            <ScatterFile></ScatterFile>
-=======
             <ScatterFile>.\Objects\gen-g070-release.sct</ScatterFile>
->>>>>>> Development070
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
             <Misc></Misc>
@@ -473,15 +453,9 @@
           <GroupName>W25qxx</GroupName>
           <Files>
             <File>
-<<<<<<< HEAD
-              <FileName>w25qxx.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\W25QXX\w25qxx.c</FilePath>
-=======
               <FileName>MainSpiFlash.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\W25QXX\MainSpiFlash.c</FilePath>
->>>>>>> Development070
             </File>
           </Files>
         </Group>
@@ -576,8 +550,6 @@
           </Files>
         </Group>
         <Group>
-<<<<<<< HEAD
-=======
           <GroupName>CommModbos</GroupName>
           <Files>
             <File>
@@ -673,7 +645,6 @@
           </Files>
         </Group>
         <Group>
->>>>>>> Development070
           <GroupName>::CMSIS</GroupName>
         </Group>
         <Group>

@@ -1,15 +1,6 @@
-<<<<<<< HEAD
-#define debug1
-#define PowerUSE
-#define LCDUSE
-#define ACCUSE
-#define COMMS
-#define PLAYER
-=======
 #include "GlobalKey.h"
 
 //#define debug1
->>>>>>> Development070
 
 #include <string.h>
 #include "stm32g0xx.h"
@@ -29,11 +20,7 @@
 
 #ifdef COMMS
 #include "SuperLoop_Comm.h"
-<<<<<<< HEAD
-//#include "bluetooth.h"
-=======
 #include "bluetooth.h"
->>>>>>> Development070
 //#include "rn4870Model.h"
 #include "uart.h"
 #include "flash.h"
@@ -128,15 +115,9 @@ SLD_init();
 #if defined COMMS || defined PLAYER
 	tim3Init();
 	initSpi_1();
-<<<<<<< HEAD
-	//SLC_init();
-	//SLP_init();
- __flashInit();
-=======
 	SLC_init();
 	SLP_init();
 // __flashInit();
->>>>>>> Development070
 #endif	
 
 #ifdef 	COMMS 

@@ -152,15 +152,9 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-<<<<<<< HEAD
-          <LineNumber>73</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134266028</Address>
-=======
           <LineNumber>172</LineNumber>
           <EnabledFlag>1</EnabledFlag>
           <Address>134266572</Address>
->>>>>>> Development070
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -169,27 +163,6 @@
           <BreakIfRCount>1</BreakIfRCount>
           <Filename>..\User\src\main.c</Filename>
           <ExecCommand></ExecCommand>
-<<<<<<< HEAD
-          <Expression>\\Generator070\../User/src/main.c\73</Expression>
-        </Bp>
-        <Bp>
-          <Number>1</Number>
-          <Type>0</Type>
-          <LineNumber>53</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134265988</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\User\src\main.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\Generator070\../User/src/main.c\53</Expression>
-        </Bp>
-      </Breakpoint>
-=======
           <Expression>\\gen_g070\../User/src/main.c\172</Expression>
         </Bp>
       </Breakpoint>
@@ -207,7 +180,6 @@
           <ItemText>fpgaFlags</ItemText>
         </Ww>
       </WatchWindow2>
->>>>>>> Development070
       <Tracepoint>
         <THDelay>0</THDelay>
       </Tracepoint>
@@ -250,15 +222,6 @@
       <pszMrulep></pszMrulep>
       <pSingCmdsp></pSingCmdsp>
       <pMultCmdsp></pMultCmdsp>
-<<<<<<< HEAD
-      <SystemViewers>
-        <Entry>
-          <Name>System Viewer\GPIOB</Name>
-          <WinId>35905</WinId>
-        </Entry>
-      </SystemViewers>
-=======
->>>>>>> Development070
       <DebugDescription>
         <Enable>1</Enable>
         <EnableFlashSeq>0</EnableFlashSeq>
@@ -279,11 +242,7 @@
       <GroupNumber>1</GroupNumber>
       <FileNumber>1</FileNumber>
       <FileType>1</FileType>
-<<<<<<< HEAD
-      <tvExp>0</tvExp>
-=======
       <tvExp>1</tvExp>
->>>>>>> Development070
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
       <PathWithFileName>..\User\src\main.c</PathWithFileName>
@@ -351,11 +310,7 @@
 
   <Group>
     <GroupName>Display</GroupName>
-<<<<<<< HEAD
-    <tvExp>0</tvExp>
-=======
     <tvExp>1</tvExp>
->>>>>>> Development070
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -407,11 +362,7 @@
 
   <Group>
     <GroupName>Communications</GroupName>
-<<<<<<< HEAD
-    <tvExp>0</tvExp>
-=======
     <tvExp>1</tvExp>
->>>>>>> Development070
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -419,11 +370,7 @@
       <GroupNumber>5</GroupNumber>
       <FileNumber>9</FileNumber>
       <FileType>1</FileType>
-<<<<<<< HEAD
-      <tvExp>1</tvExp>
-=======
       <tvExp>0</tvExp>
->>>>>>> Development070
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
       <PathWithFileName>..\Communications\SuperLoop_Comm.c</PathWithFileName>
@@ -435,11 +382,7 @@
 
   <Group>
     <GroupName>W25qxx</GroupName>
-<<<<<<< HEAD
-    <tvExp>0</tvExp>
-=======
     <tvExp>1</tvExp>
->>>>>>> Development070
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -447,19 +390,11 @@
       <GroupNumber>6</GroupNumber>
       <FileNumber>10</FileNumber>
       <FileType>1</FileType>
-<<<<<<< HEAD
-      <tvExp>0</tvExp>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-      <PathWithFileName>..\W25QXX\w25qxx.c</PathWithFileName>
-      <FilenameWithoutPath>w25qxx.c</FilenameWithoutPath>
-=======
       <tvExp>1</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
       <PathWithFileName>..\W25QXX\MainSpiFlash.c</PathWithFileName>
       <FilenameWithoutPath>MainSpiFlash.c</FilenameWithoutPath>
->>>>>>> Development070
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -467,11 +402,7 @@
 
   <Group>
     <GroupName>Player</GroupName>
-<<<<<<< HEAD
-    <tvExp>0</tvExp>
-=======
     <tvExp>1</tvExp>
->>>>>>> Development070
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -639,11 +570,7 @@
 
   <Group>
     <GroupName>DOC</GroupName>
-<<<<<<< HEAD
-    <tvExp>1</tvExp>
-=======
     <tvExp>0</tvExp>
->>>>>>> Development070
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -674,8 +601,6 @@
   </Group>
 
   <Group>
-<<<<<<< HEAD
-=======
     <GroupName>CommModbos</GroupName>
     <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
@@ -896,7 +821,6 @@
   </Group>
 
   <Group>
->>>>>>> Development070
     <GroupName>::CMSIS</GroupName>
     <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>

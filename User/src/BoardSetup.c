@@ -181,13 +181,9 @@ void boardIoPinInit(void){
                      GPIO_AFRL_AFSEL7_Msk);            	// set PB7 as I2C2_SDA 
 	GPIOB->AFR[0] |= 6 << GPIO_AFRL_AFSEL6_Pos |           	// set PB6 as I2C2_SCL
                    6 << GPIO_AFRL_AFSEL7_Pos;
-<<<<<<< HEAD
-	GPIOB->AFR[1] = 6 << GPIO_AFRH_AFSEL8_Pos |           	// set PB8 as I2C2_SCL
-=======
 	GPIOB->AFR[1] &= ~(GPIO_AFRH_AFSEL8_Msk |           	// set PB8 as I2C2_SCL
                      GPIO_AFRH_AFSEL9_Msk);            	// set PB9 as I2C2_SDA 
   GPIOB->AFR[1] = 6 << GPIO_AFRH_AFSEL8_Pos |           	// set PB8 as I2C2_SCL
->>>>>>> Development070
                   6 << GPIO_AFRH_AFSEL9_Pos;            	// set PB9 as I2C2_SDA 
   
   GPIOB->OSPEEDR |= GPIO_OSPEEDR_OSPEED5_Msk | 
@@ -250,17 +246,6 @@ void boardIoPinInit(void){
 										
 	GPIOA->MODER &= ~(GPIO_MODER_MODE15_Msk); //A15 ! 
 	
-<<<<<<< HEAD
-	GPIOB->MODER |= GPIO_MODER_MODE3_1 |
-									GPIO_MODER_MODE4_1 |
-									GPIO_MODER_MODE5_1;
-									
-	GPIOB->AFR[0]&=~( (GPIO_AFRL_AFSEL3_Msk) |										//PB3 - SPI1 SCK
-									  (GPIO_AFRL_AFSEL3_Msk) |										//PB4 - SPI1 MISO
-									  (GPIO_AFRL_AFSEL3_Msk)										//PB5 - SPI1 MOSI	
-                  );										
-	GPIOB->AFR[0] |= (0<<GPIO_AFRL_AFSEL3_Pos) |										//PB3 - SPI1 SCK
-=======
 	GPIOB->MODER |= GPIO_MODER_MODE3_1 | //B3 ?
 									GPIO_MODER_MODE4_1 | //B4?
 									GPIO_MODER_MODE5_1;  //B5?
@@ -269,7 +254,6 @@ void boardIoPinInit(void){
 									  GPIO_AFRL_AFSEL3_Msk |										//PB4 - SPI1 MISO
 									  GPIO_AFRL_AFSEL3_Msk);										//PB5 - SPI1 MOSI											
 	GPIOB->AFR[0] |=(0<<GPIO_AFRL_AFSEL3_Pos) |								//PB3 - SPI1 SCK
->>>>>>> Development070
 									(0<<GPIO_AFRL_AFSEL4_Pos) |										//PB4 - SPI1 MISO
 									(0<<GPIO_AFRL_AFSEL5_Pos);										//PB5 - SPI1 MOSI
 									
