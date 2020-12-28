@@ -10,7 +10,7 @@
       <TargetName>Target 1</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>6120000::V6.12::.\ARMCLANG</pCCUsed>
+      <pCCUsed>6140001::V6.14.1::ARMCLANG</pCCUsed>
       <uAC6>1</uAC6>
       <TargetOption>
         <TargetCommonOption>
@@ -185,6 +185,7 @@
             <uocXRam>0</uocXRam>
             <RvdsVP>0</RvdsVP>
             <RvdsMve>0</RvdsMve>
+            <RvdsCdeCp>0</RvdsCdeCp>
             <hadIRAM2>0</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>8</StupSel>
@@ -321,13 +322,13 @@
             <PlainCh>0</PlainCh>
             <Ropi>0</Ropi>
             <Rwpi>0</Rwpi>
-            <wLevel>3</wLevel>
+            <wLevel>1</wLevel>
             <uThumb>0</uThumb>
             <uSurpInc>0</uSurpInc>
             <uC99>1</uC99>
             <uGnu>1</uGnu>
             <useXO>0</useXO>
-            <v6Lang>3</v6Lang>
+            <v6Lang>5</v6Lang>
             <v6LangP>3</v6LangP>
             <vShortEn>1</vShortEn>
             <vShortWch>1</vShortWch>
@@ -338,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>..\User\inc;..\ugfx_2.9\src\gdisp;..\ugfx_2.9\src;..\ugfx_2.9;..\ugfx_2.9\src\gos;..\ugfx_2.9\src\gwin;..\ugfx_2.9\drivers\gdisp\ILI9341;..\ugfx_2.9\src\ginput;..\ugfx_2.9\drivers\ginput\toggle\Pal;..\Display;..\ugfx_2.9\drivers\ginput\touch\FT6x06;..\DriversCommon;..\PowerModes;..\W25QXX;..\Communications;..\Player;..\acc;..\PowerModes;..\FreeModbus;..\CommModbus</IncludePath>
+              <IncludePath>..\User\inc;..\ugfx_2.9\src\gdisp;..\ugfx_2.9\src;..\ugfx_2.9;..\ugfx_2.9\src\gos;..\ugfx_2.9\src\gwin;..\ugfx_2.9\drivers\gdisp\ILI9341;..\ugfx_2.9\src\ginput;..\ugfx_2.9\drivers\ginput\toggle\Pal;..\Display;..\ugfx_2.9\drivers\ginput\touch\FT6x06;..\DriversCommon;..\PowerModes;..\W25QXX;..\Communications;..\Player;..\acc;..\PowerModes;..\FreeModbus;..\CommModbus;..\spiffs\src;..\spiffs\src\default</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -351,7 +352,7 @@
             <NoWarn>0</NoWarn>
             <uSurpInc>0</uSurpInc>
             <useXO>0</useXO>
-            <uClangAs>0</uClangAs>
+            <ClangAsOpt>4</ClangAsOpt>
             <VariousControls>
               <MiscControls></MiscControls>
               <Define></Define>
@@ -391,6 +392,11 @@
               <FileName>BoardSetup.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\User\src\BoardSetup.c</FilePath>
+            </File>
+            <File>
+              <FileName>version.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\User\inc\version.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -453,9 +459,9 @@
           <GroupName>W25qxx</GroupName>
           <Files>
             <File>
-              <FileName>MainSpiFlash.c</FileName>
+              <FileName>w25qxx.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\W25QXX\MainSpiFlash.c</FilePath>
+              <FilePath>..\W25QXX\w25qxx.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -641,6 +647,61 @@
               <FileName>tim1.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\FreeModbus\tim1.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>spiffs</GroupName>
+          <Files>
+            <File>
+              <FileName>spiffs_config.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\spiffs\src\default\spiffs_config.h</FilePath>
+            </File>
+            <File>
+              <FileName>spiffs.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\spiffs\src\spiffs.h</FilePath>
+            </File>
+            <File>
+              <FileName>spiffs_cache.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\spiffs\src\spiffs_cache.c</FilePath>
+            </File>
+            <File>
+              <FileName>spiffs_check.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\spiffs\src\spiffs_check.c</FilePath>
+            </File>
+            <File>
+              <FileName>spiffs_gc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\spiffs\src\spiffs_gc.c</FilePath>
+            </File>
+            <File>
+              <FileName>spiffs_hydrogen.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\spiffs\src\spiffs_hydrogen.c</FilePath>
+            </File>
+            <File>
+              <FileName>spiffs_nucleus.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\spiffs\src\spiffs_nucleus.c</FilePath>
+            </File>
+            <File>
+              <FileName>spiffs_nucleus.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\spiffs\src\spiffs_nucleus.h</FilePath>
+            </File>
+            <File>
+              <FileName>spiffs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\src\spiffs.c</FilePath>
+            </File>
+            <File>
+              <FileName>fs.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\User\inc\fs.h</FilePath>
             </File>
           </Files>
         </Group>

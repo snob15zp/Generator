@@ -19,7 +19,7 @@ typedef
   
 extern spiMode_en spiMode;
 
-extern void initSpi_1(void);
+void initSpi_1(void);
 extern void initSpi_2(void);
 extern void spiByteModeEnable(void);
 extern void spiWordModeEnable(void);

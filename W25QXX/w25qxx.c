@@ -148,23 +148,22 @@ void W25qxx_WriteDisable(void)
 void W25qxx_WaitForWriteEnd(void)
 {
 	W25qxx_Delay(1);
-	W25QFLASH_CS_SELECT;
-	W25qxx_Spi(W25_READ_STATUS_1);
+
 
 	do{
+        W25QFLASH_CS_SELECT;
+        W25qxx_Spi(W25_READ_STATUS_1);
 		w25qxx.StatusRegister1 = W25qxx_Spi(W25QXX_DUMMY_BYTE);
-		W25qxx_Delay(1);
+        W25QFLASH_CS_UNSELECT;
+		W25qxx_Delay(5);
 	}
 	while((w25qxx.StatusRegister1 & 0x01) == 0x01);
-
-	W25QFLASH_CS_UNSELECT;
 }
 
 //###################################################################################################################
 uint8_t W25qxx_Init(void)
 {
 	w25qxx.Lock = 1;
-//	while(HAL_GetTick() < 100)
 	W25qxx_Delay(1);
 
 	W25QFLASH_CS_UNSELECT;
@@ -172,165 +171,102 @@ uint8_t W25qxx_Init(void)
 
 	uint32_t id;
 
-//	#if (INIT_DEBUG == 1)
-//	HAL_UART_Transmit(DEBUG_UART, (uint8_t*)"Init Begin...\n", 14, 1000);
-//	#endif
-	
+
 	id = W25qxx_ReadID();
-
-//	#if (INIT_DEBUG == 1)
-//	snprintf(buf, 64, "ID:0x%lX\n", id);
-//	HAL_UART_Transmit(DEBUG_UART, (uint8_t*)buf, strlen(buf), 1000);
-//	#endif
-
 	switch(id & 0x0000FFFF)
 	{
 		case 0x401A:	// 	w25q512
 			w25qxx.ID = W25Q512;
 			w25qxx.BlockCount = 1024;
-//			#if (INIT_DEBUG == 1)
-//			HAL_UART_Transmit(DEBUG_UART, (uint8_t*)"Chip: w25q512\n", 14, 1000);
-//			#endif
 		break;
 
 		case 0x4019:	// 	w25q256
 			w25qxx.ID = W25Q256;
 			w25qxx.BlockCount = 512;
-//			#if (INIT_DEBUG == 1)
-//			HAL_UART_Transmit(DEBUG_UART, (uint8_t*)"Chip: w25q256\n", 14, 1000);
-//			#endif
 		break;
 
 		case 0x4018:	// 	w25q128
 			w25qxx.ID = W25Q128;
 			w25qxx.BlockCount = 256;
-//			#if (INIT_DEBUG == 1)
-//			HAL_UART_Transmit(DEBUG_UART, (uint8_t*)"Chip: w25q128\n", 14, 1000);
-//			#endif
 		break;
 
 		case 0x4017:	//	w25q64
 			w25qxx.ID = W25Q64;
 			w25qxx.BlockCount = 128;
-//			#if (INIT_DEBUG == 1)
-//			HAL_UART_Transmit(DEBUG_UART, (uint8_t*)"Chip: w25q64\n", 13, 1000);
-//			#endif
 		break;
 
 		case 0x4016:	//	w25q32
 			w25qxx.ID = W25Q32;
 			w25qxx.BlockCount = 64;
-//			#if (INIT_DEBUG == 1)
-//			HAL_UART_Transmit(DEBUG_UART, (uint8_t*)"Chip: w25q32\n", 13, 1000);
-//			#endif
 		break;
 
 		case 0x4015:	//	w25q16
 			w25qxx.ID = W25Q16;
 			w25qxx.BlockCount = 32;
-//			#if (INIT_DEBUG == 1)
-//			HAL_UART_Transmit(DEBUG_UART, (uint8_t*)"Chip: w25q16\n", 13, 1000);
-//			#endif
 		break;
 
 		case 0x4014:	//	w25q80
 			w25qxx.ID = W25Q80;
 			w25qxx.BlockCount = 16;
-//			#if (INIT_DEBUG == 1)
-//			HAL_UART_Transmit(DEBUG_UART, (uint8_t*)"Chip: w25q80\n", 13, 1000);
-//			#endif
 		break;
 
 		case 0x4013:	//	w25q40
 			w25qxx.ID = W25Q40;
 			w25qxx.BlockCount = 8;
-//			#if (INIT_DEBUG == 1)
-//			HAL_UART_Transmit(DEBUG_UART, (uint8_t*)"Chip: w25q40\n", 13, 1000);
-//			#endif
 		break;
 
 		case 0x4012:	//	w25q20
 			w25qxx.ID = W25Q20;
 			w25qxx.BlockCount = 4;
-//			#if (INIT_DEBUG == 1)
-//			HAL_UART_Transmit(DEBUG_UART, (uint8_t*)"Chip: w25q20\n", 13, 1000);
-//			#endif
 		break;
 
 		case 0x4011:	//	w25q10
 			w25qxx.ID = W25Q10;
 			w25qxx.BlockCount = 2;
-//			#if (INIT_DEBUG == 1)
-//			HAL_UART_Transmit(DEBUG_UART, (uint8_t*)"Chip: w25q10\n", 13, 1000);
-//			#endif
 		break;
 
-		////////////////////////////////////////////////////////////////////////////////
-
 		case 0x3017:	//	w25x64
-			//w25qxx.ID = W25Q64;
+			w25qxx.ID = W25Q64;
 			w25qxx.BlockCount = 128;
-//			#if (INIT_DEBUG == 1)
-//			HAL_UART_Transmit(DEBUG_UART, (uint8_t*)"Chip: w25x64\n", 13, 1000);
-//			#endif
 		break;
 
 		case 0x3016:	//	w25x32
-			//w25qxx.ID = W25Q32;
+			w25qxx.ID = W25Q32;
 			w25qxx.BlockCount = 64;
-//			#if (INIT_DEBUG == 1)
-//			HAL_UART_Transmit(DEBUG_UART, (uint8_t*)"Chip: w25x32\n", 13, 1000);
-//			#endif
 		break;
 
 		case 0x3015:	//	w25q16
-			//w25qxx.ID = W25Q16;
+			w25qxx.ID = W25Q16;
 			w25qxx.BlockCount = 32;
-//			#if (INIT_DEBUG == 1)
-//			HAL_UART_Transmit(DEBUG_UART, (uint8_t*)"Chip: w25x16\n", 13, 1000);
-//			#endif
 		break;
 
-		////////////////////////////////////////////////////////////////////////////////
 		case 0x3014:	//	w25x80
-			//w25qxx.ID = W25Q80;
+			w25qxx.ID = W25Q80;
 			w25qxx.BlockCount = 16;
-//			#if (INIT_DEBUG == 1)
-//			HAL_UART_Transmit(DEBUG_UART, (uint8_t*)"Chip: w25x80\n", 13, 1000);
-//			#endif
 		break;
 
 		case 0x3013:	//	w25x40
-			//w25qxx.ID = W25Q40;
+			w25qxx.ID = W25Q40;
 			w25qxx.BlockCount = 8;
-//			#if (INIT_DEBUG == 1)
-//			HAL_UART_Transmit(DEBUG_UART, (uint8_t*)"Chip: w25x40\n", 13, 1000);
-//			#endif
 		break;
 
 		case 0x3012:	//	w25x20
-			//w25qxx.ID = W25Q20;
+			w25qxx.ID = W25Q20;
 			w25qxx.BlockCount = 4;
-//			#if (INIT_DEBUG == 1)
-//			HAL_UART_Transmit(DEBUG_UART, (uint8_t*)"Chip: w25x20\n", 13, 1000);
-//			#endif
 		break;
 
 		case 0x3011:	//	w25x10
-			//w25qxx.ID = W25Q10;
+			w25qxx.ID = W25Q10;
 			w25qxx.BlockCount = 2;
-//			#if (INIT_DEBUG == 1)
-//			HAL_UART_Transmit(DEBUG_UART, (uint8_t*)"Chip: w25x10\n", 13, 1000);
-//			#endif
+		break;
+	
+		case 0x8701:	//	w25x10
+			w25qxx.ID = AT25SF321;
+			w25qxx.BlockCount = 64;
 		break;
 
 
-
 		default:
-//			#if (INIT_DEBUG == 1)
-//			HAL_UART_Transmit(DEBUG_UART, (uint8_t*)"Unknown ID\n", 11, 1000);
-//			#endif
-
 			w25qxx.Lock = 0;
 			return 0;
 	}
@@ -342,36 +278,6 @@ uint8_t W25qxx_Init(void)
 	w25qxx.PageCount = (w25qxx.SectorCount * w25qxx.SectorSize) / w25qxx.PageSize;
 	w25qxx.BlockSize = w25qxx.SectorSize * 16;
 	w25qxx.CapacityInKiloByte = (w25qxx.SectorCount * w25qxx.SectorSize) / 1024;
-
-	//W25qxx_ReadUniqID();
-	//W25qxx_ReadStatusRegister(1);
-	//W25qxx_ReadStatusRegister(2);
-	//W25qxx_ReadStatusRegister(3);
-
-//	#if (INIT_DEBUG == 1)
-//	snprintf(buf, 64, "Page Size: %d Bytes\n", w25qxx.PageSize);
-//	HAL_UART_Transmit(DEBUG_UART, (uint8_t*)buf, strlen(buf), 1000);
-
-//	snprintf(buf, 64, "Page Count: %lu\n", w25qxx.PageCount);
-//	HAL_UART_Transmit(DEBUG_UART, (uint8_t*)buf, strlen(buf), 1000);
-
-//	snprintf(buf, 64, "Sector Size: %lu Bytes\n", w25qxx.SectorSize);
-//	HAL_UART_Transmit(DEBUG_UART, (uint8_t*)buf, strlen(buf), 1000);
-
-//	snprintf(buf, 64, "Sector Count: %lu\n", w25qxx.SectorCount);
-//	HAL_UART_Transmit(DEBUG_UART, (uint8_t*)buf, strlen(buf), 1000);
-
-//	snprintf(buf, 64, "Block Size: %lu Bytes\n", w25qxx.BlockSize);
-//	HAL_UART_Transmit(DEBUG_UART, (uint8_t*)buf, strlen(buf), 1000);
-
-//	snprintf(buf, 64, "Block Count: %lu\n", w25qxx.BlockCount);
-//	HAL_UART_Transmit(DEBUG_UART, (uint8_t*)buf, strlen(buf), 1000);
-
-//	snprintf(buf, 64, "Capacity: %lu KBytes\n", w25qxx.CapacityInKiloByte);
-//	HAL_UART_Transmit(DEBUG_UART, (uint8_t*)buf, strlen(buf), 1000);
-
-//	HAL_UART_Transmit(DEBUG_UART, (uint8_t*)"Init Done\n", 10, 1000);
-//	#endif
 
 	w25qxx.Lock = 0;
 	return 1;

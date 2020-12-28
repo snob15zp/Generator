@@ -36,7 +36,7 @@ volatile systemticks_t BS_LastButtonPress;
 
 int BSInit(void)
 {
-	SystemCoreClock = setSystemClock(); 
+  SystemCoreClock = setSystemClock(); 
   SysTick_Config(SystemCoreClock/1000); // for uGFX
 	
 	

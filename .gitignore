@@ -1,7 +1,19 @@
-/KeilProgect030/Listings/
-/KeilProgect030/Objects/
-/KeilProgect070/Listings/
-/KeilProgect070/Objects/
+KeilProgect030/Listings/
+KeilProgect030/Objects/
+KeilProgect070/Listings/
+KeilProgect070/Objects/
+release-build.log
+dev_gen_g070.latest.bf
+dev_gen_g070.R201204.bf
+dev_gen_g070_release.hex
+/KeilProject070/*.intl
+/KeilProject070/*.uvoptx
+/KeilProject070/Listings
+/KeilProject070/Objects
+/DebugConfig/Generator_STM32G070CBTx_1.0.0.dbgconf
+*.bak
+/KeilProject070/release-build.log
+/Display/*.bak
 
 KeilProject070/Listings/
 

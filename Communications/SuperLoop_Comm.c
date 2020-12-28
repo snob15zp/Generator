@@ -139,7 +139,7 @@ void wrPlayFiles(void)
 void wrConfFile(void)
 {
 	if(usbFlags.getStartAddr==0){
-		startPageAddr=W25qxx_SectorToPage(FIRST_CONF_SECT);
+//		startPageAddr=W25qxx_SectorToPage(FIRST_CONF_SECT);
 		usbFlags.getStartAddr=1;
 	}
 	wrPage();
@@ -159,6 +159,7 @@ void wrConfFile(void)
 
 void wrPage(void)
 {
+    /*
 	if(usbFlags.lastPage==1){
 		if(usbFlags.buffSel==0){
 			spi1FifoClr();
@@ -182,6 +183,7 @@ void wrPage(void)
 		usbFlags.buff1DataRdy=0;
 		return;
 	}
+    */
 }
 
 //uint32_t isFlashClear(void)
@@ -200,21 +202,24 @@ void wrPage(void)
 
 void eraseFlash(void)
 {
-	W25qxx_EraseChip();
+	/* W25qxx_EraseChip(); */
 	fpgaFlags.fileListUpdate=1;
 }
 
 uint16_t findEmptySector(void)
 {
-	uint32_t sectAddr=0;
+	/*
+    uint32_t sectAddr=0;
 	while(!(W25qxx_IsEmptySector(sectAddr,0))){
 		sectAddr++;
 	}
 	return sectAddr;
+    */
 }
 
 void erFlash(uint8_t firstSectAddr, uint8_t lastSectAddr)
 {
+    /*
 	if(firstSectAddr<lastSectAddr){
 		for(int i=firstSectAddr;i<=lastSectAddr;i++){
 			spi1FifoClr();
@@ -230,6 +235,7 @@ void erFlash(uint8_t firstSectAddr, uint8_t lastSectAddr)
 
 void rdFlash(void)
 {
+    /*
 	uint8_t byte;
 	
 	for(int i=0;i<SECTOR_SIZE*SECTORS_NUM;i++)
@@ -240,6 +246,7 @@ void rdFlash(void)
 		while(!(USART1->ISR & USART_ISR_TC)){}
 	}
 	usbCmd=0;
+    */
 }
 
 #ifdef COMMS
@@ -313,27 +320,32 @@ void USART1_IRQHandler(void)
 
 void playSectorsStatus(void)
 {
+    /*
 	for(int i=0;i<MAX_FILES_NUM;i++){
 		if(W25qxx_IsEmptySector(i,0))
 			debArr1[i]=1;
 		else
 			debArr1[i]=0;
 	}
+    */
 }
 
 void confSectorsStatus(void)
 {
+    /*
 	for(int i=FIRST_CONF_SECT;i<LAST_CONF_SECT+1;i++){
 		if(W25qxx_IsEmptySector(i,0))
 			debArr2[i]=1;
 		else
 			debArr2[i]=0;
 	}
+    */
 }
 
 //-----------------------------------for debug----------------------------------
 void rdPlayFiles(void)
 {
+    /*
 	uint16_t shift;
 	uint8_t byte;
 	uint32_t fileSize;
@@ -349,4 +361,5 @@ void rdPlayFiles(void)
 	}
 	rxIrqCnt=0;
 	usbCmd=0;
+    */
 }
