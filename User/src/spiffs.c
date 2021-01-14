@@ -20,6 +20,12 @@
 
 #define W25_ERASE_TIMEOUT 3000
 
+
+#define spi_transfer ///rdd debug
+#define spi_cs_off()   ///rdd debug
+#define  spi_cs_on() ///rdd debug
+
+
 spiffs fs;
 
 extern uint8_t spiDispCapture;
@@ -27,6 +33,8 @@ extern uint8_t spiDispCapture;
 static u8_t spiffs_work_buf[SPIFFS_CFG_LOG_PAGE_SZ() * 2];
 static u8_t spiffs_fds[32 * 4];
 static u8_t spiffs_cache_buf[(SPIFFS_CFG_LOG_PAGE_SZ() + 32) * 4];
+
+
 
 
 /**
