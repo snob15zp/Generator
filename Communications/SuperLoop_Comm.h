@@ -2,6 +2,7 @@
 #define SLC_H
 
 #include "stm32g0xx.h"
+#include "w25qxx.h"
 #include "SuperLoop_Player.h"
 
 #define WR_CONF_FILE		0x31
@@ -12,6 +13,7 @@
 #define RD_PLAY_FILES		0x36
 #define ER_ALL_FILES		0x37
 
+#define __flashInit() W25qxx_Init()
 #define PAGE_SIZE 			256
 #define SECTOR_SIZE 		4096
 #define SECTORS_NUM			512

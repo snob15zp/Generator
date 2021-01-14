@@ -18,7 +18,6 @@
 #include "superloopDisplay.h"
 #include "mainFSM.h"
 #include "board_PowerModes.h"
-#include "BoardSetup.h"
 
 //-------------------------for main-----------------------------------------------
 uint16_t playFileSector;
@@ -268,9 +267,8 @@ int SLDwACC(void)
 { 
 	//event handling
 	pe = geventEventWait(&gl,10 ); //gDelayForever
-	
-    displayACC();
-    return 0;
+	displayACC();
+	return 0;
 }
 
 static void createLists(void) {
@@ -379,11 +377,14 @@ static void createLabels(void) {
 
 int SLD_DisplInit(void)
 { 
-   // initSpi_1();
-    GFXPreinit();	
-    gfxInit();	
+GFXPreinit();	
+gfxInit();	
 
 	
+	
+	GEvent* pe;
+
+
 	// Set the widget defaults
 	gwinSetDefaultFont(gdispOpenFont("U11"));
 	gwinSetDefaultStyle(&WhiteWidgetStyle, gFalse);

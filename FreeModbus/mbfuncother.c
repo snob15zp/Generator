@@ -83,23 +83,5 @@ eMBFuncReportSlaveID( UCHAR * pucFrame, USHORT * usLen )
     *usLen = ( USHORT )( MB_PDU_DATA_OFF + usMBSlaveIDLen );
     return MB_EX_NONE;
 }
-#endif
-
-
-#if MB_FUNC_WRITE_FILE_ENABLED > 0
-
-/**
-* Extern to spiffs module
-* @param buf Input data
-* @param len Lngth of input data
-* @return Error Code
-*/
-extern int on_modbus_write_file(uint8_t* buf, size_t len);
-
-eMBException  
-eMBFuncWriteFile( UCHAR * pucFrame, USHORT * usLen )
-{
-    return on_modbus_write_file(pucFrame + 9, *usLen - 9);
-}
 
 #endif

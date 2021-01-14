@@ -321,13 +321,13 @@
             <PlainCh>0</PlainCh>
             <Ropi>0</Ropi>
             <Rwpi>0</Rwpi>
-            <wLevel>1</wLevel>
+            <wLevel>3</wLevel>
             <uThumb>0</uThumb>
             <uSurpInc>0</uSurpInc>
             <uC99>1</uC99>
             <uGnu>1</uGnu>
             <useXO>0</useXO>
-            <v6Lang>5</v6Lang>
+            <v6Lang>3</v6Lang>
             <v6LangP>3</v6LangP>
             <vShortEn>1</vShortEn>
             <vShortWch>1</vShortWch>
@@ -451,6 +451,16 @@
               <FileName>SuperLoop_Comm.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Communications\SuperLoop_Comm.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>W25qxx</GroupName>
+          <Files>
+            <File>
+              <FileName>MainSpiFlash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\W25QXX\MainSpiFlash.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -645,52 +655,52 @@
             <File>
               <FileName>spiffs_config.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\spiffs\src\default\spiffs_config.h</FilePath>
+              <FilePath>..\..\..\STM_GH\Generator\spiffs\src\default\spiffs_config.h</FilePath>
             </File>
             <File>
               <FileName>spiffs.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\spiffs\src\spiffs.h</FilePath>
+              <FilePath>..\..\..\STM_GH\Generator\spiffs\src\spiffs.h</FilePath>
             </File>
             <File>
               <FileName>spiffs_cache.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\spiffs\src\spiffs_cache.c</FilePath>
+              <FilePath>..\..\..\STM_GH\Generator\spiffs\src\spiffs_cache.c</FilePath>
             </File>
             <File>
               <FileName>spiffs_check.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\spiffs\src\spiffs_check.c</FilePath>
+              <FilePath>..\..\..\STM_GH\Generator\spiffs\src\spiffs_check.c</FilePath>
             </File>
             <File>
               <FileName>spiffs_gc.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\spiffs\src\spiffs_gc.c</FilePath>
+              <FilePath>..\..\..\STM_GH\Generator\spiffs\src\spiffs_gc.c</FilePath>
             </File>
             <File>
               <FileName>spiffs_hydrogen.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\spiffs\src\spiffs_hydrogen.c</FilePath>
+              <FilePath>..\..\..\STM_GH\Generator\spiffs\src\spiffs_hydrogen.c</FilePath>
             </File>
             <File>
               <FileName>spiffs_nucleus.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\spiffs\src\spiffs_nucleus.c</FilePath>
+              <FilePath>..\..\..\STM_GH\Generator\spiffs\src\spiffs_nucleus.c</FilePath>
             </File>
             <File>
               <FileName>spiffs_nucleus.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\spiffs\src\spiffs_nucleus.h</FilePath>
+              <FilePath>..\..\..\STM_GH\Generator\spiffs\src\spiffs_nucleus.h</FilePath>
             </File>
             <File>
               <FileName>spiffs.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\User\src\spiffs.c</FilePath>
+              <FilePath>..\..\..\STM_GH\Generator\User\src\spiffs.c</FilePath>
             </File>
             <File>
               <FileName>fs.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\User\inc\fs.h</FilePath>
+              <FilePath>..\..\..\STM_GH\Generator\User\inc\fs.h</FilePath>
             </File>
           </Files>
         </Group>

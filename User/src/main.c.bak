@@ -2,7 +2,6 @@
 
 //#define debug1
 
-#include <stdio.h>
 #include <string.h>
 #include "stm32g0xx.h"
 #include "BoardSetup.h"
@@ -26,6 +25,7 @@
 #include "uart.h"
 #include "flash.h"
 #include "Spi.h"
+#include "w25qxx.h"
 #include "tim3.h"
 #endif
 
@@ -33,6 +33,7 @@
 #include "fpga.h"
 #include "flash.h"
 #include "Spi.h"
+#include "w25qxx.h"
 #include "tim3.h"
 #endif
 
@@ -40,46 +41,13 @@
 #include "SL_CommModbus.h"
 #endif
 
-#ifdef SPIFFS
-#include <spiffs.h>
-  
-extern spiffs fs;
 
-int spiffs_init();
- 
-#endif
 
-#ifdef RELEASE
-#define APPLICATION_ADDRESS (uint32_t)0x08001800 /**  offset start address */
 
-void _ttywrch(int ch)
-{
-    (void)ch;
-}
 
-void _sys_exit(int return_code)
-{
-    (void) return_code;
-label:  goto label;  /* endless loop */
-}
 
-void _sys_command_string(char *cmd, int len)
-{
-    (void) cmd;
-    (void) len;
-}
-
-#endif
-
-extern bool bVSYS;
 int main(void)
 {
-#ifdef RELEASE
-    __asm(".global __use_no_semihosting\n\t");
-    SCB->VTOR = APPLICATION_ADDRESS;
-    __enable_irq();
-#endif    
-    
 #ifdef debug1	
 __disable_irq();	
   RCC->IOPENR |= RCC_IOPENR_GPIOAEN |                     // enable clock for GPIO 
@@ -109,19 +77,16 @@ delayms(1000);
 __disable_irq();
 #endif
 
-
 #ifdef PowerUSE
  SuperLoop_PowerModes_Init();	//must be call brefore other board functions
 #endif
 
 #ifdef ACCUSE
 SuperLoopACC_init();
-#else
- bVSYS = 1;
 #endif
 
 #ifdef LCDUSE
-//    SLD_init();
+SLD_init();
 #endif
 
 #if defined COMMS || defined PLAYER
@@ -129,20 +94,15 @@ SuperLoopACC_init();
 	initSpi_1();
 	SLC_init();
 	SLP_init();
-
+// __flashInit();
 #endif	
-
-#ifdef SPIFFS
-spiffs_init();
-#endif
-
 
 #ifdef 	COMMS 
 SLC_init();
 #endif
 
 #ifdef 	PLAYER 
-//SLP_init();
+SLP_init();
 #endif
 
 #ifdef MODBUS
@@ -161,9 +121,7 @@ SL_CommModbusInit();
 //fpgaConfig();
 //fpgaConfig();
 //end debug FPGA config	
-	PM_OnOffPWR(PM_Display,false );
-  PM_OnOffPWR(PM_Player,false );	
-	PM_OnOffPWR(PM_Communication,false );
+		
   while(1){
 
 #ifdef 	COMMS 
@@ -171,25 +129,24 @@ SLC();
 #endif
 
 #ifdef 	PLAYER 
-//SLP();
+SLP();
 #endif
 		
 #ifdef LCDUSE
-//SLD();
-
+SLD();
 #endif
 			
 //GPIOB->ODR ^= GPIO_ODR_OD10; 
 //GPIOB->BSRR = GPIO_BSRR_BS10;		
 			
 #ifdef ACCUSE
-//SuperLoopACC();
+SuperLoopACC();
 #endif	
 			
 //GPIOB->BSRR = GPIO_BSRR_BR10;	
 			
 #ifdef PowerUSE
-//SuperLoop_PowerModes();			
+SuperLoop_PowerModes();			
 #endif			
 
 #ifdef MODBUS

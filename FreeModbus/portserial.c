@@ -162,19 +162,41 @@ CHAR data;
 #ifdef MODBUS
 void USART1_IRQHandler(void)
 {
-    if ( (USART1->ISR & USART_ISR_TXE_TXFNF) && (USART1->CR1 & USART_CR1_TXEIE_TXFNFIE) )
-    {
-        USART1->ICR |= USART_ICR_TXFECF;             
-        USART1->RQR |= USART_RQR_TXFRQ;
-        pxMBFrameCBTransmitterEmpty();			
-        return;
-    }	
+static unsigned char dummy[8];
+static unsigned long value = 0;
+
+		if ( (USART1->ISR & USART_ISR_TXE_TXFNF) && (USART1->CR1 & USART_CR1_TXEIE_TXFNFIE) )
+		{
+			USART1->ICR |= USART_ICR_TXFECF;             
+			USART1->RQR |= USART_RQR_TXFRQ;
+//			USART1->TDR = value;
+//			value++;						
+//			if ( value >= 5 )	
+//			{
+//				USART1->CR1 |= USART_CR1_RXNEIE_RXFNEIE;				
+//				USART1->CR1 &= ~USART_CR1_TXEIE_TXFNFIE;
+//				value = 0;
+//			}
+      pxMBFrameCBTransmitterEmpty();			
+			return;
+		}	
 	
 	if( (USART1->ISR & USART_ISR_RXNE_RXFNE) && (USART1->CR1 & USART_CR1_RXNEIE_RXFNEIE) )
 	{
 		USART1->ICR |= USART_ICR_ORECF;
 		USART1->RQR |= USART_RQR_RXFRQ;
 		pxMBFrameCBByteReceived();		
+//		dummy[value] = USART1->RDR;
+		value++;
+		if ( value >= 8 )
+		{
+			value = 0;
+			
+//			USART1->CR1 &= ~USART_CR1_RXNEIE_RXFNEIE;				
+//			USART1->CR1 |= USART_CR1_TXEIE_TXFNFIE;
+			
+//		dummy[0] = dummy[1] = dummy[2] = dummy[3] = dummy[4] = dummy[5] = dummy[6] = dummy[7] = 0;		
+		}
 	}
 }
 #endif
