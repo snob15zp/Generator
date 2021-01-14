@@ -73,6 +73,10 @@ eMBException    eMBFuncReadDiscreteInputs( UCHAR * pucFrame, USHORT * usLen );
 eMBException    eMBFuncReadWriteMultipleHoldingRegister( UCHAR * pucFrame, USHORT * usLen );
 #endif
 
+#if MB_FUNC_WRITE_FILE_ENABLED > 0
+eMBException    eMBFuncWriteFile( UCHAR * pucFrame, USHORT * usLen );
+#endif
+
 #ifdef __cplusplus
 PR_END_EXTERN_C
 #endif
