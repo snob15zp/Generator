@@ -30,7 +30,7 @@ uint8_t	W25qxx_Spi(uint8_t	Data)
 	uint8_t	ret;
 
 //	HAL_SPI_TransmitReceive(W25QXX_SPI_PTR, &Data, &ret, 1, 100); // spi2
-	spi1TransmitReceive(&Data,&ret,1,100);
+///rdd debug	spi1TransmitReceive(&Data,&ret,1,100);
 
 
 	/*while(!(W25QXX_SPI->SR & SPI_SR_TXE));
@@ -528,7 +528,7 @@ uint8_t W25qxx_IsEmptyPage(uint32_t Page_Address, uint32_t OffsetInByte)
 	W25qxx_Spi(0);
 
 //	HAL_SPI_Receive(W25QXX_SPI_PTR, pBuffer, size, 100);
-	spi1Receive(pBuffer, size, 100);
+///rdd debug	spi1Receive(pBuffer, size, 100);
 
 	W25QFLASH_CS_UNSELECT;
 
@@ -607,7 +607,7 @@ uint8_t W25qxx_IsEmptySector(uint32_t Sector_Address, uint32_t OffsetInByte)
 
 //		HAL_SPI_Receive(W25QXX_SPI_PTR, pBuffer, s_buf, 100);
 		
-		spi1Receive(pBuffer, s_buf, 100);
+///rdd debug		spi1Receive(pBuffer, s_buf, 100);
 
 		W25QFLASH_CS_UNSELECT;
 
@@ -689,7 +689,7 @@ uint8_t W25qxx_IsEmptyBlock(uint32_t Block_Address, uint32_t OffsetInByte)
 //HAL_UART_Transmit(&huart1, (uint8_t*)buf2, strlen(buf2), 100);
 
 //		HAL_SPI_Receive(W25QXX_SPI_PTR, pBuffer, s_buf, 100);
-		spi1Receive(pBuffer, s_buf, 100);
+///rdd debug		spi1Receive(pBuffer, s_buf, 100);
 
 		W25QFLASH_CS_UNSELECT;
 
@@ -774,7 +774,7 @@ void W25qxx_WritePage(uint8_t *pBuffer, uint32_t Page_Address, uint32_t OffsetIn
 	W25qxx_Spi(Page_Address & 0xFF);
 
 //	HAL_SPI_Transmit(W25QXX_SPI_PTR, pBuffer, NumByteToWrite_up_to_PageSize, 100);
-	spi1Transmit(pBuffer, NumByteToWrite_up_to_PageSize, 100);
+///rdd debug	spi1Transmit(pBuffer, NumByteToWrite_up_to_PageSize, 100);
 	
 	W25QFLASH_CS_UNSELECT;
 
@@ -893,7 +893,7 @@ void W25qxx_ReadBytes(uint8_t* pBuffer, uint32_t ReadAddr, uint32_t NumByteToRea
 	W25qxx_Spi(0);
 
 //	HAL_SPI_Receive(W25QXX_SPI_PTR, pBuffer, NumByteToRead, 2000);
-	spi1Receive(pBuffer, NumByteToRead, 2000);
+///rdd debug	spi1Receive(pBuffer, NumByteToRead, 2000);
 
 	/*uint16_t i = 0;
 	while(NumByteToRead > 0U)
@@ -940,7 +940,7 @@ void W25qxx_ReadPage(uint8_t *pBuffer, uint32_t Page_Address, uint32_t OffsetInB
 	W25qxx_Spi(0);
 
 //	HAL_SPI_Receive(W25QXX_SPI_PTR, pBuffer, NumByteToRead_up_to_PageSize, 100);
-	spi1Receive(pBuffer, NumByteToRead_up_to_PageSize, 100);
+///rdd debug	spi1Receive(pBuffer, NumByteToRead_up_to_PageSize, 100);
 
 	/*uint16_t i = 0;
 	while(NumByteToRead_up_to_PageSize > 0U)

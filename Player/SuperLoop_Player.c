@@ -9,6 +9,7 @@
 #include "Spi1.h"
 #include "SuperLoop_Player.h"
 #include "board_PowerModes.h"
+#include "BoardSetup.h"
 
 uint16_t freqStartByte;
 uint32_t freq;
@@ -238,7 +239,7 @@ void fpgaConfig(void)											//
 	delay_ms(100);// test -> ok
 	switchOUTStageInterfacePinsToPwr(ENABLE);
 	delay_ms(10);
-	spi1FifoClr();
+///rdd debug	spi1FifoClr();
 //	GPIOB->BSRR=GPIO_BSRR_BR0;							//FPGA 1.2 V on
 	nCONFIG_H;
 	while(!(GPIOC->IDR & GPIO_IDR_ID7)){/** \todo timeout */}
@@ -773,7 +774,7 @@ void SLP(void)
 		case 0:
 			if(fpgaFlags.fileListUpdate==1){
 				if(!W25qxx_IsEmptySector(fileSect,0)){
-					spi1FifoClr();
+///rdd debug					spi1FifoClr();
 					W25qxx_ReadSector((uint8_t*)fileName,fileSect,FILE_NAME_SHIFT,FILE_NAME_BYTES);
 					fpgaFlags.addListItem=1;
 				}
@@ -796,7 +797,7 @@ void SLP(void)
 				curState=2;
 			}
 			if(fpgaFlags.addNewListItem==1){
-				spi1FifoClr();
+///rdd debug				spi1FifoClr();
 				W25qxx_ReadSector((uint8_t*)fileName,startSectAddr,FILE_NAME_SHIFT,FILE_NAME_BYTES);
 			}
 			break;
@@ -807,7 +808,7 @@ void SLP(void)
 		
 			PM_OnOffPWR(PM_Player,true );//RDD ON POWER
 		  initSpi_2();
-			spi1FifoClr();
+///rdd debug			spi1FifoClr();
 			spi2FifoClr();
 		
 			fpgaFlags.fpgaConfig=1;
@@ -846,7 +847,7 @@ void SLP(void)
 			if(durTimeS>=playParamArr[3]){
 				startFpga();
 				durTimeS=0;
-				spi1FifoClr();
+///rdd debug				spi1FifoClr();
 				spi2FifoClr();
 				calcFreq();
 				if(fpgaFlags.endOfFile==1){

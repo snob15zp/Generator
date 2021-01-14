@@ -18,6 +18,7 @@
 #include "superloopDisplay.h"
 #include "mainFSM.h"
 #include "board_PowerModes.h"
+#include "BoardSetup.h"
 
 //-------------------------for main-----------------------------------------------
 uint16_t playFileSector;
