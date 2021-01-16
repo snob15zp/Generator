@@ -172,7 +172,7 @@ void wrPage(void)
     /*
 	if(usbFlags.lastPage==1){
 		if(usbFlags.buffSel==0){
-			spi1FifoClr();
+///rdd debug			spi1FifoClr();
 			W25qxx_WritePage(usbRxBuff0,startPageAddr+filePagesNum-1,0,lastPageBytesNum);
 		}
 		else{

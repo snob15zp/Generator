@@ -5,7 +5,6 @@
 void initSpi_1(void);
 
 uint8_t spi_transfer(uint8_t data);
-extern void disableSpi_1(void);
 
 void spi_cs_on();
 void spi_cs_off();
