@@ -12,5 +12,5 @@ void voidfun(void)
 
 void voidfun8(uint8_t a )
 {
-	a;
+	(void)a;
 };

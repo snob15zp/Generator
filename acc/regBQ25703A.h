@@ -42,14 +42,14 @@ typedef enum {
 
 extern const t_I2c16InitData bq25703InitData[eBQ25703_NumOfReg];
 
-extern inline uint16_t BQ25703_ChargeCurrent_Eval(uint16_t I);//arg in mA
-extern inline uint16_t BQ25703_ChargeVoltage_Eval(uint16_t V);//arg in mV
-extern inline uint16_t BQ25703_MinSystemVoltage_Eval(uint16_t V);//arg in mV
-extern inline uint16_t BQ25703_IIN_HOST_Eval(uint16_t I);//arg in mA
-extern inline uint16_t BQ25703_InputVoltage_Eval(uint16_t V);//arg in mA
-extern inline uint16_t BQ25703_IBAT_CH(uint16_t data16);//in mA
-extern inline uint16_t BQ25703_IBAT_DCH(uint16_t data16);//in mA
-extern inline uint16_t BQ25703_VSYS(uint16_t data16);//V, mV
-extern inline uint16_t BQ25703_VBAT(uint16_t data16);//V, mV 
+uint16_t BQ25703_ChargeCurrent_Eval(uint16_t I);//arg in mA
+uint16_t BQ25703_ChargeVoltage_Eval(uint16_t V);//arg in mV
+uint16_t BQ25703_MinSystemVoltage_Eval(uint16_t V);//arg in mV
+uint16_t BQ25703_IIN_HOST_Eval(uint16_t I);//arg in mA
+uint16_t BQ25703_InputVoltage_Eval(uint16_t V);//arg in mA
+uint16_t BQ25703_IBAT_CH(uint16_t data16);//in mA
+uint16_t BQ25703_IBAT_DCH(uint16_t data16);//in mA
+uint16_t BQ25703_VSYS(uint16_t data16);//V, mV
+uint16_t BQ25703_VBAT(uint16_t data16);//V, mV 
 
 #endif /* REGBQ25703A_H_ */

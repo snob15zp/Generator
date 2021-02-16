@@ -58,9 +58,9 @@
 //    #define GFX_CPU                                  GFX_CPU_UNKNOWN
 //    #define GFX_CPU_NO_ALIGNMENT_FAULTS              GFXOFF
 //    #define GFX_CPU_ENDIAN                           GFX_CPU_ENDIAN_UNKNOWN
-    #define GFX_OS_HEAP_SIZE                         0x400
+    #define GFX_OS_HEAP_SIZE                         0x800
 //    #define GFX_OS_NO_INIT                           GFXOFF
-//    #define GFX_OS_INIT_NO_WARNING                   GFXOFF
+    #define GFX_OS_INIT_NO_WARNING                   GFXON
 //    #define GFX_OS_PRE_INIT_FUNCTION                 myHardwareInitRoutine
 //    #define GFX_OS_EXTRA_INIT_FUNCTION               myOSInitRoutine
 //    #define GFX_OS_EXTRA_DEINIT_FUNCTION             myOSDeInitRoutine
@@ -84,7 +84,7 @@
 //#define GDISP_NEED_ELLIPSE                           GFXOFF
 //#define GDISP_NEED_ARC                               GFXOFF
 //#define GDISP_NEED_ARCSECTORS                        GFXOFF
-//#define GDISP_NEED_CONVEX_POLYGON                    GFXOFF
+#define GDISP_NEED_CONVEX_POLYGON                    GFXON
 //#define GDISP_NEED_SCROLL                            GFXOFF
 //#define GDISP_NEED_PIXELREAD                         GFXOFF
 #define GDISP_NEED_CONTROL                           GFXON
@@ -119,19 +119,19 @@
 //    #define GDISP_INCLUDE_FONT_DEJAVUSANSBOLD12_AA   GFXOFF
 //    #define GDISP_INCLUDE_USER_FONTS                 GFXOFF
 
-//#define GDISP_NEED_IMAGE                             GFXOFF
+#define GDISP_NEED_IMAGE                             GFXON
 //    #define GDISP_NEED_IMAGE_NATIVE                  GFXOFF
 //    #define GDISP_NEED_IMAGE_GIF                     GFXOFF
 //        #define GDISP_IMAGE_GIF_BLIT_BUFFER_SIZE     32
-//    #define GDISP_NEED_IMAGE_BMP                     GFXOFF
-//        #define GDISP_NEED_IMAGE_BMP_1               GFXON
-//        #define GDISP_NEED_IMAGE_BMP_4               GFXON
-//        #define GDISP_NEED_IMAGE_BMP_4_RLE           GFXON
-//        #define GDISP_NEED_IMAGE_BMP_8               GFXON
-//        #define GDISP_NEED_IMAGE_BMP_8_RLE           GFXON
-//        #define GDISP_NEED_IMAGE_BMP_16              GFXON
-//        #define GDISP_NEED_IMAGE_BMP_24              GFXON
-//        #define GDISP_NEED_IMAGE_BMP_32              GFXON
+    #define GDISP_NEED_IMAGE_BMP                     GFXON
+        #define GDISP_NEED_IMAGE_BMP_1               GFXON
+        #define GDISP_NEED_IMAGE_BMP_4               GFXON
+        #define GDISP_NEED_IMAGE_BMP_4_RLE           GFXON
+        #define GDISP_NEED_IMAGE_BMP_8               GFXON
+        #define GDISP_NEED_IMAGE_BMP_8_RLE           GFXON
+        #define GDISP_NEED_IMAGE_BMP_16              GFXON
+        #define GDISP_NEED_IMAGE_BMP_24              GFXON
+        #define GDISP_NEED_IMAGE_BMP_32              GFXON
 //        #define GDISP_IMAGE_BMP_BLIT_BUFFER_SIZE     32
 //    #define GDISP_NEED_IMAGE_JPG                     GFXOFF
 //    #define GDISP_NEED_IMAGE_PNG                     GFXOFF
@@ -223,7 +223,7 @@
 //        #define GWIN_SLIDER_DEAD_BAND                5
 //        #define GWIN_SLIDER_TOGGLE_INC               20
 //    #define GWIN_NEED_CHECKBOX                       GFXOFF
-//    #define GWIN_NEED_IMAGE                          GFXOFF
+    #define GWIN_NEED_IMAGE                          GFXON
 //        #define GWIN_NEED_IMAGE_ANIMATION            GFXOFF
 //    #define GWIN_NEED_RADIO                          GFXOFF
     #define GWIN_NEED_LIST                           GFXON
@@ -311,7 +311,7 @@
 ///////////////////////////////////////////////////////////////////////////
 // GFILE                                                                 //
 ///////////////////////////////////////////////////////////////////////////
-//#define GFX_USE_GFILE                                GFXOFF
+#define GFX_USE_GFILE                                GFXON
 
 //#define GFILE_NEED_PRINTG                            GFXOFF
 //#define GFILE_NEED_SCANG                             GFXOFF
@@ -321,8 +321,8 @@
 //#define GFILE_NEED_NOAUTOMOUNT                       GFXOFF
 //#define GFILE_NEED_NOAUTOSYNC                        GFXOFF
 
-//#define GFILE_NEED_MEMFS                             GFXOFF
-//#define GFILE_NEED_ROMFS                             GFXOFF
+#define GFILE_NEED_MEMFS                             GFXON
+#define GFILE_NEED_ROMFS                             GFXON
 //#define GFILE_NEED_RAMFS                             GFXOFF
 //#define GFILE_NEED_FATFS                             GFXOFF
 //#define GFILE_NEED_NATIVEFS                          GFXOFF

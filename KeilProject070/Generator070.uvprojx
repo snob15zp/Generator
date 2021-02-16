@@ -312,7 +312,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>1</interw>
-            <Optim>1</Optim>
+            <Optim>2</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>1</OneElfS>
@@ -327,7 +327,7 @@
             <uC99>1</uC99>
             <uGnu>1</uGnu>
             <useXO>0</useXO>
-            <v6Lang>3</v6Lang>
+            <v6Lang>5</v6Lang>
             <v6LangP>3</v6LangP>
             <vShortEn>1</vShortEn>
             <vShortWch>1</vShortWch>
@@ -338,7 +338,7 @@
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>..\User\inc;..\ugfx_2.9\src\gdisp;..\ugfx_2.9\src;..\ugfx_2.9;..\ugfx_2.9\src\gos;..\ugfx_2.9\src\gwin;..\ugfx_2.9\drivers\gdisp\ILI9341;..\ugfx_2.9\src\ginput;..\ugfx_2.9\drivers\ginput\toggle\Pal;..\Display;..\ugfx_2.9\drivers\ginput\touch\FT6x06;..\DriversCommon;..\PowerModes;..\W25QXX;..\Communications;..\Player;..\acc;..\PowerModes;..\FreeModbus;..\CommModbus</IncludePath>
+              <IncludePath>..\User\inc;..\ugfx_2.9\src\gdisp;..\ugfx_2.9\src;..\ugfx_2.9;..\ugfx_2.9\src\gos;..\ugfx_2.9\src\gwin;..\ugfx_2.9\drivers\gdisp\ILI9341;..\ugfx_2.9\src\ginput;..\ugfx_2.9\drivers\ginput\toggle\Pal;..\Display;..\ugfx_2.9\drivers\ginput\touch\FT6x06;..\DriversCommon;..\PowerModes;..\W25QXX;..\Communications;..\Player;..\acc;..\PowerModes;..\FreeModbus;..\CommModbus;..\spiffs\src;..\spiffs\src\default;..\FileIcons</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -392,6 +392,21 @@
               <FileType>1</FileType>
               <FilePath>..\User\src\BoardSetup.c</FilePath>
             </File>
+            <File>
+              <FileName>template.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\src\template.c</FilePath>
+            </File>
+            <File>
+              <FileName>GlobalKey.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\src\GlobalKey.c</FilePath>
+            </File>
+            <File>
+              <FileName>UID.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\src\UID.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -422,6 +437,11 @@
               <FileType>1</FileType>
               <FilePath>..\Display\superloopDisplay.c</FilePath>
             </File>
+            <File>
+              <FileName>uGFXport.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Display\uGFXport.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -443,19 +463,19 @@
           <GroupName>Communications</GroupName>
           <Files>
             <File>
-              <FileName>SuperLoop_Comm.c</FileName>
+              <FileName>SuperLoop_Comm2.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Communications\SuperLoop_Comm.c</FilePath>
+              <FilePath>..\Communications\SuperLoop_Comm2.c</FilePath>
             </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>W25qxx</GroupName>
-          <Files>
             <File>
-              <FileName>MainSpiFlash.c</FileName>
+              <FileName>bluetooth.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\W25QXX\MainSpiFlash.c</FilePath>
+              <FilePath>..\Communications\bluetooth.c</FilePath>
+            </File>
+            <File>
+              <FileName>SuperLoop_Comm2.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Communications\SuperLoop_Comm2.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -521,6 +541,11 @@
               <FileName>I2C_COMMON.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\acc\I2C_COMMON.c</FilePath>
+            </File>
+            <File>
+              <FileName>BQ28z610_Data.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\acc\BQ28z610_Data.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -641,6 +666,61 @@
               <FileName>tim1.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\FreeModbus\tim1.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>spiffs</GroupName>
+          <Files>
+            <File>
+              <FileName>spiffs.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\spiffs\src\spiffs.h</FilePath>
+            </File>
+            <File>
+              <FileName>spiffs_cache.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\spiffs\src\spiffs_cache.c</FilePath>
+            </File>
+            <File>
+              <FileName>spiffs_check.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\spiffs\src\spiffs_check.c</FilePath>
+            </File>
+            <File>
+              <FileName>spiffs_gc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\spiffs\src\spiffs_gc.c</FilePath>
+            </File>
+            <File>
+              <FileName>spiffs_hydrogen.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\spiffs\src\spiffs_hydrogen.c</FilePath>
+            </File>
+            <File>
+              <FileName>spiffs_nucleus.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\spiffs\src\spiffs_nucleus.c</FilePath>
+            </File>
+            <File>
+              <FileName>spiffs_nucleus.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\spiffs\src\spiffs_nucleus.h</FilePath>
+            </File>
+            <File>
+              <FileName>spiffs_config.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\spiffs\src\default\spiffs_config.h</FilePath>
+            </File>
+            <File>
+              <FileName>spiffs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\src\spiffs.c</FilePath>
+            </File>
+            <File>
+              <FileName>fs.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\User\inc\fs.h</FilePath>
             </File>
           </Files>
         </Group>

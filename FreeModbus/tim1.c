@@ -57,6 +57,7 @@ unsigned long timeTek;
 				GPIOB->BSRR = GPIO_BSRR_BS10;				
 			}
 			else
-				GPIOB->ODR = 0;//GPIO_ODR_OD10; 		
+				//GPIOB->ODR = 0;//GPIO_ODR_OD10
+			; 		
 		}
 }

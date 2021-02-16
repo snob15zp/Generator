@@ -101,7 +101,7 @@ static gBool read_xyz(GMouse* m, GMouseReading* pdr)
 	return gTrue;
 }
 
-const GMouseVMT const GMOUSE_DRIVER_VMT[1] = {{
+const GMouseVMT GMOUSE_DRIVER_VMT[1] = {{
 	{
 		GDRIVER_TYPE_TOUCH,
 		#if GMOUSE_FT6x06_SELF_CALIBRATE

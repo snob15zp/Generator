@@ -49,7 +49,8 @@ const t_I2c16InitData TPS65982_6InitData[e_TPS65982_6_NumOfReg]=
 		{{I2C_OP_WRITE,0x03,		1,4+1},0},//e_TPS65982_6_Mode,                    TPS659827       //4cc
 		{{I2C_OP_WRITE,0x28,		1,17+1},0},//e_TPS65982_6_SystemConfigurationRegister   TPS659827 // 8 bytes
 		{{I2C_OP_WRITE,0x18,		1,11+1},0},//e_TPS65987_IntClear1   TPS659827 // 11 bytes
-		
+		{{I2C_OP_WRITE,0x14,		1,11+1},0},//e_TPS65987_IntEvent1   TPS659827 // 11 bytes
+		{{I2C_OP_READ, 0x3f,		1,2+1},0},//e_TPS65987_PowerStatusRegister
 };
 
 const t_TPS_CMD TPS_CMD[e_TPS_CMD_NumOfEl]=

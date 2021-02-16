@@ -37,6 +37,7 @@ cut-off = 110
 #define VOLTAGE_CHARGED (4250)
 #define VOLTAGE_FAST_CHARGE (6144/2)
 #define VOLTAGE_CHARGE_RENEWAL (4100)
+#define VOLTAGE_CHARGE_END (4150)
 
 //
 #define TEMP_MIN (100)

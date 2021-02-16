@@ -63,7 +63,7 @@ static gU8 read_byte(GMouse* m, gU8 reg) {
 
 	  i2c2DataRW(FT6x06_SLAVE_ADDR, TRANSFER_READ, reg,  1, (uint8_t*) &result, 1 );
 	  while (getI2c2Status()!=I2C_IDLE);
-
+	  ;
     return result;
 }
 

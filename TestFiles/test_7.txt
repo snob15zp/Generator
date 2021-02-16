@@ -1,0 +1,18 @@
+NAme, test_7
+FRequencies, 9
+OFfset,  10
+ONset,  3
+DUration, 10
+NEgative, 1
+UP, 1
+inverse, 0
+OutVoltage, 5
+10
+20
+30
+40
+50
+60
+70
+80
+90

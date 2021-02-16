@@ -1,0 +1,10 @@
+NAme, test949
+FRequencies, 1
+OFfset,  3
+ONset,  0
+DUration, 10
+NEgative, 0
+UP, 1
+inverse, 0
+OutVoltage, 10
+948000

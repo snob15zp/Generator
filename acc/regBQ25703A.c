@@ -10,7 +10,7 @@
 
 const t_I2c16InitData bq25703InitData[eBQ25703_NumOfReg]=
 {
-		{{I2C_OP_WRITE,0x0,		1,2},0x020f/*0x020e 0xe20e*/}, // ChargeOption0()							0
+		{{I2C_OP_WRITE,0x0,		1,2},0x820f/*0x020e 0xe20e*/}, // ChargeOption0()							0
 //0b: Disable Low Power Mode. Device in performance mode with battery only.
 		//The PROCHOT, current/power monitor buffer and comparator follow register		setting.
 //01b: Enabled, 5 sec

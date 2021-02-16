@@ -23,7 +23,7 @@ gThread	hThread = 0;
 static GTimer	*pTimerHead = 0;
 static gSem		waitsem;
 static gTicks	ticks2ms;
-static GFX_THREAD_STACK(waTimerThread, GTIMER_THREAD_WORKAREA_SIZE);
+__attribute__((aligned(4))) static GFX_THREAD_STACK(waTimerThread, GTIMER_THREAD_WORKAREA_SIZE);
 
 /*===========================================================================*/
 /* Driver local functions.                                                   */

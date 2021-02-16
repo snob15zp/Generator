@@ -55,16 +55,32 @@ void I2C_API_Reset(void)
 e_FunctionReturnState
 I2C_API_Exchange( e_I2C_API_Devices d,	t_I2cRecord i2cRecord, uint8_t *buf, unsigned char priority,void (*fun)(uint8_t) )
 {
-//	e_I2C_API_Buses bus;
-static	uint8_t stateIN=0;
-static	uint8_t trcounter=0;
-static  systemticks_t systickl;
+  static unsigned int ReturnAddress=0;
+	int ReturnAddressl=0;//in register
+  static	uint8_t stateIN=0;
+  static	uint8_t trcounter=0;
+  static  systemticks_t systickl;
         systemticks_t	systickl1;
 	e_FunctionReturnState rs;
 	i2cState_e rsi2c;
-	//bus=BusOfDevice[d];
+	
+	
+// __asm 
+//  (
+//    "MOV %[result], lr \t\n"
+//    : [result] "=r" (ReturnAddressl)
+//	  : 
+//	  :	
+//  );
+//	
+//	if (0==ReturnAddress )
+//	{ReturnAddress=ReturnAddressl;
+//	};
 
-//(i2c2_bus_is_IDLE(i2c_NODES[bus])<<1) + (i2c2_busHANDLE_is_DONE(i2c_HANDLES[bus]));
+//  if 	(ReturnAddress!=ReturnAddressl)
+//	{ return e_FRS_Busy;
+//	};
+
 	  rs=e_FRS_Processing;
 #define stateerror 6	  
     switch  (stateIN)
@@ -107,6 +123,7 @@ static  systemticks_t systickl;
 				  if (I2C_IDLE==rsi2c) 
             { if (0==getI2cError())
 							 {rs=e_FRS_Done;
+								ReturnAddress=0;
                 stateIN+=2;
 							 }
 							 else
@@ -137,10 +154,12 @@ static  systemticks_t systickl;
     	       
 			
 			case 6:                                                     //error
-				      rs=e_FRS_DoneError; 
+				      rs=e_FRS_DoneError;
+              ReturnAddress=0;			
 						  stateIN++;
 			        break;
-    	default: { stateIN=0;                                       // goto idle state
+    	default: { stateIN=0;   
+                 ReturnAddress=0;				// goto idle state
 				         rs=e_FRS_Idle;
 				         getI2cReset();
     	           break;

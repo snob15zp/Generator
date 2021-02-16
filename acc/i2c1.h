@@ -44,4 +44,9 @@ extern uint16_t i2cDataRW(slaveChip_e chipID, transferMode_e tMode, uint8_t slav
 extern i2cState_e getI2cStatus(void);
 extern uint16_t getI2cError(void);
 extern void getI2cReset(void);
+		
+extern void I2c1InSleep(void);
+extern void I2c1OutSleep(void);
+
+		
 #endif

@@ -22,6 +22,7 @@ extern e_FunctionReturnState
 BQ25703_Wr_Check( e_I2C_API_Devices d,	t_I2cRecord i2cRecord, uint16_t data, unsigned char priority,void (*fun)(uint8_t));
 //extern e_FunctionReturnState BQ25703_Init();
 extern e_FunctionReturnState BQ25703_Init_Check(void);//hiZ, currents=>minimum.
+extern e_FunctionReturnState BQ25703_Write_Check(bq25703Registers reg, uint16_t data);
 extern e_FunctionReturnState BQ25703_Charge_Check(uint16_t I);//charge, mA
 extern e_FunctionReturnState BQ25703_IIN_Check(uint16_t I);//charge, mA
 

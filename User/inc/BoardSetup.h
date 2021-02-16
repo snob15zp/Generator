@@ -2,22 +2,23 @@
 #define __BOARDSETUP_H
 
 #include "stm32g0xx.h" 
-#include "fpga.h"
-#include "gfx.h"
+#include <stdint.h>
+//#include "fpga.h"
+//#include "gfx.h"
 
 #define HSE_READY_DELAY   (uint32_t)1600000;
 #define CLK_TICK_FOR_1MS  64000U;          
 
 //DEFINE POWER SWITCHES PIN IO
-#define	PWR_OUTSTAGE			0				// OUT	PB0
+//#define	PWR_OUTSTAGE			0				// OUT	PB0
 #define	PWR_UTSTAGE_ON    GPIOB->BSRR = GPIO_BSRR_BR0
 #define	PWR_UTSTAGE_OFF   GPIOB->BSRR = GPIO_BSRR_BS0
 
-#define	PWR_TFT			      1				// OUT	PB1
+//#define	PWR_TFT			      1				// OUT	PB1
 #define	PWR_TFT_ON        GPIOB->BSRR = GPIO_BSRR_BR1
 #define	PWR_TFT_OFF       GPIOB->BSRR = GPIO_BSRR_BS1
 
-#define	PWR_GLOBAL			  2				// OUT	PB2
+//#define	PWR_GLOBAL			  2				// OUT	PB2
 #define	PWR_GLOBAL_ON     GPIOB->BSRR = GPIO_BSRR_BS2
 #define	PWR_GLOBAL_OFF    GPIOB->BSRR = GPIO_BSRR_BR2
  
@@ -45,6 +46,9 @@
 #define TFT_CS					  3			// PD3  CHIP SELECT
 #define TFT_CS_LOW			  GPIOD->BSRR = GPIO_BSRR_BR3
 #define TFT_CS_HI				  GPIOD->BSRR = GPIO_BSRR_BS3
+#define TFT_CS_H 					GPIOD->BSRR=GPIO_BSRR_BS3
+#define TFT_CS_L 					GPIOD->BSRR=GPIO_BSRR_BR3
+
 
 #define TFT_SCL					  3			// PB3 	SERIAL CLOCK 
 #define TFT_SCL_LOW			  GPIOB->BSRR = GPIO_BSRR_BR3	
@@ -71,47 +75,35 @@
 #define FPGA_START_H 		GPIOA->BSRR = GPIO_BSRR_BS8
 #define FPGA_START_L 		GPIOA->BSRR = GPIO_BSRR_BR8
 
+#define FLASH_CS_H 		  GPIOA->BSRR = GPIO_BSRR_BS15
+#define FLASH_CS_L 		  GPIOA->BSRR = GPIO_BSRR_BR15
+
+//For Charger
+#define TPSIRQ (!((GPIOA->IDR)& GPIO_IDR_ID7_Msk))
+
 typedef uint32_t systemticks_t;
+
 		
 extern volatile   systemticks_t SystemTicks;	
+extern volatile   systemticks_t BS_LastButtonPress;
 extern uint16_t button_sign;		
 extern uint8_t  SystemStatus;
 
-//extern volatile  uint32_t tick;
-extern systemticks_t gfxSystemTicks(void);
-extern systemticks_t gfxMillisecondsToTicks(delaytime_t ms);		
 
-//typedef 
-//	enum {
-//		TM_WRITE,
-//		TM_READ
-//} transferMode_en;
-//	
-//typedef 
-//	enum {
-//		I2C_WAIT_STATE,	
-//		I2C_TRANSACTION_OK,
-//		I2C_TRANSACTION_ERROR
-//} i2cState_en;
-
-//typedef
-//  __packed struct {   
-//      uint8_t slaveAddr;
-//      uint8_t subAddr[2];
-//		  uint8_t numOfDataBytes;
-//		  uint8_t numOfSubAddrBytes;
-//    } i2cPacket_t;
-
-//extern uint32_t tick;
-
-/* functions prototypes */
+		
+//for power
+extern void BoardSetup_InSleep(void);
+extern void BoardSetup_OutSleep(void);
 		
 extern int BSInit(void);		
 extern uint32_t setSystemClock(void);
 extern void boardIoPinInit(void);
+
 extern void switchDisplayInterfacePinsToPwr(FunctionalState pwrMode);
 extern void switchOUTStageInterfacePinsToPwr(FunctionalState pwrMode);
 extern void switchSPI1InterfacePinsToPwr(FunctionalState pwrMode);
+extern void B_ACC_PinsOnOff(FunctionalState pwrMode);
+
 extern void delayms(uint16_t tt);
 extern void delay_x10ms(uint32_t tensMs);
 

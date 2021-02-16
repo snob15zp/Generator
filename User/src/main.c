@@ -1,4 +1,5 @@
 #include "GlobalKey.h"
+#include "UID.h"
 
 //#define debug1
 
@@ -19,27 +20,17 @@
 #endif
 
 #ifdef COMMS
-#include "SuperLoop_Comm.h"
-#include "bluetooth.h"
-//#include "rn4870Model.h"
-#include "uart.h"
-#include "flash.h"
-#include "Spi.h"
-#include "w25qxx.h"
-#include "tim3.h"
+#include "SuperLoop_Comm2.h"
 #endif
 
 #ifdef PLAYER
-#include "fpga.h"
-#include "flash.h"
-#include "Spi.h"
-#include "w25qxx.h"
-#include "tim3.h"
+//#include "fpga.h"
+//#include "flash.h"
+#include "Spi1.h"
+//#include "tim3.h"
 #endif
 
-#ifdef MODBUS
-#include "SL_CommModbus.h"
-#endif
+#include "fs.h"
 
 #ifdef RELEASE
 #define APPLICATION_ADDRESS (uint32_t)0x08001800 /**  offset start address */
@@ -63,6 +54,7 @@ void _sys_command_string(char *cmd, int len)
 
 #endif
 
+
 int main(void)
 {
 #ifdef RELEASE
@@ -70,6 +62,8 @@ int main(void)
     SCB->VTOR = APPLICATION_ADDRESS;
     __enable_irq();
 #endif    
+    
+
     
 #ifdef debug1	
 __disable_irq();	
@@ -128,11 +122,6 @@ SLC_init();
 SLP_init();
 #endif
 
-#ifdef MODBUS
-SL_CommModbusInit();
-#endif
-
-
 //test flash
 //uint8_t temp_pBuffer;
 //W25qxx_EraseSector(0);
@@ -144,9 +133,18 @@ SL_CommModbusInit();
 //fpgaConfig();
 //fpgaConfig();
 //end debug FPGA config	
-		
+	PM_OnOffPWR(PM_Display,false );
+  PM_OnOffPWR(PM_Player,false );	
+	PM_OnOffPWR(PM_Communication,false );
+	
+	getUID();
+	
   while(1){
 
+#ifdef LCDUSE
+SLD();
+#endif
+		
 #ifdef 	COMMS 
 SLC();
 #endif
@@ -155,9 +153,7 @@ SLC();
 SLP();
 #endif
 		
-#ifdef LCDUSE
-SLD();
-#endif
+
 			
 //GPIOB->ODR ^= GPIO_ODR_OD10; 
 //GPIOB->BSRR = GPIO_BSRR_BS10;		
@@ -172,9 +168,6 @@ SuperLoopACC();
 SuperLoop_PowerModes();			
 #endif			
 
-#ifdef MODBUS
-SL_CommModbus();
-#endif
 		
   }
 }

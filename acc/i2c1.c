@@ -143,6 +143,18 @@ if (  (isrVal & I2C_ICR_BERRCF) )
 *
 *
 **************************************************************************************************************************/
+void I2c1InSleep(void)
+{
+	RCC->APBENR1 |= RCC_APBENR1_I2C1EN;											// I2C1 clock enable
+  I2C1->CR1 &= ~I2C_CR1_PE;
+	RCC->APBENR1 &= ~RCC_APBENR1_I2C1EN;
+};
+
+void I2c1OutSleep(void)	
+{
+	initI2c1();
+};
+
 void initI2c1(void){
       
 	RCC->APBENR1 |= RCC_APBENR1_I2C1EN;											// I2C1 clock enable

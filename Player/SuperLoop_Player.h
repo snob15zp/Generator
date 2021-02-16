@@ -3,22 +3,15 @@
 
 #include <stdbool.h>
 #include <math.h>
-#include "stm32g0xx.h"
-#include "SuperLoop_Comm.h"
+#include <stm32g0xx.h>
+#include "GlobalKey.h"
+#include "PowerModes_Defs.h"
+#include "SuperLoop_Comm2.h"
 #include "superloopDisplay.h"
-
-// for interraction with PWR
-typedef enum  {e_FSMS_SLPl_Off,e_FSMS_SLPl_On,e_FSMS_SLPl_NumOfEl} e_FSMState_SuperLoopPlayer;
-extern __inline e_FSMState_SuperLoopPlayer SLPl_FSMState(void);
+#include "I2C_COMMON1.h"
 
 
-// For main
-extern void SLP_init(void);
-extern void SLP(void);
 
-//for power
-extern bool SuperLoop_Player_SleepIn(void);
-extern bool SuperLoop_Player_SleepOut(void);
 
 //for player
 
@@ -32,48 +25,71 @@ extern bool SuperLoop_Player_SleepOut(void);
 #define MULT_VAL_1 21000
 #define MULT_VAL_2 21000
 
+typedef enum  
+{SLPl_FSM_InitialWait  		//work
+,SLPl_FSM_off  						//e_PS_ReadySleep
+,SLPl_FSM_OnTransition 		//work
+,SLPl_FSM_On 							//work
+,SLPl_FSM_OffTransition 	//work
+,SLPl_FSM_NumOfElements	
+} e_SLPl_FSM;
+
 typedef struct {
-	uint16_t playStart						:1;
-	uint16_t playBegin						:1;
-	uint16_t fpgaConfig						:1;
-	uint16_t playStop							:1;
-	uint16_t fpgaConfigComplete		:1;
-	uint16_t fileListUpdate				:1;
-	uint16_t labelsUpdate					:1;
-	uint16_t clockStart						:1;
-	uint16_t nextFreq							:1;
-	uint16_t endOfFile						:1;
-	uint16_t addListItem					:1;
+	uint32_t playStart						:1;
+	uint32_t playBegin						:1;
+	uint32_t fpgaConfig						:1;
+	uint32_t playStop							:1;
+	uint32_t fpgaConfigComplete		:1;
+	uint32_t fileListUpdate				:1;
+	uint32_t labelsUpdate					:1;
+	uint32_t clockStart						:1;
+	uint32_t nextFreq							:1;
+	uint32_t endOfFile						:1;
+	uint32_t addListItem					:1;
+	uint32_t addNewListItem				:1;
+	uint32_t clearList						:1;
+	uint32_t timeUpdate						:1;
 } t_fpgaFlags;
 
 extern volatile t_fpgaFlags fpgaFlags;
 
-void fpgaConfig(void);
-void getFileList(void);
-void timeToString(uint8_t* timeArr);
-void getControlParam(uint16_t fileSect);
-//void loadDataToFpga(uint16_t fileSect);
-uint32_t calcFreq(uint32_t val);
-void getCrc(void);
-void spi2FifoClr(void);
-void loadMultToFpga(void);
-void loadFreqToFpga(uint16_t addr);
-void startFpga(void);
+extern uint16_t SLPl_ui16_NumOffiles;
 
-extern void setTotalTimer(void);
-extern void setFileTimer(void);
+
+extern char SLPl_filename[D_FileNameLength+1];
+
+void SLPl_Start(uint32_t nof);
+void SLPl_Stop();
+
+
+void timeToString(uint8_t* timeArr);
+
+void getTimers(void);
 extern void SecToHhMmSs(uint32_t timeInSec);
 
-//for SPI2
-void initSpi_2(void);
-void spi2Transmit(uint8_t *pData, uint16_t Size);
-void loadDataToFpga(uint16_t addr);
-
-//for TIM3
-//extern volatile uint32_t playClk;
 void tim3Init(void);
-void delay_ms(uint32_t delayTime);
-//uint32_t getTick(void);
+
 extern volatile uint32_t playClk;
+extern volatile uint32_t progBarClk;
+
+//for power
+extern  e_PowerState SLPl_GetPowerState(void);
+extern  e_PowerState SLPl_SetSleepState(bool state);
+extern  e_SLPl_FSM Get_SLPl_FSM_State(void);
+extern bool SLPl_FFSFree(void);
+
+// For main
+void SLP_init(void);
+void SLP(void);
+
+//For display
+extern uint8_t curState;
+extern uint16_t playFileSector;
+
+//For superloopComm
+
+void SLPl_InitFiles(void);
+
+
 
 #endif

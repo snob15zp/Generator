@@ -9,6 +9,7 @@
 #define _GDISP_LLD_BOARD_H
 
 #include "BoardSetup.h"
+//#include "uGFXport.h"
 #include "superloopDisplay.h"
 
 static GFXINLINE void init_board(GDisplay *g) {
@@ -58,12 +59,18 @@ static GFXINLINE void set_backlight(GDisplay *g, gU8 percent) {
 
 static GFXINLINE void acquire_bus(GDisplay *g) {
 	(void) g;
+	while (SPI1->SR & SPI_SR_FTLVL_Msk){}										//  Wait until FTLVL[1:0] = 00 (no more data to transmit)
+	while (SPI1->SR & SPI_SR_BSY){}
 	TFT_CS_LOW;
 	spiDispCapture=1;
 }
 
 static GFXINLINE void release_bus(GDisplay *g) {
 	(void) g;
+	
+	while (SPI1->SR & SPI_SR_FTLVL_Msk){}										//  Wait until FTLVL[1:0] = 00 (no more data to transmit)
+	while (SPI1->SR & SPI_SR_BSY){}
+
 	TFT_CS_HI;
 	spiDispCapture=0;
 }
