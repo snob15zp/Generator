@@ -119,8 +119,6 @@ extern void SLC(void)
 {
 
 	//systemticks_t SLD_LastButtonPress;
-	if ((!bVSYS))
-		state_inner=SLC_FSM_InitialWaitSupply;
 	switch (state_inner)
 	{
 		case SLC_FSM_InitialWaitSupply: // initial on
@@ -132,15 +130,16 @@ extern void SLC(void)
 			spiffs_init();
 		  SL_CommModbusInit();
 			btInit();
-		
-//		readDataFromFile();	//for debug
-		
 		  state_inner=SLC_FSM_InitFiles;
+			if ((!bVSYS))
+				state_inner=SLC_FSM_InitialWaitSupply;
 			break;
 		case SLC_FSM_InitFiles:
 			  File_List=SPIFFS_open(&fs,"freq.pls",SPIFFS_O_RDONLY,0);
 				SLPl_InitFiles();
 		    state_inner=SLC_FSM_CommAbsent;
+		    if ((!bVSYS))
+					state_inner=SLC_FSM_InitialWaitSupply;
 			break;
 		case SLC_FSM_CommAbsent: //
 			  SL_CommModbus();
@@ -148,21 +147,21 @@ extern void SLC(void)
 				if (SLC_GoToSleep)
 				   {
 						SPIFFS_close(&fs, File_List);
-					  PM_OnOffPWR(PM_Communication,false);
-						//unmount
+						SPIFFS_unmount(&fs);//unmount
 						state_inner=SLC_FSM_Sleep;
+						PM_OnOffPWR(PM_Communication,false); 
 					 }						 
-						 
 				USBcommLastTimel=USBcommLastTime; //MODBUScommLastTime
 				if ((SystemTicks-USBcommLastTimel)>(2*USBcommPause))
 				   {   USBcommLastTime=SystemTicks-(2*USBcommPause);
 					 }	 
-
 				if ((SystemTicks-USBcommLastTimel)<USBcommPause)
 				{
 					  //SPIFFS_close(&fs, File_List);
 					  state_inner=SLC_FSM_OffPlayerTransition;
 				}
+				if ((!bVSYS))
+					state_inner=SLC_FSM_InitialWaitSupply;
       break;
 		case SLC_FSM_OffPlayerTransition: // on
 			SL_CommModbus();
@@ -172,13 +171,17 @@ extern void SLC(void)
  				SPIFFS_close(&fs, File_List);
 				state_inner=SLC_FSM_USBCommunication;
 			};
+			if ((!bVSYS))
+				state_inner=SLC_FSM_InitialWaitSupply;
 			break;
 		case SLC_FSM_USBCommunication: 
 			SL_CommModbus();
-		   SLBL();
+		  SLBL();
 		  USBcommLastTimel=USBcommLastTime;
       if ((SystemTicks-USBcommLastTimel)>(USBcommPause))				
 				  state_inner=SLC_FSM_InitFiles;
+			if ((!bVSYS))
+				state_inner=SLC_FSM_InitialWaitSupply;
 		  break;	
 		case SLC_FSM_Sleep:
 				if ((!SLC_GoToSleep) ) 

@@ -87,7 +87,7 @@ void SuperLoop_PowerModes(void)
 		rdispl=		SLD_GetPowerState();
 		racc=			SLAcc_GetPowerState();
 		rcomm=		SLC_GetPowerState();
-		return; ///RDD debug
+		//return; ///RDD debug
 		switch (SLP_state)
 		{
 			case 0://work mode
@@ -96,6 +96,7 @@ void SuperLoop_PowerModes(void)
 						SLPl_SetSleepState(true);
 						SLD_SetSleepState(true);
 						SLAcc_SetSleepState(true);
+						SLC_SetSleepState(true);
 						SLP_state++;
 					}
 				break;
@@ -104,6 +105,7 @@ void SuperLoop_PowerModes(void)
 					if ((e_PS_ReadySleep==rplayer)
 						&&(e_PS_ReadySleep==rdispl)
 					  &&(e_PS_ReadySleep==racc)
+					  &&(e_PS_ReadySleep==rcomm)
 				     ) 
 					  SLP_state++;
 				break;
