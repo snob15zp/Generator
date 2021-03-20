@@ -30,6 +30,7 @@ typedef enum {
 	      e_TPS65987_IntEvent1,
 	      e_TPS65987_PowerStatusRegister,
 	      e_TPS65987_BootFlagsRegister,
+//				e_TPS65987_Gaid,
 				e_TPS65982_6_NumOfReg
 
 } e_TPS65982_6_Registers;
@@ -45,6 +46,7 @@ typedef enum {
 	e_TPS_CMD_FLad,
 	e_TPS_CMD_FLwd,
 	e_TPS_CMD_FLvy,
+	e_TPS_CMD_GAID,
 	e_TPS_CMD_NumOfEl
 } e_TPS65982_6_CMD;
 

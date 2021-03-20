@@ -210,6 +210,8 @@ void btOn(void)
 	delay_ms(1000);
 	uart2Tx("SS,40\r",6);	//uart transparent mode
 	delay_ms(1000);
+	uart2Tx("S-,InHealion\r",13);	//set device name
+	delay_ms(1000);
 ////	//uart2Tx("$$$",3);	//set Command Mode
 ////	delay_ms(100);
 //////	uart2Tx("SW,0C,0C\r",9);	//fast data mode

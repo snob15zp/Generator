@@ -68,6 +68,7 @@ const t_TPS_CMD TPS_CMD[e_TPS_CMD_NumOfEl]=
 	{"FLad",0,0},//e_TPS_CMD_DBfg
 	{"FLwd",0,0},//e_TPS_CMD_DBfg
 	{"FLvy",0,0},//e_TPS_CMD_DBfg
+	{"GAID",0,0},//e_TPS_CMD_DBfg
 };
 
 
@@ -205,7 +206,7 @@ TPS65982_6_CMD_U(e_I2C_API_Devices device,e_TPS65982_6_CMD CMD, uint8_t *dataWR,
 						if (e_FRS_DoneError==returnstateL1)
 							internalstate1=101;
 			    break;
-	case 3: returnstateL1=TPS65982_6_RW(device,e_TPS65982_6_Data1,dataRD,qntByteRD+1,I2C_OP_READ,key);
+	case 3: returnstateL1=TPS65982_6_RW(device,e_TPS65982_6_Data1,dataRD,qntByteRD,I2C_OP_READ,key);
             if (e_FRS_Done==returnstateL1)
 			         {
 			       		internalstate1=100;

@@ -216,7 +216,7 @@ extern void SLC(void)
 			{
 				if (BQ28z610_DriverState())
 					break;
-				b_UpdateFlag_28z610=false;
+//				b_UpdateFlag_28z610=false;
 				br_28z610=readDataFromFile();
 				
 				if (br_28z610)
@@ -239,7 +239,7 @@ extern void SLC(void)
 				if (TPS6598x_DriverState())
 					break;
 				b_UpdateFlag_65987=false;
-				//br_65987=tpsFlashUpdate();
+				br_65987=tpsFlashUpdate();
 				if (br_65987)
 				{ SetStatusString("Update 65987 ok");
 				}

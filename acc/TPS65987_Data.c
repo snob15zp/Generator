@@ -14,12 +14,8 @@ int32_t tpsFlashUpdate()
 	
 	PreOpsForFlashUpdate();
 	StartFlashUpdate();
-//	indata[0] = active_region;
-//	do{
-//		retVal=TPS65982_6_CMD_U(TPS87,e_TPS_CMD_FLrr,indata,1,outdata,5);
-//	}while(!((retVal==e_FRS_Done)||(retVal==e_FRS_DoneError)));
-	//SPIFFS_remove(&fs,"tps65987.bin");
-	return 0;
+	ResetPDController();
+	return 1;
 }
 
 /**/
@@ -116,13 +112,13 @@ static int32_t StartFlashUpdate()
 	*/
 //	retVal = UpdateAndVerifyRegion(pCtx->inactive_region);
 	retVal = UpdateAndVerifyRegion(inactive_region);
-	if(0 != retVal){
-//	UART_PRINT("Region[%d] update failed.! Next boot will happen from Region[%d]\n\r",\
-//	pCtx->inactive_region, pCtx->active_region);
-//	retVal = 0;
-//	goto error;
-		return -1;
-	}
+//	if(0 != retVal){
+////	UART_PRINT("Region[%d] update failed.! Next boot will happen from Region[%d]\n\r",\
+////	pCtx->inactive_region, pCtx->active_region);
+////	retVal = 0;
+////	goto error;
+//		return -1;
+//	}
 	/*
 	* Region-1 is successfully updated.
 	* To maintain a redundant copy for a fail-safe flash-update, copy the same
@@ -130,14 +126,14 @@ static int32_t StartFlashUpdate()
 	*/
 //	retVal = UpdateAndVerifyRegion(pCtx->active_region);
 	retVal = UpdateAndVerifyRegion(active_region);
-	if(0 != retVal)
-	{
-//		UART_PRINT("Region[%d] update failed.! Next boot will happen from Region[%d]\n\r",\
-//		pCtx->active_region, pCtx->inactive_region);
-//		retVal = 0;
-//		goto error;
-		return -1;
-	}
+//	if(0 != retVal)
+////	{
+//////		UART_PRINT("Region[%d] update failed.! Next boot will happen from Region[%d]\n\r",\
+//////		pCtx->active_region, pCtx->inactive_region);
+//////		retVal = 0;
+//////		goto error;
+////		return -1;
+//	}
 //	error:
 //	SignalEvent(APP_EVENT_END_UPDATE);
 //	return retVal;
@@ -146,6 +142,8 @@ static int32_t StartFlashUpdate()
 }
 	/**/
 	uint32_t regAddr = 0;
+	uint8_t bytesToRead=0;
+	uint32_t bytesRemain=0;
 
 static int32_t UpdateAndVerifyRegion(uint8_t region_number)
 {
@@ -153,26 +151,27 @@ static int32_t UpdateAndVerifyRegion(uint8_t region_number)
 //	s_TPS_flem flemInData = {0};
 //	s_TPS_flad fladInData = {0};
 //	s_TPS_flvy flvyInData = {0};
-	s32_t patchBundleSize = 0;
+//	s32_t patchBundleSize = 0;
 //	uint32_t regAddr = 0;
-	int32_t idx = -1;
-	e_FunctionReturnState retVal;
-	uint8_t byteBuff[64];
-	uint8_t bytesToRead=0;
-	uint32_t bytesRemain=0;
+//	int32_t idx = -1;
+	int32_t retVal;
+	uint8_t byteBuff[PATCH_BUNDLE_SIZE];
+//	uint8_t bytesToRead=0;
+//	uint32_t bytesRemain=0;
 	
 	tps_file=SPIFFS_open(&fs,"tps65987.bin",SPIFFS_O_RDONLY,0);
 //	patchBundleSize = sizeof(tps6598x_lowregion_array);
 	SPIFFS_fstat(&fs,tps_file,&file_stat);
-	patchBundleSize = file_stat.size;
+//	patchBundleSize = file_stat.size;
 	/*
 	* Get the location of the region 'region_number'
 	*/
-	indata[0] = region_number;
+	indata[0] = 1;
+	indata[1] = region_number;
 //	retVal = ExecCmd(FLrr, sizeof(flrrInData), (int8_t *)&flrrInData, \
 //	OUTPUT_LEN_FLRR, &outdata[0]);
 	do{
-		retVal=TPS65982_6_CMD_U(TPS87,e_TPS_CMD_FLrr,indata,1,outdata,5,UpdateAndVerifyRegion);
+		retVal=TPS65982_6_CMD_U(TPS87,e_TPS_CMD_FLrr,indata,2,outdata,5,UpdateAndVerifyRegion);
 	}while(!((retVal==e_FRS_Done)||(retVal==e_FRS_DoneError)));
 //	RETURN_ON_ERROR(retVal);
 	regAddr = (outdata[4] << 24) | (outdata[3] << 16) | (outdata[2] << 8) | (outdata[1] << 0);
@@ -183,29 +182,31 @@ static int32_t UpdateAndVerifyRegion(uint8_t region_number)
 	* Ensure its validity for the TPS6598x being used for your
 	* application.
 	*/
-	indata[0]=(regAddr&0x000000FF);
-	indata[1]=((regAddr>>8)&0x0000FF);
-	indata[2]=((regAddr>>16)&0x00FF);
-	indata[3]=(regAddr>>24);
-	indata[4]=TOTAL_4kBSECTORS_FOR_PATCH;
+	indata[0]=5;
+	indata[1]=(regAddr&0x000000FF);
+	indata[2]=((regAddr>>8)&0x0000FF);
+	indata[3]=((regAddr>>16)&0x00FF);
+	indata[4]=(regAddr>>24);
+	indata[5]=TOTAL_4kBSECTORS_FOR_PATCH;
 //	retVal = ExecCmd(FLem, sizeof(flemInData), (int8_t *)&flemInData, \
 //	TASK_RET_CODE_LEN, &outdata[0]);
 	do{
-		retVal=TPS65982_6_CMD_U(TPS87,e_TPS_CMD_FLem,indata,5,outdata,1,UpdateAndVerifyRegion);
+		retVal=TPS65982_6_CMD_U(TPS87,e_TPS_CMD_FLem,indata,6,outdata,2,UpdateAndVerifyRegion);
 	}while(!((retVal==e_FRS_Done)||(retVal==e_FRS_DoneError)));
 
 //	RETURN_ON_ERROR(retVal);
 	/*
 	* Set the start address for the next write
 	*/
-	indata[0]=(regAddr&0x000000FF);
-	indata[1]=((regAddr>>8)&0x0000FF);
-	indata[2]=((regAddr>>16)&0x00FF);
-	indata[3]=(regAddr>>24);
+	indata[0]=4;
+	indata[1]=(regAddr&0x000000FF);
+	indata[2]=((regAddr>>8)&0x0000FF);
+	indata[3]=((regAddr>>16)&0x00FF);
+	indata[4]=(regAddr>>24);
 //	retVal = ExecCmd(FLad, sizeof(fladInData), (int8_t *)&fladInData, \
 //	TASK_RET_CODE_LEN, &outdata[0]);
 	do{
-		retVal=TPS65982_6_CMD_U(TPS87,e_TPS_CMD_FLad,indata,4,outdata,1,UpdateAndVerifyRegion);
+		retVal=TPS65982_6_CMD_U(TPS87,e_TPS_CMD_FLad,indata,5,outdata,2,UpdateAndVerifyRegion);
 	}while(!((retVal==e_FRS_Done)||(retVal==e_FRS_DoneError)));
 //	RETURN_ON_ERROR(retVal);
 	/**/
@@ -213,10 +214,18 @@ static int32_t UpdateAndVerifyRegion(uint8_t region_number)
 //	for (idx = 0; idx < patchBundleSize/PATCH_BUNDLE_SIZE; idx++)
 //	{
 	bytesToRead=PATCH_BUNDLE_SIZE;
+	bytesRemain=file_stat.size;
 	do{
-		retVal=SPIFFS_read(&fs, tps_file, &indata, bytesToRead);
+		retVal=SPIFFS_read(&fs, tps_file, &byteBuff, bytesToRead);
 		if (retVal<bytesToRead)
 		{	break;
+		}
+		
+		indata[0]=bytesToRead;
+		int j=1;
+		for(int i=0;i<bytesToRead;i++){
+			indata[j]=byteBuff[i];
+			j++;
 		}
 		
 	//	UART_PRINT(".");
@@ -229,8 +238,9 @@ static int32_t UpdateAndVerifyRegion(uint8_t region_number)
 	//	TASK_RET_CODE_LEN, &outdata[0]);
 	//	RETURN_ON_ERROR(retVal);
 		do{
-			retVal=TPS65982_6_CMD_U(TPS87,e_TPS_CMD_FLwd,indata,bytesToRead,outdata,1,UpdateAndVerifyRegion);
+			retVal=TPS65982_6_CMD_U(TPS87,e_TPS_CMD_FLwd,indata,bytesToRead+1,outdata,2,UpdateAndVerifyRegion);
 		}while(!((retVal==e_FRS_Done)||(retVal==e_FRS_DoneError)));
+//		delayms(100);
 		bytesRemain-=bytesToRead;
 		if(bytesRemain>=PATCH_BUNDLE_SIZE)
 			bytesToRead=PATCH_BUNDLE_SIZE;
@@ -239,28 +249,29 @@ static int32_t UpdateAndVerifyRegion(uint8_t region_number)
 		/*
 		* 'outdata[1]' will contain the command's return code
 		*/
-		if(0 != outdata[1])
-		{
-	//	UART_PRINT("\n\r");
-	//	UART_PRINT("Flash Write FAILED.!\n\r");
-	//	retVal = -1;
-	//	goto error;
-			return -1;
-		}
+//		if(0 != outdata[1])
+//		{
+//	//	UART_PRINT("\n\r");
+//	//	UART_PRINT("Flash Write FAILED.!\n\r");
+//	//	retVal = -1;
+//	//	goto error;
+//			return -1;
+//		}
 //	}
-	}while(bytesToRead!=0);
+	}while(bytesRemain!=0);
 //	UART_PRINT("\n\r");
 	/*
 	* Write is through. Now verify if the content/copy is valid
 	*/
-	indata[0]=(regAddr&0x000000FF);
-	indata[1]=((regAddr>>8)&0x0000FF);
-	indata[2]=((regAddr>>16)&0x00FF);
-	indata[3]=(regAddr>>24);
+	indata[0]=4;
+	indata[1]=(regAddr&0x000000FF);
+	indata[2]=((regAddr>>8)&0x0000FF);
+	indata[3]=((regAddr>>16)&0x00FF);
+	indata[4]=(regAddr>>24);
 //	retVal = ExecCmd(FLvy, sizeof(flvyInData), (int8_t *)&flvyInData, \
 //	TASK_RET_CODE_LEN, &outdata[0]);
 	do{
-		retVal=TPS65982_6_CMD_U(TPS87,e_TPS_CMD_FLvy,indata,4,outdata,1,UpdateAndVerifyRegion);
+		retVal=TPS65982_6_CMD_U(TPS87,e_TPS_CMD_FLvy,indata,5,outdata,2,UpdateAndVerifyRegion);
 	}while(!((retVal==e_FRS_Done)||(retVal==e_FRS_DoneError)));
 
 	if(0 != outdata[1])
@@ -278,12 +289,14 @@ static int32_t UpdateAndVerifyRegion(uint8_t region_number)
 /**/
 static int32_t ResetPDController()
 {
-	int32_t retVal = -1;
+	int32_t retVal = 0;
 	/*
 	* Execute GAID, and wait for reset to complete
 	*/
 //	ExecCmd(GAID, 0, NULL, 0, NULL);
-	ExecCmd("GAID", 0, NULL, 0, NULL);
+	do{
+		retVal=TPS65982_6_CMD_U(TPS87,e_TPS_CMD_GAID,indata,0,outdata,0,UpdateAndVerifyRegion);
+	}while(!((retVal==e_FRS_Done)||(retVal==e_FRS_DoneError)));
 //	Board_IF_Delay(1000);
 //	retVal = ReadMode();
 //	RETURN_ON_ERROR(retVal);
