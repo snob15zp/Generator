@@ -279,10 +279,14 @@ static int32_t UpdateAndVerifyRegion(uint8_t region_number)
 //	UART_PRINT("Flash Verify FAILED.!\n\r");
 //	retVal = -1;
 //	goto error;
+		SPIFFS_close(&fs,tps_file);
+		SPIFFS_remove(&fs,"tps65987.bin");
 		return -1;
 	}
 //	error:
 //	return retVal;
+	SPIFFS_close(&fs,tps_file);
+	SPIFFS_remove(&fs,"tps65987.bin");
 	return 0;
 }
 	

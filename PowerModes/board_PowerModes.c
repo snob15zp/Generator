@@ -148,7 +148,7 @@ void enterToStop(void)
     
 
     
-	GPIOB->BSRR = GPIO_BSRR_BS10;
+//	GPIOB->BSRR = GPIO_BSRR_BS10;
 	PWR->CR1 |= PWR_CR1_LPR |	// the regulator is switched from main mode (MR) to low-power mode
 				PWR_CR1_LPMS_0; // select Stop 1 low-power mode
 	__DMB();
@@ -169,7 +169,7 @@ void enterToStop(void)
     tim3Init();
 
 
-	GPIOB->BSRR = GPIO_BSRR_BR10;
+//	GPIOB->BSRR = GPIO_BSRR_BR10;
 	NVIC_EnableIRQ(USART1_IRQn);
 	NVIC_EnableIRQ(I2C2_IRQn);
 	NVIC_EnableIRQ(I2C1_IRQn);

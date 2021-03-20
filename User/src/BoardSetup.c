@@ -59,11 +59,25 @@ void SysTick_Handler(void)
 	static uint8_t status=0;	
 	static uint32_t button_new; 
 	static uint16_t	button_old, button_stable_new, button_stable_old;
-	static uint32_t cur_time, stop_time, disp_off_on_time;
-	static uint8_t disp_on_off_en;
+	static uint32_t cur_time, stop_time, disp_off_on_time, led_time;
+	static uint8_t disp_on_off_en, led_on;
 	
 	SystemTicks++;
 	cur_time++;
+	led_time++;
+	
+	if(led_time>=1000){
+		led_on=~led_on;
+		led_time=0;
+	}
+	switch(led_on){
+		case 0x00:
+			GPIOB->BSRR = GPIO_BSRR_BR10;
+			break;
+		case 0xFF:
+			GPIOB->BSRR = GPIO_BSRR_BS10;
+			break;
+	}
 //	btCurTime++;
     
     /*if((SystemTicks % 200) == 0)

@@ -216,7 +216,7 @@ extern void SLC(void)
 			{
 				if (BQ28z610_DriverState())
 					break;
-//				b_UpdateFlag_28z610=false;
+				b_UpdateFlag_28z610=false;
 				br_28z610=readDataFromFile();
 				
 				if (br_28z610)
