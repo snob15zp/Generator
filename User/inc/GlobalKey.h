@@ -25,6 +25,9 @@
 
 
 #define D_FileNameLength 32
+#define D_FileNameLengthInFL 32
+#define D_FN_Max_Length 28
+extern const char FN_Read_Template[];
 
 void Error(char* s);
 

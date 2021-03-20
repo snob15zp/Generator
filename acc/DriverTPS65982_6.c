@@ -101,21 +101,21 @@ e_FunctionReturnState TPS65982_6_CMD(e_I2C_API_Devices device,e_TPS65982_6_CMD C
 	         {
 		     data[0]=TPS_CMD[CMD].Data_qntByte;data[1]=TPS_CMD[CMD].Data;
 	         if (e_FRS_Done==TPS65982_6_RW(device,e_TPS65982_6_Data1,data,2,I2C_OP_WRITE,key))
-	            {
+	         { Driver6598x_KEY = key;
 	        	 internalstate1++;
-	            };
+	         };
 	         }
 	        else {internalstate1++;};
 	         break;
 	case 1:data[0]=4;for(k=0;k<4;k++) {data[k+1]=TPS_CMD[CMD].CMD[k];};
 	         if (e_FRS_Done==TPS65982_6_RW(device,e_TPS65982_6_Cmd1,data,5,I2C_OP_WRITE,key))
-	         {
+	         { Driver6598x_KEY = key;
 	        	 internalstate1++;
 	         };
 	         break;
 	case 2:
             if (e_FRS_Done==TPS65982_6_RW(device,e_TPS65982_6_Cmd1,data,5,I2C_OP_READ,key))
-			         {
+			         {Driver6598x_KEY = key;
 			        	if ((0==data[1])&&(0==data[2])&&(0==data[3])&&(0==data[4]))
 			        		{
 			        		internalstate1++;
@@ -129,7 +129,7 @@ e_FunctionReturnState TPS65982_6_CMD(e_I2C_API_Devices device,e_TPS65982_6_CMD C
 			         break;
 	case 3:
             if (e_FRS_Done==TPS65982_6_RW(device,e_TPS65982_6_Data1,data,2,I2C_OP_READ,key))
-			         {
+			         {Driver6598x_KEY = key;
 			        	if ((0==data[1]))
 			        		{
 			        		internalstate1++;
@@ -169,11 +169,11 @@ TPS65982_6_CMD_U(e_I2C_API_Devices device,e_TPS65982_6_CMD CMD, uint8_t *dataWR,
 //		     	data[0]=TPS_CMD[CMD].Data_qntByte;data[1]=TPS_CMD[CMD].Data;
 						returnstateL1=TPS65982_6_RW(device,e_TPS65982_6_Data1,dataWR,qntByteWR,I2C_OP_WRITE,key);	 
 						if (e_FRS_Done==returnstateL1)
-						{
+						{ Driver6598x_KEY = key;
 							internalstate1++;
 						};
 						if (e_FRS_DoneError==returnstateL1)
-						{
+						{ Driver6598x_KEY = key;
 							internalstate1=101;
 						};
 	       }
@@ -182,17 +182,17 @@ TPS65982_6_CMD_U(e_I2C_API_Devices device,e_TPS65982_6_CMD CMD, uint8_t *dataWR,
 	case 1:data[0]=4;for(k=0;k<4;k++) {data[k+1]=TPS_CMD[CMD].CMD[k];};
 	       returnstateL1=TPS65982_6_RW(device,e_TPS65982_6_Cmd1,data,5,I2C_OP_WRITE,key);
 	         if (e_FRS_Done==returnstateL1)
-	         {
+	         { Driver6598x_KEY = key;
 	        	 internalstate1++;
 	         };
 	         if (e_FRS_DoneError==returnstateL1)
-	         {
+	         { Driver6598x_KEY = key;
 	        	 internalstate1=101;
 	         };
 	         break;
 	case 2:returnstateL1=TPS65982_6_RW(device,e_TPS65982_6_Cmd1,data,5,I2C_OP_READ,key);
             if (e_FRS_Done==returnstateL1)
-			         {
+			         {Driver6598x_KEY = key;
 			        	if ((0==data[1])&&(0==data[2])&&(0==data[3])&&(0==data[4]))
 			        		{
 			        		internalstate1++;
@@ -204,15 +204,19 @@ TPS65982_6_CMD_U(e_I2C_API_Devices device,e_TPS65982_6_CMD CMD, uint8_t *dataWR,
 
 			         };
 						if (e_FRS_DoneError==returnstateL1)
+						{	Driver6598x_KEY = key;
 							internalstate1=101;
+						};	
 			    break;
 	case 3: returnstateL1=TPS65982_6_RW(device,e_TPS65982_6_Data1,dataRD,qntByteRD,I2C_OP_READ,key);
             if (e_FRS_Done==returnstateL1)
-			         {
-			       		internalstate1=100;
-			         };
+			      {	Driver6598x_KEY = key;
+			       	internalstate1=100;
+			      };
 						if (e_FRS_DoneError==returnstateL1)
+						{	Driver6598x_KEY = key;
 							internalstate1=101;
+						};
 			    break;
   case 100://done
 			internalstate1=0; 
@@ -239,10 +243,10 @@ TPS65982_6_RW(e_I2C_API_Devices device, e_TPS65982_6_Registers reg, uint8_t *dat
 	e_FunctionReturnState wrstate;
 	t_I2cRecord I2cRecordRead;
 	
-//	if (0==Driver6598x_KEY)  // for multi task
-//	  {Driver6598x_KEY = key;}
-//	  else if (Driver6598x_KEY!=key) 
-//		       return e_FRS_Busy;
+	if (0==Driver6598x_KEY)  // for multi task
+	  {Driver6598x_KEY = key;}
+	  else if (Driver6598x_KEY!=key) 
+		       return e_FRS_Busy;
 
 	
 	
@@ -256,8 +260,8 @@ TPS65982_6_RW(e_I2C_API_Devices device, e_TPS65982_6_Registers reg, uint8_t *dat
 									voidfun8
 								);
 
-//		if ((e_FRS_Done==wrstate)||(e_FRS_DoneError==wrstate))
-//		                         {Driver6598x_KEY=0;};
+		if ((e_FRS_Done==wrstate)||(e_FRS_DoneError==wrstate))
+		                         {Driver6598x_KEY=0;};
 		return  wrstate;
 };
 
@@ -281,8 +285,9 @@ e_FunctionReturnState TPS65982_6_RDO_R(e_I2C_API_Devices device,  uint16_t* I, u
 	{
 	  case 0: data[0]=0;internalstate++; break;
 		case 1:returnstateL1=TPS65982_6_RW(device,e_TPS65982_6_StatusRegister,data,255,I2C_OP_READ,key);
-	        	if (e_FRS_Done==returnstateL1)
-    			{data32=(data[1])+((data[2])<<8)+((data[3])<<16)+((data[4])<<24);
+	        if (e_FRS_Done==returnstateL1)
+    			{Driver6598x_KEY = key;
+						data32=(data[1])+((data[2])<<8)+((data[3])<<16)+((data[4])<<24);
 	        	 if (
 	        	    (StatusRegister_5V_neg==(data32&StatusRegister_Maska_neg))||
 	        	    (StatusRegister_Other_neg==(data32&StatusRegister_Maska_neg))
@@ -300,7 +305,7 @@ e_FunctionReturnState TPS65982_6_RDO_R(e_I2C_API_Devices device,  uint16_t* I, u
     				};
 			    };
 					if (e_FRS_DoneError==returnstateL1)
-						{
+						{Driver6598x_KEY = key;
     				*I=0;
     				*V=0;
     				returnstateL=e_FRS_Done;
@@ -312,7 +317,8 @@ e_FunctionReturnState TPS65982_6_RDO_R(e_I2C_API_Devices device,  uint16_t* I, u
 	        
 	case 2: returnstateL1=TPS65982_6_RW(device,e_TPS65982_6_PowerStatusRegister,data,255,I2C_OP_READ,key);
 		      if (e_FRS_Done==returnstateL1)
-	           {data32=(data[1])+((data[2])<<8);
+	           {Driver6598x_KEY = key;
+							 data32=(data[1])+((data[2])<<8);
 	            if (3==(data32&3))
 	              {if (3==((data32>>2)&3))
 	              	  {
@@ -337,7 +343,7 @@ e_FunctionReturnState TPS65982_6_RDO_R(e_I2C_API_Devices device,  uint16_t* I, u
 	            }
 	           };
 				if (e_FRS_DoneError==returnstateL1)
-						{
+						{Driver6598x_KEY = key;
     				*I=0;
     				*V=0;
     				returnstateL=e_FRS_Done;
@@ -348,7 +354,8 @@ e_FunctionReturnState TPS65982_6_RDO_R(e_I2C_API_Devices device,  uint16_t* I, u
 
 	case 3:   returnstateL1=TPS65982_6_RW(device,e_TPS65982_6_ActivePDO,data,255,I2C_OP_READ,key); 
             if (e_FRS_Done==returnstateL1)
-	        	{data32=(data[1])+((data[2])<<8)+((data[3])<<16)+((data[4])<<24);
+	        	{ Driver6598x_KEY = key;
+							data32=(data[1])+((data[2])<<8)+((data[3])<<16)+((data[4])<<24);
             	 *I=(data32&0x3ff)*10;
             	 *V=((data32>>10)&0x3ff)*50;
             	 returnstateL=e_FRS_Done;
@@ -356,7 +363,7 @@ e_FunctionReturnState TPS65982_6_RDO_R(e_I2C_API_Devices device,  uint16_t* I, u
             	 internalstate=0;
 	        	};
 						if (e_FRS_DoneError==returnstateL1)
-						{
+						{ Driver6598x_KEY = key;
     				*I=0;
     				*V=0;
     				returnstateL=e_FRS_Done;
@@ -503,7 +510,7 @@ e_FunctionReturnState TPS65982_6_PSwap(e_I2C_API_Devices device,uint8_t sink,uin
 	{
 	case 0://for debug in debugger
 	         if (e_FRS_Done==TPS65982_6_RW(device,e_TPS65982_6_TXSourceCapabilities,data,255,I2C_OP_READ,key))
-	         {
+	         {Driver6598x_KEY = key;
 	        	 internalstate1++;
 	         };
 	         break;
@@ -518,13 +525,13 @@ e_FunctionReturnState TPS65982_6_PSwap(e_I2C_API_Devices device,uint8_t sink,uin
             data[5]=0x90|(((I/10)>>8)&0x03);
 
 	         if (e_FRS_Done==TPS65982_6_RW(device,e_TPS65982_6_TXSourceCapabilities,data,6,I2C_OP_WRITE,key))
-	         {
+	         {Driver6598x_KEY = key;
 	        	 internalstate1++;
 	         };
 	         break;
 	case 2:data[0]=1;if (0==sink) {data[1]=0;d=0x0a;} else {data[1]=MaxTXSinkCapabilities;d=0x08;};
 	         if (e_FRS_Done==TPS65982_6_RW(device,e_TPS65982_6_TXSinkCapabilities,data,2,I2C_OP_WRITE,key))
-	         {
+	         {Driver6598x_KEY = key;
 	        	 internalstate1++;
 	         };
 	         break;

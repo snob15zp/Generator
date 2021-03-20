@@ -325,7 +325,8 @@ void timeToString(uint8_t* timeArr)
 s32_t freq_file;
 static	uint8_t n_for_CR;
 static	char tempArrOld[D_ParamStringLength+1];
-        char SLPl_filename[D_FileNameLength+1];
+static  char SLPl_filename[D_FileNameLength+1];
+        char SLPl_filenameWOE[D_FileNameLength+1];
 static int8_t bytesCount;
 
 e_FunctionReturnState getFileName(uint16_t fileSectl)
@@ -335,16 +336,19 @@ e_FunctionReturnState getFileName(uint16_t fileSectl)
   //int8_t bytesCount;
 	char byteBuff[D_FileNameLength+1];
 	
-	startAddr=fileSectl*D_FileNameLength;
+	startAddr=fileSectl*D_FileNameLengthInFL;
 	
 //	File_List=SPIFFS_open(&fs, "freq.pls", SPIFFS_O_RDONLY, 0);/// \todo one time open
     SPIFFS_lseek(&fs, File_List,startAddr,SPIFFS_SEEK_SET);
-	bytesCount=SPIFFS_read(&fs, File_List, &byteBuff, D_FileNameLength);
+	bytesCount=SPIFFS_read(&fs, File_List, &byteBuff, D_FileNameLengthInFL);
 	if (bytesCount<1)
 	{	rstate=e_FRS_DoneError;
 	}
 	byteBuff[bytesCount]=0;
-	_sscanf( byteBuff,"%18s",SLPl_filename);
+	_sscanf( byteBuff,FN_Read_Template,SLPl_filename);
+	SLPl_filename[D_FN_Max_Length]=0;
+	strncpy(SLPl_filenameWOE,SLPl_filename,28);
+	strncat(SLPl_filename,".txt",4);
 	//SPIFFS_close(&fs, File_List); /// \todo one time close
 	return rstate;
 }
@@ -771,7 +775,7 @@ s32_t res;
 //			File_List=SPIFFS_open(&fs,"freq.pls",SPIFFS_O_RDONLY,0);
 			res=SPIFFS_fstat(&fs,File_List,&file_stat);
 	    if (SPIFFS_OK==res)
-				SLPl_ui16_NumOffiles=file_stat.size/D_FileNameLength;
+				SLPl_ui16_NumOffiles=file_stat.size/D_FileNameLengthInFL;
 };
 
 void SLPl_InitFiles(void)

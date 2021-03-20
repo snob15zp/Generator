@@ -56,7 +56,7 @@ extern volatile t_fpgaFlags fpgaFlags;
 extern uint16_t SLPl_ui16_NumOffiles;
 
 
-extern char SLPl_filename[D_FileNameLength+1];
+extern char SLPl_filenameWOE[D_FileNameLength+1];
 
 void SLPl_Start(uint32_t nof);
 void SLPl_Stop();
