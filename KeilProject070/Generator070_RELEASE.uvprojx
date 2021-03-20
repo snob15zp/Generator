@@ -537,6 +537,16 @@
               <FileType>1</FileType>
               <FilePath>..\acc\I2C_COMMON.c</FilePath>
             </File>
+            <File>
+              <FileName>BQ28z610_Data.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\acc\BQ28z610_Data.c</FilePath>
+            </File>
+            <File>
+              <FileName>TPS65987_Data.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\acc\TPS65987_Data.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
