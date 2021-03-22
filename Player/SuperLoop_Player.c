@@ -601,7 +601,7 @@ void calcFreq(void)
 				playFreqArr_2[i]++;
 			}
 		}
-		playParamArr[1]++;
+		playParamArr[1]--;
 	}
 	
 	//Frequency change from (f0-onset) to (f0-onset-offset)
@@ -614,7 +614,7 @@ void calcFreq(void)
 				playFreqArr_2[i]--;
 			}
 		}
-		playParamArr[1]++;
+		playParamArr[1]--;
 	}
 }
 

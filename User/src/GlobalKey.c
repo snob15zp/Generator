@@ -9,3 +9,7 @@ void Error(char* s)
 {
 	strncpy(ErrorMess,s,48);
 }
+
+void VoidFunction(void)
+{
+};

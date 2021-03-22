@@ -178,6 +178,7 @@ void btUartInit(void)
 {
 	RCC->APBENR1 |= RCC_APBENR1_USART2EN;
 	USART2->BRR = USART2_DIV;		//sets UART2 baudrate 115200 baud
+	USART2->CR3 |= USART_CR3_OVRDIS;
 	USART2->CR1 |= //USART_CR1_FIFOEN |
 									USART_CR1_RXNEIE_RXFNEIE |
 									USART_CR1_TE |
@@ -240,8 +241,8 @@ void btOn(void)
 ////	delay_ms(1000);
 ////	uart2Tx("---",3);	//set data mode
 ////	delay_ms(1000);
-      uart2Tx("---",3);	//set data mode
-      delay_ms(1000);
+//      uart2Tx("---",3);	//set data mode
+//      delay_ms(1000);
       uart2Tx("---",3);	//set data mode
       delay_ms(1000);
 
