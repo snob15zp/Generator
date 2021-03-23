@@ -345,7 +345,7 @@ e_FunctionReturnState TransitionFunction(uint8_t state)
 																		else 
 																		{	
 																			 
-																		if ((SystemTicksOld+D_incCurPause)<SystemTicks)
+																		if ((D_incCurPause)<(SystemTicks-SystemTicksOld))
 																		{
 																			SystemTicksOld=SystemTicks;   
 																			InCurrent+=100;

@@ -280,7 +280,7 @@ extern void SLC(void)
 					 }						 
 						 
 				MODBUScommLastTimel=MODBUScommLastTime; //MODBUScommLastTime
-				if ((SystemTicks-MODBUScommLastTimel)>(2*USBcommPause))
+				if ((SystemTicks-MODBUScommLastTimel)>(3*USBcommPause))
 				   {   MODBUScommLastTime=SystemTicks-(2*USBcommPause);
 					 }	 
 
@@ -344,37 +344,37 @@ void SLBL(void)
 {			
 	switch (PS_Int)
 		{case PS_Int_USB_No:
-        if (SystemTicks-lastUSBTime < D_USB_Packet_Pause)
+        if ((SystemTicks-lastUSBTime) < D_USB_Packet_Pause)
 				{ PS_Int=PS_Int_USB; 
 				}	
-				if (SystemTicks-lastIrqTime < D_BL_Packet_Pause)
+				if ((SystemTicks-lastIrqTime) < D_BL_Packet_Pause)
 				{	eMBDisable();
 					PS_Int=PS_Int_BLE_No;
 					eMBEnable();
 				};					
 			break;
 		 case PS_Int_USB:
-			 	if (SystemTicks-lastUSBTime > D_USB_Packet_Pause)
+			 	if ((SystemTicks-lastUSBTime) > D_USB_Packet_Pause)
 					PS_Int=PS_Int_USB_No;
 			break;	
 		 case PS_Int_BLE_No:
-				if (SystemTicks-lastIrqTime < D_BL_Packet_Pause) // Exit BLE mode by pause
+				if ((SystemTicks-lastIrqTime) < D_BL_Packet_Pause) // Exit BLE mode by pause
           PS_Int=PS_Int_BLE;
-				if (SystemTicks-lastUSBTime < D_USB_Packet_Pause)
+				if ((SystemTicks-lastUSBTime )< (D_USB_Packet_Pause))
 				{	eMBDisable();
 					PS_Int=PS_Int_USB_No;
 					eMBEnable();
 				};					
 			break;
 		 case PS_Int_BLE:
-				if (SystemTicks-lastIrqTime > D_BL_Packet_Pause) // Exit BLE mode by pause
+				if ((SystemTicks-lastIrqTime) > D_BL_Packet_Pause) // Exit BLE mode by pause
 					PS_Int=PS_Int_BLE_No;
 			break;
 		 default: PS_Int=PS_Int_USB_No;
 	 };
 		
 //----------------------------BLE times-----------------------------------
-  if ((SystemTicks-lastIrqTime)>(2*D_BL_Packet_Pause))// Correction for cyclical time
+  if ((SystemTicks-lastIrqTime)>(3*D_BL_Packet_Pause))// Correction for cyclical time
 	   {   lastIrqTime=SystemTicks-(2*D_BL_Packet_Pause);
 		 }	 
 					 
@@ -384,11 +384,11 @@ void SLBL(void)
 			lastIrqTime=SystemTicks;  
 		}
 //----------------------------USB times-------------------------------------		
-  if ((SystemTicks-lastUSBTime)>(2*D_USB_Packet_Pause))// Correction for cyclical time
+  if ((SystemTicks-lastUSBTime)>(3*D_USB_Packet_Pause))// Correction for cyclical time
 	   {   lastUSBTime=SystemTicks-(2*D_USB_Packet_Pause);
 		 }	 
 					 
-	if (isBLEint) //Interrupt time latch (approximately)
+	if (isUSBint) //Interrupt time latch (approximately)
 		{
 			isUSBint=false;
 			lastUSBTime=SystemTicks;  

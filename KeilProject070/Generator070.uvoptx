@@ -152,18 +152,50 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>68</LineNumber>
+          <LineNumber>124</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134267172</Address>
+          <Address>134238168</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\User\src\main.c</Filename>
+          <Filename>..\User\src\BoardSetup.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\gen_g070\../User/src/main.c\68</Expression>
+          <Expression>\\gen_g070\../User/src/BoardSetup.c\124</Expression>
+        </Bp>
+        <Bp>
+          <Number>1</Number>
+          <Type>0</Type>
+          <LineNumber>357</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134232514</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>..\Communications\SuperLoop_Comm2.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\gen_g070\../Communications/SuperLoop_Comm2.c\357</Expression>
+        </Bp>
+        <Bp>
+          <Number>2</Number>
+          <Type>0</Type>
+          <LineNumber>393</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134232602</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>..\Communications\SuperLoop_Comm2.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\gen_g070\../Communications/SuperLoop_Comm2.c\393</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
@@ -223,6 +255,21 @@
           <count>6</count>
           <WinNumber>2</WinNumber>
           <ItemText>xFrameReceived</ItemText>
+        </Ww>
+        <Ww>
+          <count>7</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>\\gen_g070\../Communications/bluetooth.c\rxIrqCnt,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>8</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>\\gen_g070\../FreeModbus/portserial.c\btSendArr</ItemText>
+        </Ww>
+        <Ww>
+          <count>9</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>\\gen_g070\../FreeModbus/portserial.c\txIrqCnt,0x0A</ItemText>
         </Ww>
       </WatchWindow2>
       <MemoryWindow1>
@@ -317,7 +364,7 @@
 
   <Group>
     <GroupName>Main</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -361,7 +408,7 @@
       <GroupNumber>1</GroupNumber>
       <FileNumber>4</FileNumber>
       <FileType>1</FileType>
-      <tvExp>1</tvExp>
+      <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
       <PathWithFileName>..\User\src\GlobalKey.c</PathWithFileName>
@@ -493,7 +540,7 @@
 
   <Group>
     <GroupName>Communications</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -697,7 +744,7 @@
 
   <Group>
     <GroupName>PowerModes</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>

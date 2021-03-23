@@ -120,7 +120,8 @@ void SysTick_Handler(void)
 	else {disp_on_off_en=0;}
 	
 	if(!button_new) {stop_time=cur_time;}
-	if((cur_time-stop_time)>=5000) {NVIC_SystemReset();}
+	if((cur_time-stop_time)>=5000) 
+       {NVIC_SystemReset();}
 }
 /*************************************************************************************************************************
 *
