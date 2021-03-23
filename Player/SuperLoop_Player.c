@@ -512,16 +512,25 @@ uint32_t freqInverse(uint32_t freq)
 	}
 	return tempArr[5]*100000U+tempArr[4]*10000U+tempArr[3]*1000U+tempArr[2]*100U+tempArr[1]*10U+tempArr[0];
 }
-
+/*************************************
+playParamArr[0] - frequencies
+playParamArr[1] - offset
+playParamArr[2] - onset
+playParamArr[3] - duration
+playParamArr[4] - negative
+playParamArr[5] - up
+playParamArr[6] - inverse
+playParamArr[7] - out voltage
+**************************************/
 void setInitFreq(void)
 {
 	if(playParamArr[4]==0 && playParamArr[5]==0){	//negative==0 and up==0
 		for(int i=0;i<100;i++){
 			if(playFreqArr_1[i]!=0){
-				playFreqArr_1[i]+=playParamArr[1]+playParamArr[2];
+				playFreqArr_1[i]+=playParamArr[1];
 			}
 			if(playFreqArr_2[i]!=0){
-				playFreqArr_2[i]+=playParamArr[1]+playParamArr[2];
+				playFreqArr_2[i]+=playParamArr[1];
 			}
 		}
 	}
@@ -538,10 +547,10 @@ void setInitFreq(void)
 	if(playParamArr[4]==1 && playParamArr[5]==1){	//negative==1 and up==1
 		for(int i=0;i<100;i++){
 			if(playFreqArr_1[i]!=0){
-				playFreqArr_1[i]-=playParamArr[1]-playParamArr[2];
+				playFreqArr_1[i]-=playParamArr[1];
 			}
 			if(playFreqArr_2[i]!=0){
-				playFreqArr_2[i]-=playParamArr[1]-playParamArr[2];
+				playFreqArr_2[i]-=playParamArr[1];
 			}
 		}
 	}
@@ -565,7 +574,7 @@ void calcFreq(void)
 		return;
 	}
 	
-	//Frequency change from (f0+onset+offset) to (f0+onset)
+	//Frequency change from (f0+offset) to (f0+onset)
 	if(playParamArr[4]==0 && playParamArr[5]==0){	//negative==0 and up==0
 		for(int i=0;i<100;i++){
 			if(playFreqArr_1[i]!=0){
@@ -578,7 +587,7 @@ void calcFreq(void)
 		playParamArr[1]--;
 	}
 	
-	//Frequency change from (f0+onset) to (f0+onset+offset)
+	//Frequency change from (f0+onset) to (f0+offset)
 	if(playParamArr[4]==0 && playParamArr[5]==1){	//negative==0 and up==1
 		for(int i=0;i<100;i++){
 			if(playFreqArr_1[i]!=0){
@@ -604,7 +613,7 @@ void calcFreq(void)
 		playParamArr[1]--;
 	}
 	
-	//Frequency change from (f0-onset) to (f0-onset-offset)
+	//Frequency change from (f0-onset) to (f0-offset)
 	if(playParamArr[4]==1 && playParamArr[5]==0){	//negative==1 and up==0
 		for(int i=0;i<100;i++){
 			if(playFreqArr_1[i]!=0){
@@ -1004,6 +1013,7 @@ void SLP(void)
 				fpgaFlags.labelsUpdate=1;
 				curState=SLPl_FSM_On;
 				SetStatusString("Config OK");
+				durTimeS=0;
 			}
 			else
 			{

@@ -524,7 +524,7 @@ static void createLabels(void) {
 	ghLabel12 = gwinLabelCreate(0, &wi);
 
 	wi.g.width = D_image_wigx-150; wi.g.height = 20; wi.g.x = 150; wi.g.y = 0;
-	wi.text = "   0%";
+	wi.text = "  --%";
 	ghLabel13_RSOC = gwinLabelCreate(0, &wi);
 
 	
