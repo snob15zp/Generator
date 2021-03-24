@@ -553,7 +553,7 @@ int on_modbus_write_file(uint8_t* buf, size_t len)
     uint8_t last_item = 0;
     uint8_t encrypted = 0;
     
-    char fname[18] = {};    
+    char fname[33] = {};    
     if(buf[0] >= sizeof(fname) - 1)
     {
         return 0x81;
