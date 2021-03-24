@@ -114,7 +114,7 @@ void SuperLoop_PowerModes(void)
 				    Communication_InSleep();
 				    BoardSetup_InSleep();
 			      //DBG->CR|= DBG_CR_DBG_STOP;
-     //             enterToStop();
+                  enterToStop();
 			      BoardSetup_OutSleep(); 
  			      Communication_OutSleep(); 
 			      SLP_state=3;
