@@ -31,12 +31,11 @@ void EXTI4_15_IRQHandler(void)
 
 void bPM_FSMPower_Init(void);
 
-void enterToStop(void);
+static void enterToStop(void);
 
 void SuperLoop_PowerModes_Init(void)
-	{
-    RCC->IOPENR |= RCC_IOPENR_GPIOAEN;
-		
+{
+    RCC->IOPENR |= RCC_IOPENR_GPIOAEN;		
     EXTI->IMR1 = 0;
     EXTI->EMR1 = 0;	
 		
@@ -58,16 +57,10 @@ void SuperLoop_PowerModes_Init(void)
 	EXTI->IMR1 |= EXTI_IMR1_IM7; // EXTI7 interrupts unmasked
 	//EXTI->EMR1 |= EXTI_EMR1_EM7; // EXTI7 event unmasked
 	
-	
-		
 	NVIC_SetPriority(EXTI4_15_IRQn, 5);
 	NVIC_EnableIRQ(EXTI4_15_IRQn);
-		
-		
-		
-  bPM_FSMPower_Init();
-    
-	}		
+    bPM_FSMPower_Init();
+}		
 	
 /**
 \brief  control entering into sleep
@@ -85,8 +78,9 @@ void SuperLoop_PowerModes(void)
 
 		rplayer=	SLPl_GetPowerState();
 		rdispl=		SLD_GetPowerState();
-		racc=			SLAcc_GetPowerState();
+		racc=		SLAcc_GetPowerState();
 		rcomm=		SLC_GetPowerState();
+        
 		//return; ///RDD debug
 		switch (SLP_state)
 		{
@@ -135,7 +129,7 @@ PWR_CR1->FPD_STOP: Flash memory powered down during Stop mode
 PWR_CR4->VBE:	 0: VBAT battery charging disable
 	 
 */	 
-void enterToStop(void)
+static void enterToStop(void)
 {
     while (GPIOA->IDR & GPIO_IDR_ID5);
 

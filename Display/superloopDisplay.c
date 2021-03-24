@@ -192,7 +192,7 @@ int SLD(void)
 				}	
 			
 		  };
-			if ((!bVSYS)|button_sign)
+			if ( (!bVSYS) || button_sign)
 				{
 					button_sign=0;
 					state_inner=SLD_FSM_OffTransition;
