@@ -32,7 +32,7 @@
 
 unsigned long Time_Cycle = 0;   
 
-
+bool USART1_CR1_RXNEIE_Logic;
 
 /* ----------------------- static functions ---------------------------------*/
 static void prvvUARTTxReadyISR( void );
@@ -70,11 +70,11 @@ void vMBPortSerialEnable( BOOL xRxEnable, BOOL xTxEnable )
 			default:
 					if( xRxEnable )
 					{
-						USART1->CR1 |= USART_CR1_RXNEIE_RXFNEIE;
+						USART1_CR1_RXNEIE_Logic=true;
 					}
 					else
 					{
-						USART1->CR1 &= ~USART_CR1_RXNEIE_RXFNEIE;			
+						USART1_CR1_RXNEIE_Logic=false;			
 					}
 					if ( xTxEnable )
 					{
@@ -117,6 +117,7 @@ BOOL xMBPortSerialInit( UCHAR ucPORT, ULONG ulBaudRate, UCHAR ucDataBits, eMBPar
 	USART1->BRR = USART1_PCLK/USART1_BAUDRATE;	//sets UART1 baudrate 115200 baud
 	USART1->CR3 |= USART_CR3_ONEBIT;
 	USART1->CR3 |= USART_CR3_OVRDIS;
+	USART1->CR1 |= USART_CR1_RXNEIE_RXFNEIE;
 	USART1->CR1 |= USART_CR1_TE |
 								 USART_CR1_RE;
 //USART_CR1_FIFOEN |
@@ -144,13 +145,17 @@ BOOL xMBPortSerialPutByte( CHAR ucByte )
 				  if ((DTD==ucByte)||(DLE==ucByte))
 				  {	byte_TX_DLE = true;
 						USART2->TDR = DLE;
-						USART1->TDR = DLE;
+#ifdef D_TestOuputToUart1
+ 						USART1->TDR = DLE;
+#endif						
 						btSendArr[txIrqCnt++]=DLE;
 						while(!(USART2->ISR&USART_ISR_TXE_TXFNF));
 						ucBytel=ucBytel-1;
 					};
 					USART2->TDR = ucBytel;
+#ifdef D_TestOuputToUart1
 					USART1->TDR = ucBytel;
+#endif						
 					btSendArr[txIrqCnt++]=ucBytel;
 				break;
 			default:
@@ -257,7 +262,8 @@ void USART1_IRQHandler(void)
 					case PS_Int_BLE_No:
 						break;
 					default:
-						pxMBFrameCBByteReceived();
+						if (USART1_CR1_RXNEIE_Logic)
+					          	pxMBFrameCBByteReceived();
 				}
 			}
 		}

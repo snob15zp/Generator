@@ -23,6 +23,7 @@
 #define Flashat25sf321
 #define SPIFFS
 
+//#define D_TestOuputToUart1
 
 #define D_FileNameLength 32
 #define D_FileNameLengthInFL 32

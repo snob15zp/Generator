@@ -6,6 +6,7 @@
 #include "SuperLoop_Comm2.h"
 #include "port.h"
 #include "mbport.h"
+#include "GlobalKey.h"
 
 //#include "rn4870Model.h"
 
@@ -107,7 +108,9 @@ void USART2_IRQHandler(void)
 								  &&(USART_CR1_RXNEIE_Logic) 
 								   )
 									pxMBFrameCBByteReceived();	
+#ifdef D_TestOuputToUart1									
 								  USART1->TDR=USART2_RDR;
+#endif								
 								  //uart2Tx(&USART2_RDR,1);
 							}	
 						byte_DLE=false;	
