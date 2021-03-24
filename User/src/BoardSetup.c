@@ -9,18 +9,18 @@ Setting up shared resources that are used by multiple software modules
 //for power
 void BoardSetup_InSleep(void)
 {
-	
 	RCC->CR  &= ~(RCC_CR_HSION);                                  // OFF HSI
-  while((RCC->CR & RCC_CR_HSIRDY)){};
+    while((RCC->CR & RCC_CR_HSIRDY)){};
 		
 	__DMB();
 	SysTick->CTRL &= ~SysTick_CTRL_TICKINT_Msk;
 	__DMB();
 };
+
 void BoardSetup_OutSleep(void)
 {
 	 SysTick->CTRL |= SysTick_CTRL_TICKINT_Msk;
-	 BS_LastButtonPress=SystemTicks;
+	 BS_LastButtonPress = SystemTicks;
 };
 
 
@@ -42,9 +42,7 @@ int BSInit(void)
 	
 	
   boardIoPinInit();
-
-
-	return 0;
+  return 0;
 };
 
 uint16_t button_sign;
@@ -54,74 +52,34 @@ extern uint32_t btCurTime;
  
 void SysTick_Handler(void) 
 {
-  static uint32_t ledTick = 0;
-	static uint16_t ss;
-	static uint8_t status=0;	
-	static uint32_t button_new; 
-	static uint16_t	button_old, button_stable_new, button_stable_old;
-	static uint32_t cur_time, stop_time, disp_off_on_time, led_time;
-	static uint8_t disp_on_off_en, led_on;
-	
+    static uint32_t btn_interval;
 	SystemTicks++;
-	cur_time++;
-	led_time++;
-	
-	if(led_time>=1000){
-		led_on=~led_on;
-		led_time=0;
-	}
-	switch(led_on){
-		case 0x00:
-			GPIOB->BSRR = GPIO_BSRR_BR10;
-			break;
-		case 0xFF:
-			GPIOB->BSRR = GPIO_BSRR_BS10;
-			break;
-	}
-//	btCurTime++;
     
-    /*if((SystemTicks % 200) == 0)
+    if((GPIOA->IDR & GPIO_IDR_ID5_Msk) == GPIO_IDR_ID5_Msk) //button is pressed
     {
-        GPIOB->ODR ^= GPIO_ODR_OD10;
+        BS_LastButtonPress = SystemTicks;
+        btn_interval ++;
+        
+        if((SystemTicks % 50) == 0)
+        {
+            GPIOB->ODR ^= GPIO_ODR_OD10;
+        }
     }
-    */
-    
-    
-//	ledTick++;
-//  if (ledTick >= 200)   
-//		{ledTick = 0;
-//		 switch (	status )   // Led Light according to SystemStatus
-//		 {
-//			 case 0: ss++;
-//               GPIOB->ODR ^= GPIO_ODR_OD10;
-//			         if (ss>=2*(SystemStatus+1))
-//							 {ss=0;status=1;};
-//							 break;
-//			 case 1: ss++;
-//               //GPIOB->ODR ^= GPIO_ODR_OD10;
-//			         if (ss>=4)
-//							 {ss=0;status=0;};
-//							 break;
-//       default: status=0;
-//		 };       
-//    }
-  button_new =(GPIOA->IDR)& GPIO_IDR_ID5_Msk ;
-	if (button_new) {BS_LastButtonPress=SystemTicks;};
-	if  (((uint16_t)button_new)==button_old) 
-				button_stable_new =button_new;
-	if(disp_on_off_en){	
-		button_old=button_new;
-		button_sign|=(~button_stable_old)&button_stable_new;
-		button_stable_old=button_stable_new;
-  }
-	
-	if(!button_new) {disp_off_on_time=cur_time;}
-	if((cur_time-disp_off_on_time)>=3000) {disp_on_off_en=1;}
-	else {disp_on_off_en=0;}
-	
-	if(!button_new) {stop_time=cur_time;}
-	if((cur_time-stop_time)>=5000) 
-       {NVIC_SystemReset();}
+    else    // button released
+    {
+        if (btn_interval > 5000)
+        {
+            NVIC_SystemReset();
+        }
+        
+        if(btn_interval > 3000)
+        {
+            button_sign = 1;
+        }
+        
+        GPIOB->ODR &= ~GPIO_ODR_OD10;
+        btn_interval = 0;
+    }
 }
 /*************************************************************************************************************************
 *
@@ -129,21 +87,19 @@ void SysTick_Handler(void)
 *
 **************************************************************************************************************************/
 void delayms(uint16_t count)// delays count  -0/+1 ms
-	{
-	 systemticks_t lt;	 
-   lt=SystemTicks;                                                                                
-   while ((SystemTicks-lt)<=count);                                                                                  
-  }
+{
+   systemticks_t lt = SystemTicks;                                                                                
+   while ((SystemTicks - lt) <= count);                                                                                  
+}
 
 /*************************************************************************************************************************
 *
 *                                          Setup PLL and system clocks
 *
 **************************************************************************************************************************/
-uint32_t setSystemClock(void){
-  uint32_t waitCycle = HSE_READY_DELAY;
-  
-	
+uint32_t setSystemClock(void)
+{
+  uint32_t waitCycle = HSE_READY_DELAY;	
 	RCC->CR |= (RCC_CR_HSION);                                  // ON HSI
   while(!(RCC->CR & (RCC_CR_HSIRDY))){};
 	RCC->CFGR&=~(RCC_CFGR_SW_Msk);                           // togle on HSI

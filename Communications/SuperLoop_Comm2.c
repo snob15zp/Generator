@@ -153,7 +153,6 @@ void on_tx_done_cb(void)
 */
 void tps65987_cb(void)
 {
-    GPIOB->ODR ^= GPIO_ODR_OD10; 
 	  b_UpdateFlag_65987=true;
 }
 
@@ -165,7 +164,6 @@ void tps65987_cb(void)
 */
 void bq28z610_cb(void)
 {
-    GPIOB->ODR ^= GPIO_ODR_OD10;
     b_UpdateFlag_28z610=true;	
 }
 

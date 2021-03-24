@@ -406,6 +406,11 @@ int spiffs_erase_by_ext(const char* ext)
 
 int spiffs_format_flash()
 {
+    
+    if (format_flash_cb != NULL)
+    {
+        format_flash_cb();
+    }
     SPIFFS_unmount(&fs); 
     flash_chip_erase();
     NVIC_SystemReset();
