@@ -441,6 +441,7 @@ void switchSPI1InterfacePinsToPwr(FunctionalState pwrMode)
                       GPIO_MODER_MODE10_Msk);
 		
 		BS_BLE_PinsOnOff( pwrMode);
+//		B_ACC_PinsOnOff(pwrMode)
 		
 		TFT_LED_OFF;
 		PWR_GLOBAL_OFF;
@@ -545,12 +546,15 @@ void B_ACC_PinsOnOff(FunctionalState pwrMode)
 	
   if (pwrMode == DISABLE)
 		{  
-			GPIOB->MODER &=~(GPIO_MODER_MODE8_Msk |GPIO_MODER_MODE9_Msk);//Charger I2C pins set as general purpose input mode 
+			GPIOB->MODER &=~(GPIO_MODER_MODE8_Msk |GPIO_MODER_MODE9_Msk|GPIO_MODER_MODE6_Msk|GPIO_MODER_MODE7_Msk);
+			//Charger I2C pins set as general purpose input mode 
+//			GPIOB->MODER |=GPIO_MODER_MODE6_0|GPIO_MODER_MODE7_0;
+//			GPIOB->BSRR |=GPIO_BSRR_BR6| GPIO_BSRR_BR7;
 		}
 		else
 		{
-			GPIOB->MODER &=~(GPIO_MODER_MODE8_Msk |GPIO_MODER_MODE9_Msk);
-			GPIOB->MODER |= (GPIO_MODER_MODE8_1 | GPIO_MODER_MODE9_1); // Charger I2C pins set as alternative    
+			GPIOB->MODER |=(GPIO_MODER_MODE8_Msk |GPIO_MODER_MODE9_Msk|GPIO_MODER_MODE6_Msk|GPIO_MODER_MODE7_Msk);
+			//GPIOB->MODER |= (GPIO_MODER_MODE8_1 | GPIO_MODER_MODE9_1); // Charger I2C pins set as alternative    
 		};
 };
 

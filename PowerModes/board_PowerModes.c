@@ -111,13 +111,13 @@ void SuperLoop_PowerModes(void)
 					  SLP_state++;
 				break;
 			case 2:
-				    Communication_InSleep();
-				    BoardSetup_InSleep();
+				    Communication_InSleep();//14 mA
+				    BoardSetup_InSleep();//13.5 mA
 			      //DBG->CR|= DBG_CR_DBG_STOP;
-                  enterToStop();
+                  enterToStop();  //13.2 mA
 			      BoardSetup_OutSleep(); 
  			      Communication_OutSleep(); 
-			      SLP_state=3;
+			      SLP_state=3; //13.4mA   9.5mA with USB 0 mA second times
               break;			
 			case 3: //weakup
 						SLAcc_SetSleepState(false);	
@@ -148,7 +148,7 @@ void enterToStop(void)
     
 
     
-//	GPIOB->BSRR = GPIO_BSRR_BS10;
+	GPIOB->BSRR = GPIO_BSRR_BR10; //11.1 mA
 	PWR->CR1 |= PWR_CR1_LPR |	// the regulator is switched from main mode (MR) to low-power mode
 				PWR_CR1_LPMS_0; // select Stop 1 low-power mode
 	__DMB();
@@ -165,11 +165,11 @@ void enterToStop(void)
 	SCB->SCR &= ~SCB_SCR_SLEEPDEEP_Msk; // reset SLEEPDEEP bit of Cortex System Control Register
 	SysTick->CTRL |= SysTick_CTRL_TICKINT_Msk;
 	PWR->CR1 &= ~(PWR_CR1_LPMS_Msk | PWR_CR1_LPR); // the regulator is switched from low-power mode to main mode (MR)
-	setSystemClock();
+	setSystemClock(); //11.3mA
     tim3Init();
 
 
-//	GPIOB->BSRR = GPIO_BSRR_BR10;
+	GPIOB->BSRR = GPIO_BSRR_BS10; //13.4mA
 	NVIC_EnableIRQ(USART1_IRQn);
 	NVIC_EnableIRQ(I2C2_IRQn);
 	NVIC_EnableIRQ(I2C1_IRQn);

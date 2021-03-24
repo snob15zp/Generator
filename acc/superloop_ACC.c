@@ -259,7 +259,7 @@ e_FunctionReturnState A_FSM_SleepTransition(void)
 		 break;
 	 case 1:	 
 		 if (e_FRS_Done==BQ28z610_AltManufacturerAccessCommand(BQ28z610_Command_Sleep,A_FSM_SleepTransition))
-            {maintaskstate++;};
+            {state++;};
 		 break;				
    case 2:
 		 I2c1InSleep();
