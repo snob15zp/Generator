@@ -53,7 +53,6 @@ extern uint32_t btCurTime;
 void SysTick_Handler(void) 
 {
     static uint32_t btn_interval;
-	static uint8_t state;
     SystemTicks++;
     
     if((GPIOA->IDR & GPIO_IDR_ID5_Msk) == GPIO_IDR_ID5_Msk) //button is pressed
@@ -61,33 +60,19 @@ void SysTick_Handler(void)
         BS_LastButtonPress = SystemTicks;
         btn_interval ++;
         
-        if((SystemTicks % 50) == 0)
+        if(btn_interval == 2000)
         {
-            GPIOB->ODR ^= GPIO_ODR_OD10;
-        }
-        
-        if(state == 1 && btn_interval > 3000)
-        {
-            state = 0;
             button_sign = 1;
             btn_interval = 0;
         }
         
-    }
-    else    // button released
-    {
-        if (btn_interval > 5000)
+        if (btn_interval == 5000)
         {
             NVIC_SystemReset();
         }
-        
-        if(state == 0 && btn_interval > 250)
-        {
-            button_sign = 1;
-            state = 1;
-        }
-        
-        GPIOB->ODR &= ~GPIO_ODR_OD10;
+    }
+    else    // button released
+    {
         btn_interval = 0;
     }
 }
@@ -315,6 +300,22 @@ void boardIoPinInit(void){
 									(0x01<<GPIO_AFRH_AFSEL10_Pos);
 									
   
+}
+
+void usart1_deinit()
+{
+    USART1->CR1 = 0;
+    USART1->CR2 = 0;
+    USART1->CR3 = 0;
+    USART1->BRR = 0;
+    USART1->GTPR = 0;
+    USART1->RTOR = 0;
+    USART1->RQR = 0;
+    //isr skiped
+    USART1->ICR = 0;
+    USART1->RDR = 0;
+    USART1->TDR = 0;
+    USART1->PRESC = 0;
 }
 
 /**

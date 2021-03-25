@@ -69,6 +69,7 @@ int main(void)
 #ifdef RELEASE
     __asm(".global __use_no_semihosting\n\t");
     SCB->VTOR = APPLICATION_ADDRESS;
+    usart1_deinit();
     __enable_irq();
 #endif    
   
