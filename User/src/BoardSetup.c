@@ -53,7 +53,8 @@ extern uint32_t btCurTime;
 void SysTick_Handler(void) 
 {
     static uint32_t btn_interval;
-	SystemTicks++;
+	static uint8_t state;
+    SystemTicks++;
     
     if((GPIOA->IDR & GPIO_IDR_ID5_Msk) == GPIO_IDR_ID5_Msk) //button is pressed
     {
@@ -64,6 +65,14 @@ void SysTick_Handler(void)
         {
             GPIOB->ODR ^= GPIO_ODR_OD10;
         }
+        
+        if(state == 1 && btn_interval > 3000)
+        {
+            state = 0;
+            button_sign = 1;
+            btn_interval = 0;
+        }
+        
     }
     else    // button released
     {
@@ -72,9 +81,10 @@ void SysTick_Handler(void)
             NVIC_SystemReset();
         }
         
-        if(btn_interval > 3000)
+        if(state == 0 && btn_interval > 250)
         {
             button_sign = 1;
+            state = 1;
         }
         
         GPIOB->ODR &= ~GPIO_ODR_OD10;
