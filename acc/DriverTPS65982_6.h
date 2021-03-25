@@ -30,7 +30,7 @@ typedef enum {
 	      e_TPS65987_IntEvent1,
 	      e_TPS65987_PowerStatusRegister,
 	      e_TPS65987_BootFlagsRegister,
-//				e_TPS65987_Gaid,
+				e_TPS65987_SleepConfigurationRegister,
 				e_TPS65982_6_NumOfReg
 
 } e_TPS65982_6_Registers;

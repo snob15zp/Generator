@@ -256,18 +256,44 @@ e_FunctionReturnState A_FSM_SleepTransition(void)
 		 {
 		  state++;
 		 }
+		 if (e_FRS_DoneError==wrstate)
+		 {
+		  state=101;
+		 }
 		 break;
 	 case 1:	 
-		 if (e_FRS_Done==BQ28z610_AltManufacturerAccessCommand(BQ28z610_Command_Sleep,A_FSM_SleepTransition))
-            {state++;};
+		 data=(0b101<<8)+1;
+		 wrstate=TPS65982_6_RW(TPS87,  e_TPS65987_SleepConfigurationRegister,(uint8_t*)&data,2,I2C_OP_WRITE,A_FSM_SleepTransition);
+		 if (e_FRS_Done==wrstate)
+		 {
+		  state++;
+		 }
+		 if (e_FRS_DoneError==wrstate)
+		 {
+		  state=101;
+		 }
+		 break;
+	 case 2:	 
+		 wrstate=BQ28z610_AltManufacturerAccessCommand(BQ28z610_Command_Sleep,A_FSM_SleepTransition);
+		 if (e_FRS_Done==wrstate)
+		 {
+		  state++;
+		 }
+		 if (e_FRS_DoneError==wrstate)
+		 {
+		  state=101;
+		 }
 		 break;				
-   case 2:
+   case 3:
 		 I2c1InSleep();
 		 B_ACC_PinsOnOff(DISABLE); 
 	   state=0;
 	   rstatel=e_FRS_Done;
 	   break;
-		
+		case 101://error
+	   state=0;
+	   rstatel=e_FRS_DoneError;
+     break;
    default: state=0;
 	};
 	

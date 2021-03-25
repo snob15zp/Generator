@@ -53,7 +53,7 @@ const t_I2c16InitData TPS65982_6InitData[e_TPS65982_6_NumOfReg]=
 		{{I2C_OP_WRITE,0x14,		1,11+1},0},//e_TPS65987_IntEvent1   TPS659827 // 11 bytes
 		{{I2C_OP_READ, 0x3f,		1,2+1},0},//e_TPS65987_PowerStatusRegister
 		{{I2C_OP_READ, 0x2D,		1,12+1},0},//e_TPS65987_BootFlagsRegister
-	
+		{{I2C_OP_WRITE, 0x70,		1,1+1},(0b101<<8)+1},// e_TPS65987_SleepConfigurationRegister,TPS659827 //1
 };
 
 const t_TPS_CMD TPS_CMD[e_TPS_CMD_NumOfEl]=
