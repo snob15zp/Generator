@@ -67,7 +67,8 @@ void vMBPortSerialEnable( BOOL xRxEnable, BOOL xTxEnable )
 						USART2->CR1 &= ~USART_CR1_TXEIE_TXFNFIE;			
 					}
 				break;
-			default:
+			case PS_Int_USB:
+			case PS_Int_USB_No:	
 					if( xRxEnable )
 					{
 						USART1_CR1_RXNEIE_Logic=true;
@@ -84,6 +85,8 @@ void vMBPortSerialEnable( BOOL xRxEnable, BOOL xTxEnable )
 					{
 						USART1->CR1 &= ~USART_CR1_TXEIE_TXFNFIE;			
 					}
+					break;
+			default:;
 		}
 }
 
@@ -158,8 +161,11 @@ BOOL xMBPortSerialPutByte( CHAR ucByte )
 #endif						
 					btSendArr[txIrqCnt++]=ucBytel;
 				break;
-			default:
+			case PS_Int_USB:
+			case PS_Int_USB_No:	
 					USART1->TDR = ucByte;
+			break;
+	  	default:;
 		}
     return TRUE;
 }
@@ -176,8 +182,12 @@ BOOL xMBPortSerialGetByte( CHAR *pucByte )
 			case PS_Int_BLE_No:	
 				  *pucByte = USART2_RDR;// todo ??????
 				break;
-			default:
-					*pucByte = (CHAR)USART1->RDR;
+			case PS_Int_USB:
+			case PS_Int_USB_No:	
+					*pucByte = (CHAR)USART1->RDR;				
+      break;			
+			default:;
+
 		}
     return TRUE;
 }
@@ -243,8 +253,11 @@ void USART1_IRQHandler(void)
           case PS_Int_BLE:
 					case PS_Int_BLE_No:						
 						break;
-					default:
+			case PS_Int_USB:
+			case PS_Int_USB_No:	
 						pxMBFrameCBTransmitterEmpty();
+			     break;
+					default:;
 				}
 					return;
       }	
@@ -261,9 +274,12 @@ void USART1_IRQHandler(void)
 					case PS_Int_BLE:
 					case PS_Int_BLE_No:
 						break;
-					default:
+					case PS_Int_USB:
+					case PS_Int_USB_No:	
 						if (USART1_CR1_RXNEIE_Logic)
 					          	pxMBFrameCBByteReceived();
+						break;
+					default:;
 				}
 			}
 		}

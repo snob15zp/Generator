@@ -18,7 +18,7 @@ static systemticks_t MODBUScommLastTimel;
 static systemticks_t lastIrqTime=-(2*D_BL_Packet_Pause);
 static systemticks_t lastUSBTime=-(2*D_USB_Packet_Pause);
 
-e_PS_Int PS_Int;
+e_PS_Int PS_Int=PS_Int_USB;
 bool byte_TX_DLE;
 bool isUSBint;
 
@@ -132,18 +132,20 @@ void on_tx_done_cb(void)
   
 	switch (PS_Int)// swith Android/USB
 	{
+		case PS_Int_USB_No:
 		case PS_Int_USB:
-			 	lastUSBTime=SystemTicks-D_USB_Packet_Pause;
+			 	lastUSBTime=SystemTicks-2*D_USB_Packet_Pause;
 				isUSBint=false;	
 			break;	
 		 case PS_Int_BLE:
-				lastIrqTime=SystemTicks-D_BL_Packet_Pause;
+		 case PS_Int_BLE_No:	 
+				lastIrqTime=SystemTicks-2*D_BL_Packet_Pause;
 		    isBLEint=false;
 			break;
 		 default: ;
 	 };
 	
-	 MODBUScommLastTimel=SystemTicks-USBcommPause;	//swith FilesExchainge/generation
+	 MODBUScommLastTimel=SystemTicks-2*USBcommPause;	//swith FilesExchainge/generation
   
 }
 
@@ -346,7 +348,8 @@ void SLBL(void)
 				{ PS_Int=PS_Int_USB; 
 				}	
 				if ((SystemTicks-lastIrqTime) < D_BL_Packet_Pause)
-				{	eMBDisable();
+				{	PS_Int=PS_Int_No;
+					eMBDisable();
 					PS_Int=PS_Int_BLE_No;
 					eMBEnable();
 				};					
@@ -359,7 +362,8 @@ void SLBL(void)
 				if ((SystemTicks-lastIrqTime) < D_BL_Packet_Pause) // Exit BLE mode by pause
           PS_Int=PS_Int_BLE;
 				if ((SystemTicks-lastUSBTime )< (D_USB_Packet_Pause))
-				{	eMBDisable();
+				{	PS_Int=PS_Int_No;
+					eMBDisable();
 					PS_Int=PS_Int_USB_No;
 					eMBEnable();
 				};					
