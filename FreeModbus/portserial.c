@@ -30,6 +30,9 @@
 #include "mb.h"
 #include "mbport.h"
 
+
+uint8_t USART1_RDR;
+
 unsigned long Time_Cycle = 0;   
 
 bool USART1_CR1_RXNEIE_Logic;
@@ -184,10 +187,9 @@ BOOL xMBPortSerialGetByte( CHAR *pucByte )
 				break;
 			case PS_Int_USB:
 			case PS_Int_USB_No:	
-					*pucByte = (CHAR)USART1->RDR;				
+					*pucByte = USART1_RDR;				
       break;			
 			default:;
-
 		}
     return TRUE;
 }
@@ -237,6 +239,10 @@ CHAR data;
 
 
 
+uint8_t usbChRx;
+uint8_t usbRxArr[256];
+uint8_t rxUSBCnt;
+
 
 #ifdef MODBUS
 void USART1_IRQHandler(void)
@@ -265,6 +271,9 @@ void USART1_IRQHandler(void)
 	
 		if (USART1->ISR & USART_ISR_RXNE_RXFNE) 
 		{
+			usbChRx=USART1->RDR;
+		  usbRxArr[rxUSBCnt]=usbChRx;
+		  rxUSBCnt++;//&0xff
 			USART1->ICR |= USART_ICR_ORECF;
 			if (USART1->CR1 & USART_CR1_RXNEIE_RXFNEIE)
 			{
@@ -277,7 +286,10 @@ void USART1_IRQHandler(void)
 					case PS_Int_USB:
 					case PS_Int_USB_No:	
 						if (USART1_CR1_RXNEIE_Logic)
-					          	pxMBFrameCBByteReceived();
+						{
+							USART1_RDR=usbChRx;
+					    pxMBFrameCBByteReceived();
+						}
 						break;
 					default:;
 				}

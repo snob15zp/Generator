@@ -202,16 +202,22 @@ extern void SLC(void)
 			break;
 		case SLC_FSM_InitComms:
 			if ((!bVSYS))
-  		state_inner=SLC_FSM_InitialWaitSupply;
+			{
+				state_inner=SLC_FSM_InitialWaitSupply;
+				break;
+			}
 			PM_OnOffPWR(PM_Communication,true );
 			spiffs_init();
 		  SL_CommModbusInit();
 			btInit();
 		  state_inner=SLC_FSM_Init28z610;
-			break;
+			//break;
 		case SLC_FSM_Init28z610:
 			if ((!bVSYS))
-				state_inner=SLC_FSM_InitialWaitSupply;			
+			{	
+				state_inner=SLC_FSM_InitialWaitSupply;	
+        break;
+		  }			
 			if (b_UpdateFlag_28z610)
 			{
 				if (BQ28z610_DriverState())
@@ -225,15 +231,19 @@ extern void SLC(void)
         else				
 				{ SetStatusString("Update 28z610 err");
 				}
+				state_inner=SLC_FSM_Init65987;
 			}
       else
 			{
 				br_28z610=true;
 				state_inner=SLC_FSM_Init65987;
 			}			
+			//break;
  		case SLC_FSM_Init65987:
 			if ((!bVSYS))
-				state_inner=SLC_FSM_InitialWaitSupply;
+			{state_inner=SLC_FSM_InitialWaitSupply;
+			 break;
+			};
 			if (b_UpdateFlag_65987)
 			{
 				if (TPS6598x_DriverState())
@@ -246,6 +256,7 @@ extern void SLC(void)
         else				
 				{ SetStatusString("Update 65987 err");
 				}
+				state_inner=SLC_FSM_InitFiles;
 			}
       else
 			{
@@ -258,24 +269,28 @@ extern void SLC(void)
 //			readDataFromFile();
 //			tpsFlashUpdate();
 //			state_inner=SLC_FSM_InitFiles;
+			//break;
 		case SLC_FSM_InitFiles:
 			if ((!bVSYS))
-  		state_inner=SLC_FSM_InitialWaitSupply;
+			  {state_inner=SLC_FSM_InitialWaitSupply;
+					break;
+				}
 			  File_List=SPIFFS_open(&fs,"freq.pls",SPIFFS_O_RDONLY,0);
 				SLPl_InitFiles();
 		    state_inner=SLC_FSM_CommAbsent;
-			break;
+			//break;
 		case SLC_FSM_CommAbsent: //
 			if ((!bVSYS))
-  		state_inner=SLC_FSM_InitialWaitSupply;
-
+			  {state_inner=SLC_FSM_InitialWaitSupply;
+					break;
+				}
 			  SL_CommModbus();
 		    SLBL();//
 				if (SLC_GoToSleep)
 				   {
 						SPIFFS_close(&fs, File_List);
+						 //unmount
 					  PM_OnOffPWR(PM_Communication,false);
-						//unmount
 						state_inner=SLC_FSM_Sleep;
 					 }						 
 						 
@@ -292,7 +307,9 @@ extern void SLC(void)
       break;
 		case SLC_FSM_OffPlayerTransition: // on
 			if ((!bVSYS))
-  		state_inner=SLC_FSM_InitialWaitSupply;
+			  {state_inner=SLC_FSM_InitialWaitSupply;
+					break;
+				}
 
 			SL_CommModbus();
 		    SLBL();
@@ -304,8 +321,9 @@ extern void SLC(void)
 			break;
 		case SLC_FSM_USBCommunication: 
 			if ((!bVSYS))
-  		state_inner=SLC_FSM_InitialWaitSupply;
-
+			  {state_inner=SLC_FSM_InitialWaitSupply;
+					break;
+				}
 			SL_CommModbus();
 		   SLBL();
 		  MODBUScommLastTimel=MODBUScommLastTime;
