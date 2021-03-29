@@ -247,7 +247,6 @@ uint8_t rxUSBCnt;
 #ifdef MODBUS
 void USART1_IRQHandler(void)
 {
-	  isUSBint =true; 
     if  (USART1->ISR & USART_ISR_TXE_TXFNF) 
 		{	USART1->ICR |= USART_ICR_TXFECF; 
 			USART1->RQR |= USART_RQR_TXFRQ;
@@ -270,7 +269,7 @@ void USART1_IRQHandler(void)
 		}
 	
 		if (USART1->ISR & USART_ISR_RXNE_RXFNE) 
-		{
+		{ isUSBint =true;
 			usbChRx=USART1->RDR;
 		  usbRxArr[rxUSBCnt]=usbChRx;
 		  rxUSBCnt++;//&0xff

@@ -100,7 +100,7 @@ void USART2_IRQHandler(void)
   						else
 							{	USART2_RDR=btChRx;
 								if (byte_DLE)
-								{isBLEint=true;
+								{
 										USART2_RDR++;
 								}
 								if (((PS_Int_BLE==PS_Int)||(PS_Int_BLE_No==PS_Int))
