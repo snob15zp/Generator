@@ -65,7 +65,7 @@ void SysTick_Handler(void)
             button_sign = 1;
         }
         
-        if (btn_interval == 5000)
+        if (btn_interval == 10000)
         {
             NVIC_SystemReset();
         }
