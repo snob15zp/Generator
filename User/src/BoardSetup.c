@@ -63,7 +63,6 @@ void SysTick_Handler(void)
         if(btn_interval == 2000)
         {
             button_sign = 1;
-            btn_interval = 0;
         }
         
         if (btn_interval == 5000)
