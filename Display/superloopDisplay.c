@@ -458,7 +458,7 @@ static void createButtons(void) {
 	wi.g.height = 60;
 	wi.g.y = 20;
 	wi.g.x = 195;
-	wi.text = "Prew";
+	wi.text = "Prev";
 	ghButton3 = gwinButtonCreate(0, &wi);
 	
 	// Apply the NEXT button parameters
@@ -477,9 +477,9 @@ static void createLabels(void) {
 	gwinWidgetClearInit(&wi);
 	wi.g.show = gTrue;
 	
-	wi.g.width = 110; wi.g.height = 20; wi.g.x = 120, wi.g.y = 170;
+	wi.g.width = 115; wi.g.height = 20; wi.g.x = 120, wi.g.y = 170;
 //	wi.text = "Self test: OK";
-	wi.text = "Init system,pls wite";
+	wi.text = "Sys init,pls wait";
 	ghLabel3 = gwinLabelCreate(0,&wi);
 //	gwinLabelSetAttribute(ghLabel3,100,"Self test:");
 	
@@ -702,7 +702,7 @@ gfxInit();
 
 
 	// Set the widget defaults
-	gwinSetDefaultFont(gdispOpenFont("U11"));
+	gwinSetDefaultFont(gdispOpenFont("DejaVuSans12"));
 	gwinSetDefaultStyle(&WhiteWidgetStyle, gFalse);
 	gdispClear(GFX_WHITE);
 

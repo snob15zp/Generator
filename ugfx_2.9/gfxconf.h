@@ -96,13 +96,13 @@
 //    #define GDISP_NEED_TEXT_BOXPADLR                 1
 //    #define GDISP_NEED_TEXT_BOXPADTB                 1
 //    #define GDISP_NEED_ANTIALIAS                     GFXOFF
-//    #define GDISP_NEED_UTF8                          GFXOFF
+    #define GDISP_NEED_UTF8                          GFXON
 //    #define GDISP_NEED_TEXT_KERNING                  GFXOFF
 //    #define GDISP_INCLUDE_FONT_UI1                   GFXOFF
     #define GDISP_INCLUDE_FONT_UI2                   GFXON		// The smallest preferred font.
 //    #define GDISP_INCLUDE_FONT_LARGENUMBERS          GFXOFF
 //    #define GDISP_INCLUDE_FONT_DEJAVUSANS10          GFXOFF
-//    #define GDISP_INCLUDE_FONT_DEJAVUSANS12          GFXOFF
+#define GDISP_INCLUDE_FONT_DEJAVUSANS12          GFXON
 //    #define GDISP_INCLUDE_FONT_DEJAVUSANS16          GFXOFF
 //    #define GDISP_INCLUDE_FONT_DEJAVUSANS20          GFXOFF
 //    #define GDISP_INCLUDE_FONT_DEJAVUSANS24          GFXOFF
