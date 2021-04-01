@@ -25,9 +25,9 @@
 
 //#define D_TestOuputToUart1
 
-#define D_FileNameLength 32
-#define D_FileNameLengthInFL 32
-#define D_FN_Max_Length 28
+#define D_FileNameLengthFS 32 //file system
+#define D_FileNameLengthD 64  //display
+//#define D_FN_Max_Length 28
 extern const char FN_Read_Template[];
 
 void Error(char* s);

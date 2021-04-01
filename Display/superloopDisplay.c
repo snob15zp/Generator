@@ -112,7 +112,8 @@ void fileListInitStart(void);
 static bool bListUpdate;
 static uint8_t FSM_fileListUpdate_state;
 //static s32_t File_List;
-static uint8_t filename[D_FileNameLength+1];
+static uint8_t filename[D_FileNameLengthD+1];
+static uint8_t filename1[D_FileNameLengthD+1];
 static uint8_t fileCount;
 static uint32_t offset;
 static bool bListUpdate1;
@@ -616,14 +617,43 @@ void fileListInitStart(void)
 	FSM_fileListUpdate_state=0;
 };
 
+e_FunctionReturnState fileNameRead(uint16_t filenum)
+{	e_FunctionReturnState rstate;
+	char byteBuff[D_FileNameLengthD+1];
+	int8_t bytesCount;
+	uint32_t offset;
 
+	rstate=e_FRS_Processing;
+
+	offset=filenum*D_FileNameLengthD;
+	SPIFFS_lseek(&fs, File_List,offset,SPIFFS_SEEK_SET);
+
+	bytesCount=SPIFFS_read(&fs, File_List, &byteBuff, D_FileNameLengthD);
+	if (bytesCount<1)
+	{	
+		return e_FRS_DoneError;
+	}
+	else					
+	{ 
+		_sscanf( byteBuff,FN_Read_Template,filename1);                        //change if chainge D_FileNameLength
+		if (0<strlen(byteBuff))
+		{		
+			return e_FRS_Done;
+		}
+		else
+		{
+			return e_FRS_DoneError;
+		}
+	}		
+	return rstate;
+}
 
 
 uint16_t a;
 
 e_FunctionReturnState fileListRead(void)
 {	e_FunctionReturnState rstate;
-	char byteBuff[D_FileNameLength+1];
+	char byteBuff[D_FileNameLengthD+1];
 	int8_t bytesCount;
   uint32_t i;	
 	uint32_t offset;
@@ -640,7 +670,7 @@ e_FunctionReturnState fileListRead(void)
 	     // gfxSleepMilliseconds(1);
 //		  File_List=SPIFFS_open(&fs,"freq.pls",SPIFFS_O_RDONLY,0);
 		  fileCount=0;
-		  offset=D_StringInList*CurrentPage*D_FileNameLengthInFL;
+		  offset=D_StringInList*CurrentPage*D_FileNameLengthD;
 		  //gwinListDeleteAll(ghList1);
 		  SPIFFS_lseek(&fs, File_List,offset,SPIFFS_SEEK_SET);
 		  FSM_fileListUpdate_state++;
@@ -648,7 +678,8 @@ e_FunctionReturnState fileListRead(void)
 		case 1: 
       while(1){
 				if(fileCount<10){
-					bytesCount=SPIFFS_read(&fs, File_List, &byteBuff, D_FileNameLengthInFL);
+					bytesCount=SPIFFS_read(&fs, File_List, &byteBuff, D_FileNameLengthD);
+					a=bytesCount;//for debug
 					if (bytesCount<1)
 					{	FSM_fileListUpdate_state=101;
 						break;
@@ -921,7 +952,8 @@ int SLDw(void)
 	      if ((fpgaFlags.endOfFile==1)||(PlStateOld!=Get_SLPl_FSM_State()))
         	{
         		DisplaySelectedFile(playFileSector);
-						gwinSetText(ghLabel5,SLPl_filenameWOE,gFalse);
+						fileNameRead(playFileSector);
+						gwinSetText(ghLabel5,(char*)filename1,gFalse);//
         		fpgaFlags.endOfFile=0;
         	}
 			

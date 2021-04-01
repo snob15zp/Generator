@@ -1,7 +1,7 @@
 #include "GlobalKey.h"
 #include "string.h"
 
-const char FN_Read_Template[]="%26s";
+const char FN_Read_Template[]="%52s";
 
 char ErrorMess[50];
 
