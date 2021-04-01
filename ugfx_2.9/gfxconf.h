@@ -96,19 +96,19 @@
 //    #define GDISP_NEED_TEXT_BOXPADLR                 1
 //    #define GDISP_NEED_TEXT_BOXPADTB                 1
 //    #define GDISP_NEED_ANTIALIAS                     GFXOFF
-    #define GDISP_NEED_UTF8                          GFXON
+#define GDISP_NEED_UTF8                          GFXON
 //    #define GDISP_NEED_TEXT_KERNING                  GFXOFF
 //    #define GDISP_INCLUDE_FONT_UI1                   GFXOFF
-    #define GDISP_INCLUDE_FONT_UI2                   GFXON		// The smallest preferred font.
+//    #define GDISP_INCLUDE_FONT_UI2                   GFXON		// The smallest preferred font.
 //    #define GDISP_INCLUDE_FONT_LARGENUMBERS          GFXOFF
-//    #define GDISP_INCLUDE_FONT_DEJAVUSANS10          GFXOFF
-#define GDISP_INCLUDE_FONT_DEJAVUSANS12          GFXON
+#define GDISP_INCLUDE_FONT_DEJAVUSANS10          GFXON
+//    #define GDISP_INCLUDE_FONT_DEJAVUSANS12          GFXOFF
 //    #define GDISP_INCLUDE_FONT_DEJAVUSANS16          GFXOFF
 //    #define GDISP_INCLUDE_FONT_DEJAVUSANS20          GFXOFF
 //    #define GDISP_INCLUDE_FONT_DEJAVUSANS24          GFXOFF
 //    #define GDISP_INCLUDE_FONT_DEJAVUSANS32          GFXOFF
 //    #define GDISP_INCLUDE_FONT_DEJAVUSANSBOLD12      GFXOFF
-    #define GDISP_INCLUDE_FONT_FIXED_10X20           GFXON
+#define GDISP_INCLUDE_FONT_FIXED_10X20           GFXON
 //    #define GDISP_INCLUDE_FONT_FIXED_7X14            GFXOFF
 //    #define GDISP_INCLUDE_FONT_FIXED_5X8             GFXOFF
 //    #define GDISP_INCLUDE_FONT_DEJAVUSANS12_AA       GFXOFF
@@ -117,7 +117,7 @@
 //    #define GDISP_INCLUDE_FONT_DEJAVUSANS24_AA       GFXOFF
 //    #define GDISP_INCLUDE_FONT_DEJAVUSANS32_AA       GFXOFF
 //    #define GDISP_INCLUDE_FONT_DEJAVUSANSBOLD12_AA   GFXOFF
-//    #define GDISP_INCLUDE_USER_FONTS                 GFXOFF
+#define GDISP_INCLUDE_USER_FONTS                 GFXON
 
 #define GDISP_NEED_IMAGE                             GFXON
 //    #define GDISP_NEED_IMAGE_NATIVE                  GFXOFF
