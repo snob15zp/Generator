@@ -700,9 +700,8 @@ int SLD_DisplInit(void)
 GFXPreinit();	
 gfxInit();	
 
-
 	// Set the widget defaults
-	gwinSetDefaultFont(gdispOpenFont("U11"));
+	gwinSetDefaultFont(gdispOpenFont("Roboto_Light12"));
 	gwinSetDefaultStyle(&WhiteWidgetStyle, gFalse);
 	gdispClear(GFX_WHITE);
 
