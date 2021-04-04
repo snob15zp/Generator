@@ -25,6 +25,7 @@
 #include "SuperLoop_Player.h"
 #include "romfs_files.h"
 #include "SL_CommModbus.h"
+#include "version.h"
 
 //extern uint16_t SLPl_ui16_NumOffiles;
 
@@ -323,7 +324,7 @@ int SLD_DisplReInit(void)
 ////------------------------Display control objects--------------------------------------------
 GListener	gl;
 GHandle	ghLabel1, ghLabel2, ghLabel3, ghLabel4, ghLabel5, ghLabel6, ghLabel7;
-GHandle ghLabel8, ghLabel9, ghLabel10, ghLabel11, ghLabel12,ghLabel13_RSOC;
+GHandle ghLabel8, ghLabel9, ghLabel10, ghLabel11, ghLabel12,ghLabel13_RSOC, ghLabel14, ghLabelVersion;
 GHandle	ghList1;
 GHandle ghImage1;
 GHandle ghProgBarWin;
@@ -478,49 +479,49 @@ static void createLabels(void) {
 	gwinWidgetClearInit(&wi);
 	wi.g.show = gTrue;
 	
-	wi.g.width = 115; wi.g.height = 20; wi.g.x = 120, wi.g.y = 170;
+	wi.g.width = 115; wi.g.height = 20; wi.g.x = 120, wi.g.y = 155;
 //	wi.text = "Self test: OK";
 	wi.text = "Sys init,pls wait";
 	ghLabel3 = gwinLabelCreate(0,&wi);
 //	gwinLabelSetAttribute(ghLabel3,100,"Self test:");
 	
-	wi.g.width = 110; wi.g.height = 20; wi.g.x = 10, wi.g.y = 170;
+	wi.g.width = 110; wi.g.height = 20; wi.g.x = 10, wi.g.y = 155;
 	wi.text = "Self test:";
 	ghLabel8 = gwinLabelCreate(0, &wi);
 	
-	wi.g.width = 110; wi.g.height = 20; wi.g.x = 120, wi.g.y = 190;
+	wi.g.width = 110; wi.g.height = 20; wi.g.x = 120, wi.g.y = 173;
 	wi.text = "Stop";
 	ghLabel4 = gwinLabelCreate(0, &wi);
 //	gwinLabelSetAttribute(ghLabel4,100,"Status:");
 	
-	wi.g.width = 110; wi.g.height = 20; wi.g.x = 10, wi.g.y = 190;
+	wi.g.width = 110; wi.g.height = 20; wi.g.x = 10, wi.g.y = 173;
 	wi.text = "Status:";
 	ghLabel9 = gwinLabelCreate(0, &wi);
 	
-	wi.g.width = 110; wi.g.height = 20; wi.g.x = 120, wi.g.y = 210;
+	wi.g.width = 110; wi.g.height = 20; wi.g.x = 120, wi.g.y = 191;
 	wi.text = "Not selected";
 	ghLabel5 = gwinLabelCreate(0, &wi);
 //	gwinLabelSetAttribute(ghLabel5,100,"Program:");
 
-	wi.g.width = 110; wi.g.height = 20; wi.g.x = 10, wi.g.y = 210;
+	wi.g.width = 110; wi.g.height = 20; wi.g.x = 10, wi.g.y = 191;
 	wi.text = "Program:";
 	ghLabel10 = gwinLabelCreate(0, &wi);
 	
-	wi.g.width = 110; wi.g.height = 20; wi.g.x = 120, wi.g.y = 230;
+	wi.g.width = 110; wi.g.height = 20; wi.g.x = 120, wi.g.y = 209;
 	wi.text = "00:00:00";
 	ghLabel6 = gwinLabelCreate(0, &wi);
 //	gwinLabelSetAttribute(ghLabel6,100,"Program timer:");
 
-	wi.g.width = 110; wi.g.height = 20; wi.g.x = 10, wi.g.y = 230;
+	wi.g.width = 110; wi.g.height = 20; wi.g.x = 10, wi.g.y = 209;
 	wi.text = "Program timer:";
 	ghLabel11 = gwinLabelCreate(0, &wi);
 	
-	wi.g.width = 110; wi.g.height = 20; wi.g.x = 120, wi.g.y = 250;
+	wi.g.width = 110; wi.g.height = 20; wi.g.x = 120, wi.g.y = 227;
 	wi.text = "00:00:00";
 	ghLabel7 = gwinLabelCreate(0, &wi);
 //	gwinLabelSetAttribute(ghLabel7,100,"Total timer:");
 
-	wi.g.width = 110; wi.g.height = 20; wi.g.x = 10, wi.g.y = 250;
+	wi.g.width = 110; wi.g.height = 20; wi.g.x = 10, wi.g.y = 227;
 	wi.text = "Total timer:";
 	ghLabel12 = gwinLabelCreate(0, &wi);
 
@@ -528,7 +529,18 @@ static void createLabels(void) {
 	wi.text = "  --%";
 	ghLabel13_RSOC = gwinLabelCreate(0, &wi);
 
-	
+
+	wi.g.width = 110; wi.g.height = 20; wi.g.x = 10, wi.g.y = 245;
+	wi.text = "Version:";
+	ghLabel14 = gwinLabelCreate(0, &wi);
+
+    static char versionString[32] = {}; 
+    snprintf(versionString, sizeof(versionString), "%d.%d.%d", 
+            *((uint8_t *)FLASH_VERSION_ADDRESS), *((uint8_t *)FLASH_VERSION_ADDRESS + 1), *((uint8_t *)FLASH_VERSION_ADDRESS + 2));
+        
+    wi.g.width = 110; wi.g.height = 20; wi.g.x = 120, wi.g.y = 245;
+	wi.text = versionString;
+    ghLabelVersion = gwinLabelCreate(0, &wi);
 }
 
 
