@@ -103,6 +103,7 @@ int SLDw(void);
 void displayACC(void);
 int SLDwACC(void);
 void DisplayBatteryStatus(void);
+void DisplaySelectedFile(uint32_t n);
 //------------------------FSM control--------------------------------------------
 int SLD_DisplInit(void);
 int SLD_DisplReInit(void);
@@ -126,6 +127,7 @@ static bool bListUpdate1;
 */
 void on_playlist_write_done()
 {
+	playFileSector=0;
 	bListUpdate=true;
 }
 
@@ -166,6 +168,7 @@ int SLD(void)
 				SLD_DisplReInit();
 		    bListUpdate=true;
 		    gfxSleepMilliseconds(10); 
+		    DisplaySelectedFile(playFileSector);
 		    state_inner=SLD_FSM_On;
       break;
 		case SLD_FSM_On: // on
@@ -210,12 +213,14 @@ int SLD(void)
 							gwinListAddItem(ghList1, (char*)filename, gTrue);	
 						if (e_FRS_DoneError==rstatel)
 							state_inner=SLD_FSM_On;	
+						  DisplaySelectedFile(playFileSector);
 							bListUpdate1=false;
 							gfxSleepMilliseconds(10); 
 					}
 				}
 				else 
-				{	state_inner=SLD_FSM_On;	
+				{	
+					state_inner=SLD_FSM_On;	
 				};	
 //				while (e_FRS_DoneError!=rstatel);
       break;	

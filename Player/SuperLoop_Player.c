@@ -300,7 +300,7 @@ void fpgaConfig(void)											//
 }
 
 //extern uint8_t fileName[50];
-uint16_t fileSect=0;
+//uint16_t fileSect=0;
 uint16_t playFileSector;
 
 void timeToString(uint8_t* timeArr)
