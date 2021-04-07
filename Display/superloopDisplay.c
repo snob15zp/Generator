@@ -210,12 +210,14 @@ int SLD(void)
 					{
 						rstatel=fileListRead();
 						if (e_FRS_Done==rstatel)
-							gwinListAddItem(ghList1, (char*)filename, gTrue);	
+						{	gwinListAddItem(ghList1, (char*)filename, gTrue);	
+						  gfxSleepMilliseconds(10);
+						};
 						if (e_FRS_DoneError==rstatel)
-							state_inner=SLD_FSM_On;	
+						{	state_inner=SLD_FSM_On;	
 						  DisplaySelectedFile(playFileSector);
 							bListUpdate1=false;
-							gfxSleepMilliseconds(10); 
+						}	
 					}
 				}
 				else 
@@ -624,7 +626,7 @@ static void createProgBar(void)
 }
 
 //--------------------END Create uGFX Objects------------------------
-#define D_StringInList 10
+#define D_StringInList 7
 static uint32_t CurrentPage;
 
 void fileListInitStart(void)
@@ -694,7 +696,7 @@ e_FunctionReturnState fileListRead(void)
 		  break;
 		case 1: 
       while(1){
-				if(fileCount<10){
+				if(fileCount<D_StringInList){
 					bytesCount=SPIFFS_read(&fs, File_List, &byteBuff, D_FileNameLengthD);
 					a=bytesCount;//for debug
 					if (bytesCount<1)
@@ -829,21 +831,19 @@ void FileListUpDown()
 	if (ButtonFlags.fileListDown)	//prev 10 files
 			{ 
 				ButtonFlags.fileListDown=0;
-				if ((((CurrentPage+1)*D_StringInList)>=(SLPl_ui16_NumOffiles))
-				   )
-				{}
-					else
-					{
-  					CurrentPage++;
-            bListUpdate=true;
-					};
-			}
+				playFileSector+=D_StringInList;
+				if (playFileSector>=SLPl_ui16_NumOffiles)
+					  playFileSector=SLPl_ui16_NumOffiles-1;
+				if (0==SLPl_ui16_NumOffiles)
+					  playFileSector=0;
+				DisplaySelectedFile(playFileSector);
+		 };
+			
 			if (ButtonFlags.fileListUp)	//next 10 files
 			{ ButtonFlags.fileListUp=0;
-				if (CurrentPage>0)
-				{
-  					CurrentPage--;
-            bListUpdate=true;
+				if (playFileSector>=D_StringInList)
+				{playFileSector-=D_StringInList;
+  			 DisplaySelectedFile(playFileSector);
 				};
 			};
 }
