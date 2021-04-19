@@ -10,9 +10,10 @@
 #include "SuperLoop_Comm2.h"
 
 //#define SLP_WakeUpPause 500
-
+#define D_timeForButton 5000
 //static systemticks_t SLP_LastUpdateTime;
 static uint8_t SLP_state;
+static systemticks_t timeoutsleep;
 //static bool SLP_sleep;
 //static bool SLP_WakeUP;
 
@@ -104,16 +105,29 @@ void SuperLoop_PowerModes(void)
 				     ) 
 					  SLP_state++;
 				break;
-			case 2:
+			case 2://prepare sleep, stage A
 				    Communication_InSleep();//14 mA
+			      SLP_state=3;
+              break;		
+      case 3://prepare sleep, stage B		
 				    BoardSetup_InSleep();//13.5 mA
 			      //DBG->CR|= DBG_CR_DBG_STOP;
-                  enterToStop();  //13.2 mA
+            enterToStop();  //13.2 mA
 			      BoardSetup_OutSleep(); 
+			      timeoutsleep=SystemTicks;
+			      SLP_state=4;
+			      //break;
+			case 4:// 	weakup, stage B
+				    if (button_sign) 
+							SLP_state=5; 
+			      if ((Get_button_interval()==0) && (D_timeForButton <(SystemTicks-timeoutsleep))) 
+							SLP_state=3;
+			      break;
+			case 5: //weakup stage A
  			      Communication_OutSleep(); 
-			      SLP_state=3; //13.4mA   9.5mA with USB 0 mA second times
-              break;			
-			case 3: //weakup
+			      SLP_state=6; //13.4mA   9.5mA with USB 0 mA second times
+		        //break;
+			case 6: //weakup 
 						SLAcc_SetSleepState(false);	
             SLD_SetSleepState(false);	
             SLPl_SetSleepState(false);	

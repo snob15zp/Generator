@@ -117,7 +117,7 @@ int SL_CommModbus(void)
 int SL_CommModbusInit(void)
 {
     eMBErrorCode eStatus;
-	eStatus = eMBInit( MB_RTU, 0x0A, 0, 15200UL, MB_PAR_NONE );
+	eStatus = eMBInit( MB_RTU, 0x0A, 0, 115200UL, MB_PAR_NONE );
     eStatus = eMBEnable();	
     return 0;
 }

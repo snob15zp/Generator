@@ -860,8 +860,8 @@ void DisplayPlayStop()
 
 void on_format_flash()
 {					
-    SetStatusString("Formatting FS. Please wait");
-	gfxSleepMilliseconds(10);
+  SetStatusString("Formatting FS. Please wait");
+	//gfxSleepMilliseconds(10);
 }
 
 

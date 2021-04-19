@@ -96,8 +96,10 @@ extern uint8_t  SystemStatus;
 void usart1_deinit();
 		
 //for power
+extern uint32_t Get_button_interval(void);
 extern void BoardSetup_InSleep(void);
 extern void BoardSetup_OutSleep(void);
+
 		
 extern int BSInit(void);		
 extern uint32_t setSystemClock(void);

@@ -5,8 +5,24 @@ Setting up shared resources that are used by multiple software modules
 #include "stm32g0xx.h"
 #include "BoardSetup.h"
 
+static uint32_t btn_interval;
+uint16_t button_sign;
+
+extern uint32_t btCurTime;
+
+uint8_t SystemStatus;
+
+volatile systemticks_t SystemTicks;
+volatile systemticks_t BS_LastButtonPress;
+
+//
+uint32_t Get_button_interval(void)
+{
+  return btn_interval;
+}
 
 //for power
+
 void BoardSetup_InSleep(void)
 {
 	RCC->CR  &= ~(RCC_CR_HSION);                                  // OFF HSI
@@ -30,10 +46,7 @@ void BoardSetup_OutSleep(void)
 *
 **************************************************************************************************************************/
 
-uint8_t SystemStatus;
 
-volatile systemticks_t SystemTicks;
-volatile systemticks_t BS_LastButtonPress;
 
 int BSInit(void)
 {
@@ -45,14 +58,13 @@ int BSInit(void)
   return 0;
 };
 
-uint16_t button_sign;
-extern uint32_t btCurTime;
+
 
 //******************************************** for Display period= 1 ms ***************************************************
  
 void SysTick_Handler(void) 
 {
-    static uint32_t btn_interval;
+    
     SystemTicks++;
     
     if((GPIOA->IDR & GPIO_IDR_ID5_Msk) == GPIO_IDR_ID5_Msk) //button is pressed
