@@ -122,6 +122,10 @@ void SuperLoop_PowerModes(void)
 							SLP_state=5; 
 			      if ((Get_button_interval()==0) && (D_timeForButton <(SystemTicks-timeoutsleep))) 
 							SLP_state=3;
+						if (TPSIRQ) 
+						{ button_sign=1;
+							SLP_state=5; 
+						};	
 			      break;
 			case 5: //weakup stage A
  			      Communication_OutSleep(); 
