@@ -3,3 +3,5 @@
 #define VERSION_BUILD 15
 
 #define SERIAL ((const void*)0x1FFF7590)
+	
+#define FLASH_VERSION_ADDRESS 0x0801fffc

@@ -5,22 +5,38 @@ Setting up shared resources that are used by multiple software modules
 #include "stm32g0xx.h"
 #include "BoardSetup.h"
 
+static uint32_t btn_interval;
+uint16_t button_sign;
+
+extern uint32_t btCurTime;
+
+uint8_t SystemStatus;
+
+volatile systemticks_t SystemTicks;
+volatile systemticks_t BS_LastButtonPress;
+
+//
+uint32_t Get_button_interval(void)
+{
+  return btn_interval;
+}
 
 //for power
+
 void BoardSetup_InSleep(void)
 {
-	
 	RCC->CR  &= ~(RCC_CR_HSION);                                  // OFF HSI
-  while((RCC->CR & RCC_CR_HSIRDY)){};
+    while((RCC->CR & RCC_CR_HSIRDY)){};
 		
 	__DMB();
 	SysTick->CTRL &= ~SysTick_CTRL_TICKINT_Msk;
 	__DMB();
 };
+
 void BoardSetup_OutSleep(void)
 {
 	 SysTick->CTRL |= SysTick_CTRL_TICKINT_Msk;
-	 BS_LastButtonPress=SystemTicks;
+	 BS_LastButtonPress = SystemTicks;
 };
 
 
@@ -30,10 +46,7 @@ void BoardSetup_OutSleep(void)
 *
 **************************************************************************************************************************/
 
-uint8_t SystemStatus;
 
-volatile systemticks_t SystemTicks;
-volatile systemticks_t BS_LastButtonPress;
 
 int BSInit(void)
 {
@@ -42,56 +55,37 @@ int BSInit(void)
 	
 	
   boardIoPinInit();
-
-
-	return 0;
+  return 0;
 };
 
-uint16_t button_sign;
-extern uint32_t btCurTime;
+
 
 //******************************************** for Display period= 1 ms ***************************************************
  
 void SysTick_Handler(void) 
 {
-  static uint32_t ledTick = 0;
-	static uint16_t ss;
-	static uint8_t status=0;	
-	static uint32_t button_new; 
-	static uint16_t	button_old, button_stable_new, button_stable_old;
-	static uint32_t cur_time, stop_time;
-	
-	SystemTicks++;
-	cur_time++;
-//	btCurTime++;
-//	ledTick++;
-//  if (ledTick >= 200)   
-//		{ledTick = 0;
-//		 switch (	status )   // Led Light according to SystemStatus
-//		 {
-//			 case 0: ss++;
-//               GPIOB->ODR ^= GPIO_ODR_OD10;
-//			         if (ss>=2*(SystemStatus+1))
-//							 {ss=0;status=1;};
-//							 break;
-//			 case 1: ss++;
-//               //GPIOB->ODR ^= GPIO_ODR_OD10;
-//			         if (ss>=4)
-//							 {ss=0;status=0;};
-//							 break;
-//       default: status=0;
-//		 };       
-//    }
-  button_new =(GPIOA->IDR)& GPIO_IDR_ID5_Msk ;
-	if (button_new) {BS_LastButtonPress=SystemTicks;};
-	if  (((uint16_t)button_new)==button_old) 
-		    button_stable_new =button_new;
-	button_old=button_new;
-	button_sign|=(~button_stable_old)&button_stable_new;
-	button_stable_old=button_stable_new;
-	
-	if(!button_new) {stop_time=cur_time;}
-	if((cur_time-stop_time)>=5000) {NVIC_SystemReset();}
+    
+    SystemTicks++;
+    
+    if((GPIOA->IDR & GPIO_IDR_ID5_Msk) == GPIO_IDR_ID5_Msk) //button is pressed
+    {
+        BS_LastButtonPress = SystemTicks;
+        btn_interval ++;
+        
+        if(btn_interval == 2000)
+        {
+            button_sign = 1;
+        }
+        
+        if (btn_interval == 10000)
+        {
+            NVIC_SystemReset();
+        }
+    }
+    else    // button released
+    {
+        btn_interval = 0;
+    }
 }
 /*************************************************************************************************************************
 *
@@ -99,21 +93,19 @@ void SysTick_Handler(void)
 *
 **************************************************************************************************************************/
 void delayms(uint16_t count)// delays count  -0/+1 ms
-	{
-	 systemticks_t lt;	 
-   lt=SystemTicks;                                                                                
-   while ((SystemTicks-lt)<=count);                                                                                  
-  }
+{
+   systemticks_t lt = SystemTicks;                                                                                
+   while ((SystemTicks - lt) <= count);                                                                                  
+}
 
 /*************************************************************************************************************************
 *
 *                                          Setup PLL and system clocks
 *
 **************************************************************************************************************************/
-uint32_t setSystemClock(void){
-  uint32_t waitCycle = HSE_READY_DELAY;
-  
-	
+uint32_t setSystemClock(void)
+{
+  uint32_t waitCycle = HSE_READY_DELAY;	
 	RCC->CR |= (RCC_CR_HSION);                                  // ON HSI
   while(!(RCC->CR & (RCC_CR_HSIRDY))){};
 	RCC->CFGR&=~(RCC_CFGR_SW_Msk);                           // togle on HSI
@@ -321,6 +313,22 @@ void boardIoPinInit(void){
   
 }
 
+void usart1_deinit()
+{
+    USART1->CR1 = 0;
+    USART1->CR2 = 0;
+    USART1->CR3 = 0;
+    USART1->BRR = 0;
+    USART1->GTPR = 0;
+    USART1->RTOR = 0;
+    USART1->RQR = 0;
+    //isr skiped
+    USART1->ICR = 0;
+    USART1->RDR = 0;
+    USART1->TDR = 0;
+    USART1->PRESC = 0;
+}
+
 /**
 ***********************************************************************************************************************
 *RST				PD1 	39	A	
@@ -411,6 +419,7 @@ void switchSPI1InterfacePinsToPwr(FunctionalState pwrMode)
                       GPIO_MODER_MODE10_Msk);
 		
 		BS_BLE_PinsOnOff( pwrMode);
+//		B_ACC_PinsOnOff(pwrMode)
 		
 		TFT_LED_OFF;
 		PWR_GLOBAL_OFF;
@@ -515,12 +524,15 @@ void B_ACC_PinsOnOff(FunctionalState pwrMode)
 	
   if (pwrMode == DISABLE)
 		{  
-			GPIOB->MODER &=~(GPIO_MODER_MODE8_Msk |GPIO_MODER_MODE9_Msk);//Charger I2C pins set as general purpose input mode 
+			GPIOB->MODER &=~(GPIO_MODER_MODE8_Msk |GPIO_MODER_MODE9_Msk|GPIO_MODER_MODE6_Msk|GPIO_MODER_MODE7_Msk);
+			//Charger I2C pins set as general purpose input mode 
+//			GPIOB->MODER |=GPIO_MODER_MODE6_0|GPIO_MODER_MODE7_0;
+//			GPIOB->BSRR |=GPIO_BSRR_BR6| GPIO_BSRR_BR7;
 		}
 		else
 		{
-			GPIOB->MODER &=~(GPIO_MODER_MODE8_Msk |GPIO_MODER_MODE9_Msk);
-			GPIOB->MODER |= (GPIO_MODER_MODE8_1 | GPIO_MODER_MODE9_1); // Charger I2C pins set as alternative    
+			GPIOB->MODER |=(GPIO_MODER_MODE8_Msk |GPIO_MODER_MODE9_Msk|GPIO_MODER_MODE6_Msk|GPIO_MODER_MODE7_Msk);
+			//GPIOB->MODER |= (GPIO_MODER_MODE8_1 | GPIO_MODER_MODE9_1); // Charger I2C pins set as alternative    
 		};
 };
 

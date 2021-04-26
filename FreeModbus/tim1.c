@@ -54,7 +54,7 @@ unsigned long timeTek;
 			if ( value & 0x0001 )
 			{
 				mbTick_1sec++;
-				GPIOB->BSRR = GPIO_BSRR_BS10;				
+//				GPIOB->BSRR = GPIO_BSRR_BS10;				
 			}
 			else
 				//GPIOB->ODR = 0;//GPIO_ODR_OD10

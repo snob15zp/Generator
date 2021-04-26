@@ -14,11 +14,7 @@
 #include "spiffs.h"
 #include "SuperLoop_Comm2.h"
 
-
-
 uint16_t SLPl_ui16_NumOffiles;///\todo global variable one time initialiseted
-
-
 
 uint16_t freqStartByte;
 uint32_t freq;
@@ -304,7 +300,7 @@ void fpgaConfig(void)											//
 }
 
 //extern uint8_t fileName[50];
-uint16_t fileSect=0;
+//uint16_t fileSect=0;
 uint16_t playFileSector;
 
 void timeToString(uint8_t* timeArr)
@@ -317,7 +313,7 @@ void timeToString(uint8_t* timeArr)
         }
         else
         {
-					timeArr[i] = ':';
+			timeArr[i] = ':';
         }
 	}
     timeArr[9] = 0;
@@ -325,33 +321,49 @@ void timeToString(uint8_t* timeArr)
 
 //----------------------------------BEGIN LOAD FROM FILES---------------------------------
 
-#define D_ParamStringLength 40
+#define D_ParamStringLength 80
 s32_t freq_file;
 static	uint8_t n_for_CR;
 static	char tempArrOld[D_ParamStringLength+1];
-        char SLPl_filename[D_FileNameLength+1];
+static  char SLPl_filename[D_FileNameLengthFS+1];
+//        char SLPl_filenameWOE[D_FileNameLength+1];
 static int8_t bytesCount;
+
+//e_FunctionReturnState getFileName(uint16_t fileSectl)
+//{
+//	uint32_t startAddr;
+//	e_FunctionReturnState rstate=e_FRS_Done;
+//  //int8_t bytesCount;
+//	char byteBuff[D_FileNameLength+1];
+//	
+//	startAddr=fileSectl*D_FileNameLengthInFL;
+//	
+////	File_List=SPIFFS_open(&fs, "freq.pls", SPIFFS_O_RDONLY, 0);/// \todo one time open
+//    SPIFFS_lseek(&fs, File_List,startAddr,SPIFFS_SEEK_SET);
+//	bytesCount=SPIFFS_read(&fs, File_List, &byteBuff, D_FileNameLengthInFL);
+//	if (bytesCount<1)
+//	{	rstate=e_FRS_DoneError;
+//	}
+//	byteBuff[bytesCount]=0;
+//	_sscanf( byteBuff,FN_Read_Template,SLPl_filename);
+//	SLPl_filename[D_FN_Max_Length]=0;
+//	strncpy(SLPl_filenameWOE,SLPl_filename,28);
+//	strncat(SLPl_filename,".txt",4);
+//	//SPIFFS_close(&fs, File_List); /// \todo one time close
+//	return rstate;
+//}
 
 e_FunctionReturnState getFileName(uint16_t fileSectl)
 {
-	uint32_t startAddr;
-	e_FunctionReturnState rstate=e_FRS_Done;
-  //int8_t bytesCount;
-	char byteBuff[D_FileNameLength+1];
+e_FunctionReturnState rstate=e_FRS_Done;
+
+sprintf(SLPl_filename,"%u",fileSectl+1);	
+SLPl_filename[D_FileNameLengthFS-4]=0;
+strncat(SLPl_filename,".txt",4);	
 	
-	startAddr=fileSectl*D_FileNameLength;
-	
-//	File_List=SPIFFS_open(&fs, "freq.pls", SPIFFS_O_RDONLY, 0);/// \todo one time open
-  SPIFFS_lseek(&fs, File_List,startAddr,SPIFFS_SEEK_SET);
-	bytesCount=SPIFFS_read(&fs, File_List, &byteBuff, D_FileNameLength);
-	if (bytesCount<1)
-	{	rstate=e_FRS_DoneError;
-	}
-	byteBuff[bytesCount]=0;
-	_sscanf( byteBuff,"%18s",SLPl_filename);
-	//SPIFFS_close(&fs, File_List); /// \todo one time close
-	return rstate;
+return rstate;	
 }
+
 
 e_FunctionReturnState getControlParam(void)
 {
@@ -512,16 +524,25 @@ uint32_t freqInverse(uint32_t freq)
 	}
 	return tempArr[5]*100000U+tempArr[4]*10000U+tempArr[3]*1000U+tempArr[2]*100U+tempArr[1]*10U+tempArr[0];
 }
-
+/*************************************
+playParamArr[0] - frequencies
+playParamArr[1] - offset
+playParamArr[2] - onset
+playParamArr[3] - duration
+playParamArr[4] - negative
+playParamArr[5] - up
+playParamArr[6] - inverse
+playParamArr[7] - out voltage
+**************************************/
 void setInitFreq(void)
 {
 	if(playParamArr[4]==0 && playParamArr[5]==0){	//negative==0 and up==0
 		for(int i=0;i<100;i++){
 			if(playFreqArr_1[i]!=0){
-				playFreqArr_1[i]+=playParamArr[1]+playParamArr[2];
+				playFreqArr_1[i]+=playParamArr[1];
 			}
 			if(playFreqArr_2[i]!=0){
-				playFreqArr_2[i]+=playParamArr[1]+playParamArr[2];
+				playFreqArr_2[i]+=playParamArr[1];
 			}
 		}
 	}
@@ -538,10 +559,10 @@ void setInitFreq(void)
 	if(playParamArr[4]==1 && playParamArr[5]==1){	//negative==1 and up==1
 		for(int i=0;i<100;i++){
 			if(playFreqArr_1[i]!=0){
-				playFreqArr_1[i]-=playParamArr[1]-playParamArr[2];
+				playFreqArr_1[i]-=playParamArr[1];
 			}
 			if(playFreqArr_2[i]!=0){
-				playFreqArr_2[i]-=playParamArr[1]-playParamArr[2];
+				playFreqArr_2[i]-=playParamArr[1];
 			}
 		}
 	}
@@ -565,7 +586,7 @@ void calcFreq(void)
 		return;
 	}
 	
-	//Frequency change from (f0+onset+offset) to (f0+onset)
+	//Frequency change from (f0+offset) to (f0+onset)
 	if(playParamArr[4]==0 && playParamArr[5]==0){	//negative==0 and up==0
 		for(int i=0;i<100;i++){
 			if(playFreqArr_1[i]!=0){
@@ -578,7 +599,7 @@ void calcFreq(void)
 		playParamArr[1]--;
 	}
 	
-	//Frequency change from (f0+onset) to (f0+onset+offset)
+	//Frequency change from (f0+onset) to (f0+offset)
 	if(playParamArr[4]==0 && playParamArr[5]==1){	//negative==0 and up==1
 		for(int i=0;i<100;i++){
 			if(playFreqArr_1[i]!=0){
@@ -601,10 +622,10 @@ void calcFreq(void)
 				playFreqArr_2[i]++;
 			}
 		}
-		playParamArr[1]++;
+		playParamArr[1]--;
 	}
 	
-	//Frequency change from (f0-onset) to (f0-onset-offset)
+	//Frequency change from (f0-onset) to (f0-offset)
 	if(playParamArr[4]==1 && playParamArr[5]==0){	//negative==1 and up==0
 		for(int i=0;i<100;i++){
 			if(playFreqArr_1[i]!=0){
@@ -614,7 +635,7 @@ void calcFreq(void)
 				playFreqArr_2[i]--;
 			}
 		}
-		playParamArr[1]++;
+		playParamArr[1]--;
 	}
 }
 
@@ -775,7 +796,7 @@ s32_t res;
 //			File_List=SPIFFS_open(&fs,"freq.pls",SPIFFS_O_RDONLY,0);
 			res=SPIFFS_fstat(&fs,File_List,&file_stat);
 	    if (SPIFFS_OK==res)
-				SLPl_ui16_NumOffiles=file_stat.size/D_FileNameLength;
+				SLPl_ui16_NumOffiles=file_stat.size/D_FileNameLengthD;
 };
 
 void SLPl_InitFiles(void)
@@ -1004,6 +1025,7 @@ void SLP(void)
 				fpgaFlags.labelsUpdate=1;
 				curState=SLPl_FSM_On;
 				SetStatusString("Config OK");
+				durTimeS=0;
 			}
 			else
 			{

@@ -22,8 +22,10 @@
 #include "BoardSetup.h"
 #include "SuperLoop_Comm2.h"
 #include "superloop.h"
-//#include "spiffs.h"
+#include "SuperLoop_Player.h"
 #include "romfs_files.h"
+#include "SL_CommModbus.h"
+#include "version.h"
 
 //extern uint16_t SLPl_ui16_NumOffiles;
 
@@ -60,17 +62,17 @@ typedef enum
 e_PS_Work,e_PS_DontMindSleep,e_PS_ReadySleep
 */
 const e_PowerState SLD_Encoder[SLD_FSM_NumOfEl]=
-{e_PS_Work						//SLD_FSM_InitialWait
-,e_PS_Work						//SLD_FSM_Off
-,e_PS_Work						//SLD_FSM_OnTransition
-,e_PS_Work						//SLD_FSM_On
-,e_PS_Work						//SLD_FSM_PopulateList
-,e_PS_Work            //SLD_FSM_NotFlash	
-,e_PS_Work						//SLD_FSM_OffTransition 
-,e_PS_DontMindSleep		//SLD_FSM_DontMindSleep	
-,e_PS_DontMindSleep		//SLD_FSM_SleepTransition
-,e_PS_ReadySleep			//SLD_FSM_Sleep
-,e_PS_Work						//SLD_FSM_WakeTransition
+{e_PS_Work						//SLD_FSM_InitialWait 0
+,e_PS_Work						//SLD_FSM_Off         	1
+,e_PS_Work						//SLD_FSM_OnTransition	2
+,e_PS_Work						//SLD_FSM_On 						3
+,e_PS_Work						//SLD_FSM_PopulateList	4
+,e_PS_Work            //SLD_FSM_NotFlash			5
+,e_PS_Work						//SLD_FSM_OffTransition 6
+,e_PS_DontMindSleep		//SLD_FSM_DontMindSleep	7
+,e_PS_DontMindSleep		//SLD_FSM_SleepTransition	8
+,e_PS_ReadySleep			//SLD_FSM_Sleep						9
+,e_PS_Work						//SLD_FSM_WakeTransition	10
 };
 
 static e_SLD_FSM state_inner;
@@ -101,6 +103,7 @@ int SLDw(void);
 void displayACC(void);
 int SLDwACC(void);
 void DisplayBatteryStatus(void);
+void DisplaySelectedFile(uint32_t n);
 //------------------------FSM control--------------------------------------------
 int SLD_DisplInit(void);
 int SLD_DisplReInit(void);
@@ -111,18 +114,28 @@ void fileListInitStart(void);
 static bool bListUpdate;
 static uint8_t FSM_fileListUpdate_state;
 //static s32_t File_List;
-static uint8_t filename[20];
+static uint8_t filename[D_FileNameLengthD+1];
+static uint8_t filename1[D_FileNameLengthD+1];
 static uint8_t fileCount;
 static uint32_t offset;
 static bool bListUpdate1;
+
+//-------------------------------------- call back-------------------------
+
 /**
 * Calls when freq.pls writing is done
 */
 void on_playlist_write_done()
 {
+	playFileSector=0;
 	bListUpdate=true;
 }
 
+
+
+
+
+//---------------------------------------super loop------------------------
 extern  GHandle	ghList1;   
 #define SLD_SleepDelay 1000
 
@@ -155,6 +168,7 @@ int SLD(void)
 				SLD_DisplReInit();
 		    bListUpdate=true;
 		    gfxSleepMilliseconds(10); 
+		    DisplaySelectedFile(playFileSector);
 		    state_inner=SLD_FSM_On;
       break;
 		case SLD_FSM_On: // on
@@ -183,7 +197,7 @@ int SLD(void)
 				}	
 			
 		  };
-			if ((!bVSYS)|button_sign)
+			if ( (!bVSYS) || button_sign)
 				{
 					button_sign=0;
 					state_inner=SLD_FSM_OffTransition;
@@ -196,15 +210,19 @@ int SLD(void)
 					{
 						rstatel=fileListRead();
 						if (e_FRS_Done==rstatel)
-							gwinListAddItem(ghList1, (char*)filename, gTrue);	
+						{	gwinListAddItem(ghList1, (char*)filename, gTrue);	
+						  gfxSleepMilliseconds(10);
+						};
 						if (e_FRS_DoneError==rstatel)
-							state_inner=SLD_FSM_On;	
+						{	state_inner=SLD_FSM_On;	
+						  DisplaySelectedFile(playFileSector);
 							bListUpdate1=false;
-							gfxSleepMilliseconds(10); 
+						}	
 					}
 				}
 				else 
-				{	state_inner=SLD_FSM_On;	
+				{	
+					state_inner=SLD_FSM_On;	
 				};	
 //				while (e_FRS_DoneError!=rstatel);
       break;	
@@ -247,11 +265,26 @@ int SLD(void)
 	return 0;
 }
 
+mb_flags_cb_t mb_cbs = 
+{
+    .tx_done = on_tx_done_cb,
+    .play = play_cb,
+    .stop = stop_cb,
+    .prev = prev_cb,
+    .next = next_cb,
+};
+
 int SLD_init(void)
 {
 	spiffs_on_write_playlist_done(on_playlist_write_done);
+  set_mb_flags_cb(&mb_cbs);
 	return 0;
+;
 };
+
+
+
+
 
 //--------------------------------for uGFX INIT/DEINIT--------------------------------
 extern char	heap[GFX_OS_HEAP_SIZE];
@@ -298,7 +331,7 @@ int SLD_DisplReInit(void)
 ////------------------------Display control objects--------------------------------------------
 GListener	gl;
 GHandle	ghLabel1, ghLabel2, ghLabel3, ghLabel4, ghLabel5, ghLabel6, ghLabel7;
-GHandle ghLabel8, ghLabel9, ghLabel10, ghLabel11, ghLabel12,ghLabel13_RSOC;
+GHandle ghLabel8, ghLabel9, ghLabel10, ghLabel11, ghLabel12,ghLabel13_RSOC, ghLabel14, ghLabelVersion;
 GHandle	ghList1;
 GHandle ghImage1;
 GHandle ghProgBarWin;
@@ -316,6 +349,28 @@ static	GEvent* pe;
 #define D_image_wigheight 20
 
 //-------------------BEGIN  OF BEBUG ACC Display-------------
+
+void play_cb()
+{
+    ButtonFlags.playStart = 1;
+}
+
+
+
+void stop_cb()
+{
+    ButtonFlags.playStop = 1;
+}
+
+void prev_cb()
+{
+     ButtonFlags.fileListUp = 1;
+}
+
+void next_cb()
+{
+    ButtonFlags.fileListDown = 1;
+}
 
 
 void displayACC(void)
@@ -412,7 +467,7 @@ static void createButtons(void) {
 	wi.g.height = 60;
 	wi.g.y = 20;
 	wi.g.x = 195;
-	wi.text = "Prew";
+	wi.text = "Prev";
 	ghButton3 = gwinButtonCreate(0, &wi);
 	
 	// Apply the NEXT button parameters
@@ -431,57 +486,68 @@ static void createLabels(void) {
 	gwinWidgetClearInit(&wi);
 	wi.g.show = gTrue;
 	
-	wi.g.width = 110; wi.g.height = 20; wi.g.x = 120, wi.g.y = 170;
+	wi.g.width = 115; wi.g.height = 20; wi.g.x = 120, wi.g.y = 155;
 //	wi.text = "Self test: OK";
-	wi.text = "File sys is checked";
+	wi.text = "Sys init,pls wait";
 	ghLabel3 = gwinLabelCreate(0,&wi);
 //	gwinLabelSetAttribute(ghLabel3,100,"Self test:");
 	
-	wi.g.width = 110; wi.g.height = 20; wi.g.x = 10, wi.g.y = 170;
+	wi.g.width = 110; wi.g.height = 20; wi.g.x = 10, wi.g.y = 155;
 	wi.text = "Self test:";
 	ghLabel8 = gwinLabelCreate(0, &wi);
 	
-	wi.g.width = 110; wi.g.height = 20; wi.g.x = 120, wi.g.y = 190;
+	wi.g.width = 110; wi.g.height = 20; wi.g.x = 120, wi.g.y = 173;
 	wi.text = "Stop";
 	ghLabel4 = gwinLabelCreate(0, &wi);
 //	gwinLabelSetAttribute(ghLabel4,100,"Status:");
 	
-	wi.g.width = 110; wi.g.height = 20; wi.g.x = 10, wi.g.y = 190;
+	wi.g.width = 110; wi.g.height = 20; wi.g.x = 10, wi.g.y = 173;
 	wi.text = "Status:";
 	ghLabel9 = gwinLabelCreate(0, &wi);
 	
-	wi.g.width = 110; wi.g.height = 20; wi.g.x = 120, wi.g.y = 210;
+	wi.g.width = 110; wi.g.height = 20; wi.g.x = 120, wi.g.y = 191;
 	wi.text = "Not selected";
 	ghLabel5 = gwinLabelCreate(0, &wi);
 //	gwinLabelSetAttribute(ghLabel5,100,"Program:");
 
-	wi.g.width = 110; wi.g.height = 20; wi.g.x = 10, wi.g.y = 210;
+	wi.g.width = 110; wi.g.height = 20; wi.g.x = 10, wi.g.y = 191;
 	wi.text = "Program:";
 	ghLabel10 = gwinLabelCreate(0, &wi);
 	
-	wi.g.width = 110; wi.g.height = 20; wi.g.x = 120, wi.g.y = 230;
+	wi.g.width = 110; wi.g.height = 20; wi.g.x = 120, wi.g.y = 209;
 	wi.text = "00:00:00";
 	ghLabel6 = gwinLabelCreate(0, &wi);
 //	gwinLabelSetAttribute(ghLabel6,100,"Program timer:");
 
-	wi.g.width = 110; wi.g.height = 20; wi.g.x = 10, wi.g.y = 230;
+	wi.g.width = 110; wi.g.height = 20; wi.g.x = 10, wi.g.y = 209;
 	wi.text = "Program timer:";
 	ghLabel11 = gwinLabelCreate(0, &wi);
 	
-	wi.g.width = 110; wi.g.height = 20; wi.g.x = 120, wi.g.y = 250;
+	wi.g.width = 110; wi.g.height = 20; wi.g.x = 120, wi.g.y = 227;
 	wi.text = "00:00:00";
 	ghLabel7 = gwinLabelCreate(0, &wi);
 //	gwinLabelSetAttribute(ghLabel7,100,"Total timer:");
 
-	wi.g.width = 110; wi.g.height = 20; wi.g.x = 10, wi.g.y = 250;
+	wi.g.width = 110; wi.g.height = 20; wi.g.x = 10, wi.g.y = 227;
 	wi.text = "Total timer:";
 	ghLabel12 = gwinLabelCreate(0, &wi);
 
 	wi.g.width = D_image_wigx-150; wi.g.height = 20; wi.g.x = 150; wi.g.y = 0;
-	wi.text = "   0%";
+	wi.text = "  --%";
 	ghLabel13_RSOC = gwinLabelCreate(0, &wi);
 
-	
+
+	wi.g.width = 110; wi.g.height = 20; wi.g.x = 10, wi.g.y = 245;
+	wi.text = "Version:";
+	ghLabel14 = gwinLabelCreate(0, &wi);
+
+    static char versionString[32] = {}; 
+    snprintf(versionString, sizeof(versionString), "%d.%d.%d", 
+            *((uint8_t *)FLASH_VERSION_ADDRESS), *((uint8_t *)FLASH_VERSION_ADDRESS + 1), *((uint8_t *)FLASH_VERSION_ADDRESS + 2));
+        
+    wi.g.width = 110; wi.g.height = 20; wi.g.x = 120, wi.g.y = 245;
+	wi.text = versionString;
+    ghLabelVersion = gwinLabelCreate(0, &wi);
 }
 
 
@@ -560,7 +626,7 @@ static void createProgBar(void)
 }
 
 //--------------------END Create uGFX Objects------------------------
-#define D_StringInList 10
+#define D_StringInList 7
 static uint32_t CurrentPage;
 
 void fileListInitStart(void)
@@ -570,14 +636,43 @@ void fileListInitStart(void)
 	FSM_fileListUpdate_state=0;
 };
 
+e_FunctionReturnState fileNameRead(uint16_t filenum)
+{	e_FunctionReturnState rstate;
+	char byteBuff[D_FileNameLengthD+1];
+	int8_t bytesCount;
+	uint32_t offset;
 
+	rstate=e_FRS_Processing;
+
+	offset=filenum*D_FileNameLengthD;
+	SPIFFS_lseek(&fs, File_List,offset,SPIFFS_SEEK_SET);
+
+	bytesCount=SPIFFS_read(&fs, File_List, &byteBuff, D_FileNameLengthD);
+	if (bytesCount<1)
+	{	
+		return e_FRS_DoneError;
+	}
+	else					
+	{ 
+		_sscanf( byteBuff,FN_Read_Template,filename1);                        //change if chainge D_FileNameLength
+		if (0<strlen(byteBuff))
+		{		
+			return e_FRS_Done;
+		}
+		else
+		{
+			return e_FRS_DoneError;
+		}
+	}		
+	return rstate;
+}
 
 
 uint16_t a;
 
 e_FunctionReturnState fileListRead(void)
 {	e_FunctionReturnState rstate;
-	char byteBuff[20];
+	char byteBuff[D_FileNameLengthD+1];
 	int8_t bytesCount;
   uint32_t i;	
 	uint32_t offset;
@@ -594,15 +689,16 @@ e_FunctionReturnState fileListRead(void)
 	     // gfxSleepMilliseconds(1);
 //		  File_List=SPIFFS_open(&fs,"freq.pls",SPIFFS_O_RDONLY,0);
 		  fileCount=0;
-		  offset=D_StringInList*CurrentPage*D_FileNameLength;
+		  offset=D_StringInList*CurrentPage*D_FileNameLengthD;
 		  //gwinListDeleteAll(ghList1);
 		  SPIFFS_lseek(&fs, File_List,offset,SPIFFS_SEEK_SET);
 		  FSM_fileListUpdate_state++;
 		  break;
 		case 1: 
       while(1){
-				if(fileCount<10){
-					bytesCount=SPIFFS_read(&fs, File_List, &byteBuff, D_FileNameLength);
+				if(fileCount<D_StringInList){
+					bytesCount=SPIFFS_read(&fs, File_List, &byteBuff, D_FileNameLengthD);
+					a=bytesCount;//for debug
 					if (bytesCount<1)
 					{	FSM_fileListUpdate_state=101;
 						break;
@@ -613,7 +709,7 @@ e_FunctionReturnState fileListRead(void)
 	//					  if (13==byteBuff[i]) break;
 	//					  offset+=i+1;
 	//					SPIFFS_lseek(&fs, File_List,offset,SPIFFS_SEEK_SET);
-						_sscanf( byteBuff,"%18s",filename);
+						_sscanf( byteBuff,FN_Read_Template,filename);                        //change if chainge D_FileNameLength
 						if (0<strlen(byteBuff))
 						{		fileCount++;
 								FSM_fileListUpdate_state=100;
@@ -654,9 +750,8 @@ int SLD_DisplInit(void)
 GFXPreinit();	
 gfxInit();	
 
-
 	// Set the widget defaults
-	gwinSetDefaultFont(gdispOpenFont("U11"));
+	gwinSetDefaultFont(gdispOpenFont("Roboto_Light12"));
 	gwinSetDefaultStyle(&WhiteWidgetStyle, gFalse);
 	gdispClear(GFX_WHITE);
 
@@ -736,21 +831,19 @@ void FileListUpDown()
 	if (ButtonFlags.fileListDown)	//prev 10 files
 			{ 
 				ButtonFlags.fileListDown=0;
-				if ((((CurrentPage+1)*D_StringInList)>=(SLPl_ui16_NumOffiles))
-				   )
-				{}
-					else
-					{
-  					CurrentPage++;
-            bListUpdate=true;
-					};
-			}
+				playFileSector+=D_StringInList;
+				if (playFileSector>=SLPl_ui16_NumOffiles)
+					  playFileSector=SLPl_ui16_NumOffiles-1;
+				if (0==SLPl_ui16_NumOffiles)
+					  playFileSector=0;
+				DisplaySelectedFile(playFileSector);
+		 };
+			
 			if (ButtonFlags.fileListUp)	//next 10 files
 			{ ButtonFlags.fileListUp=0;
-				if (CurrentPage>0)
-				{
-  					CurrentPage--;
-            bListUpdate=true;
+				if (playFileSector>=D_StringInList)
+				{playFileSector-=D_StringInList;
+  			 DisplaySelectedFile(playFileSector);
 				};
 			};
 }
@@ -765,29 +858,38 @@ void DisplayPlayStop()
 
 };
 
+void on_format_flash()
+{					
+  SetStatusString("Formatting FS. Please wait");
+	//gfxSleepMilliseconds(10);
+}
+
+
 void Start(void)
 {
 	uint32_t nof,cf;
-			if (ButtonFlags.playStart)
-			{ ButtonFlags.playStart=0;
-				nof=gwinListItemCount(ghList1);	
-				if (nof>0)
-				{
-					SetStatusString("Config. Please wait");
-					gfxSleepMilliseconds(10);
-					cf=gwinListGetSelected(ghList1)+CurrentPage*D_StringInList;
-					SLPl_Start(cf);
-				}	
-			};	
+    if (ButtonFlags.playStart)
+    { 
+        ButtonFlags.playStart=0;
+        nof = gwinListItemCount(ghList1);	
+        if (nof > 0)
+        {
+            SetStatusString("Config. Please wait");
+            gfxSleepMilliseconds(10);
+            cf = gwinListGetSelected(ghList1)+CurrentPage*D_StringInList;
+            SLPl_Start(cf);
+        }	
+    };	
 };
 
 void Stop(void)
 {
-			if (ButtonFlags.playStop)
-			{ ButtonFlags.playStop=0;
-				//DisplayPlayStop();
-				SLPl_Stop();
-			};
+    if (ButtonFlags.playStop)
+    { 
+        ButtonFlags.playStop=0;
+        //DisplayPlayStop();
+        SLPl_Stop();
+    };
 }
 
 
@@ -867,7 +969,8 @@ int SLDw(void)
 	      if ((fpgaFlags.endOfFile==1)||(PlStateOld!=Get_SLPl_FSM_State()))
         	{
         		DisplaySelectedFile(playFileSector);
-						gwinSetText(ghLabel5,SLPl_filename,gFalse);
+						fileNameRead(playFileSector);
+						gwinSetText(ghLabel5,(char*)filename1,gFalse);//
         		fpgaFlags.endOfFile=0;
         	}
 			

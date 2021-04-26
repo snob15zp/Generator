@@ -345,7 +345,7 @@ e_FunctionReturnState TransitionFunction(uint8_t state)
 																		else 
 																		{	
 																			 
-																		if ((SystemTicksOld+D_incCurPause)<SystemTicks)
+																		if ((D_incCurPause)<(SystemTicks-SystemTicksOld))
 																		{
 																			SystemTicksOld=SystemTicks;   
 																			InCurrent+=100;
@@ -540,21 +540,21 @@ e_FunctionReturnState ReadTPSState(void)
 	  switch(state)
 	  {
 	  case 0:  //read interrupt    //debug
-      	  returnstatel=TPS65982_6_RW(TPS87,  e_TPS65987_IntEvent1, buf,  11,  I2C_OP_READ);
+      	  returnstatel=TPS65982_6_RW(TPS87,  e_TPS65987_IntEvent1, buf,  11,  I2C_OP_READ,ReadTPSState);
 			   if (e_FRS_Done==returnstatel)
 	           {state++;};
 			   if (e_FRS_DoneError==returnstatel)
 	           {state=101;};
 						 break;
     case 1:			// clear interrupt
-			       returnstatel=TPS65982_6_RW(TPS87,  e_TPS65987_IntClear1, u8_11_ff,  11,  I2C_OP_WRITE);
+			       returnstatel=TPS65982_6_RW(TPS87,  e_TPS65987_IntClear1, u8_11_ff,  11,  I2C_OP_WRITE,ReadTPSState);
 			   if (e_FRS_Done==returnstatel)
 	           {state++;};
 			   if (e_FRS_DoneError==returnstatel)
 	           {state=101;};
 						 break;
 		case 2:				 //read interrupt    //debug
-		      	  returnstatel=TPS65982_6_RW(TPS87,  e_TPS65987_IntEvent1, buf,  11,  I2C_OP_READ);
+		      	  returnstatel=TPS65982_6_RW(TPS87,  e_TPS65987_IntEvent1, buf,  11,  I2C_OP_READ,ReadTPSState);
 			   if (e_FRS_Done==returnstatel)
 	           {state++;};
 			   if (e_FRS_DoneError==returnstatel)
@@ -562,7 +562,7 @@ e_FunctionReturnState ReadTPSState(void)
 						 break;
 				 
 		case 3:	
-	          {returnstatel=TPS65982_6_RDO_R(TPS87,  &I87, &V87);
+	          {returnstatel=TPS65982_6_RDO_R(TPS87,  &I87, &V87,ReadTPSState);
 			   if (e_FRS_Done==returnstatel)
 	           {state++;};
 			   if (e_FRS_DoneError==returnstatel)
@@ -570,7 +570,7 @@ e_FunctionReturnState ReadTPSState(void)
 	          }
 			  break;
 		case 4://				e_TPS65987_PortControl
-	          returnstatel=TPS65982_6_RW(TPS87,  e_TPS65987_PowerStatusRegister, buf,  255,  I2C_OP_READ);
+	          returnstatel=TPS65982_6_RW(TPS87,  e_TPS65987_PowerStatusRegister, buf,  255,  I2C_OP_READ,ReadTPSState);
 			   if (e_FRS_Done==returnstatel)
 	           {state=100;};
 			   if (e_FRS_DoneError==returnstatel)

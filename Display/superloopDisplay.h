@@ -26,10 +26,33 @@ e_PowerState SLD_GetPowerState(void);
 e_PowerState SLD_SetSleepState(bool state);
 bool SLD_PWRState(void);
 
+/**
+* Start playing
+*/
+void play_cb();
+
+/**
+* Stop playing
+*/
+void stop_cb();
+
+/**
+* Play previous file 
+*/
+void prev_cb();
+
+/**
+* Play next file
+*/
+void next_cb();
 
 //For main
 extern int SLD_init(void);
 extern int SLD(void);
 
+/**
+* Should be called on formating flash - set message on a display: "FORMAT FS"
+*/
+void on_format_flash();
 
 #endif

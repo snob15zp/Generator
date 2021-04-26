@@ -31,6 +31,7 @@ if any modules e_PS_Work-> for all modules SLPl_SetSleepState(false)
 #include "mainFSM.h"
 #include "BoardSetup.h"
 #include "I2c1.h"
+#include "TPS65987_Data.h"
 
 #include "board_PowerModes.h"
 
@@ -184,11 +185,15 @@ e_SLA_FSM  GetNewPowerState(const e_SLA_FSM* encoder)
 					return encoder[DataFor_SLAcc_PowerState];
 };
 
+uint8_t maintaskstate1;//debug
+
 void LoopACC(void)
 { //e_FunctionReturnState returnstate;
   e_FunctionReturnState rstatel,wrstate;
   static uint16_t data;
-
+ 
+	maintaskstate1=maintaskstate;
+	
   switch(maintaskstate)
   {
 	  case SLA_FSM_WORK:
@@ -251,18 +256,44 @@ e_FunctionReturnState A_FSM_SleepTransition(void)
 		 {
 		  state++;
 		 }
+		 if (e_FRS_DoneError==wrstate)
+		 {
+		  state=101;
+		 }
 		 break;
 	 case 1:	 
-		 if (e_FRS_Done==BQ28z610_AltManufacturerAccessCommand(BQ28z610_Command_Sleep,A_FSM_SleepTransition))
-            {maintaskstate++;};
+		 data=(0b101<<8)+1;
+		 wrstate=TPS65982_6_RW(TPS87,  e_TPS65987_SleepConfigurationRegister,(uint8_t*)&data,2,I2C_OP_WRITE,A_FSM_SleepTransition);
+		 if (e_FRS_Done==wrstate)
+		 {
+		  state++;
+		 }
+		 if (e_FRS_DoneError==wrstate)
+		 {
+		  state=101;
+		 }
+		 break;
+	 case 2:	 
+		 wrstate=BQ28z610_AltManufacturerAccessCommand(BQ28z610_Command_Sleep,A_FSM_SleepTransition);
+		 if (e_FRS_Done==wrstate)
+		 {
+		  state++;
+		 }
+		 if (e_FRS_DoneError==wrstate)
+		 {
+		  state=101;
+		 }
 		 break;				
-   case 2:
+   case 3:
 		 I2c1InSleep();
 		 B_ACC_PinsOnOff(DISABLE); 
 	   state=0;
 	   rstatel=e_FRS_Done;
 	   break;
-		
+		case 101://error
+	   state=0;
+	   rstatel=e_FRS_DoneError;
+     break;
    default: state=0;
 	};
 	
@@ -301,8 +332,9 @@ e_FunctionReturnState A_FSM_WakeTransition(void)
 };
 
 
-
-
+uint8_t dataforTPS[65];
+extern uint8_t outdata[MAX_BUF_BSIZE];
+extern uint8_t indata[MAX_BUF_BSIZE];
 /**
 \brief test acc procedure
 
@@ -404,12 +436,19 @@ e_FunctionReturnState testACC(void)
 		        //if (e_FRS_Done==BQ28z610_AltManufacturerAccessDFWrite(0x46c9, (uint8_t*)&data, 2,testACC))
             {maintaskstate++;};
             break;
-   case 13: data=4400;
+   case 13: //data=4400;
 		        //if (e_FRS_Done==BQ28z610_AltManufacturerAccessDFWrite(0x46c9, (uint8_t*)&data, 2,testACC))
+	                     //#define I2C_OP_READ         ((unsigned short)(0))
+//	          if (e_FRS_Done==TPS65982_6_RW(TPS87, e_TPS65987_BootFlagsRegister, outdata, 13, I2C_OP_READ))
+//						tpsFlashUpdate();
+//						indata[0]=0;
+//		if (e_FRS_Done==TPS65982_6_CMD_U(TPS87,e_TPS_CMD_FLrr,indata,1,outdata,4))
             {maintaskstate++;};
             break;
-   case 14: if (e_FRS_Done==TPS65982_6_RDO_R(TPS87,  &I86, &V86))
+   case 14: //readDataFromFile();
 		         {maintaskstate++;};
+//						if (e_FRS_Done==TPS65982_6_RDO_R(TPS87,  &I86, &V86))
+//		         {maintaskstate++;};
 //	       rstatel=MainTransition(testkey);
 //	       if (e_FRS_Done==rstatel)
 //                                 {maintaskstate++;};
@@ -437,8 +476,6 @@ void SuperLoopACC(void)
             {maintaskstate=0;
 							state++;
 					  };
-//						data=5500;                                                                 //test defence
-//		        wrstate=BQ28z610_AltManufacturerAccessDFWrite(0x46b9, (uint8_t*)&data, 2); //test defence
        break;
 		case 1: LoopACC();
 			 break;

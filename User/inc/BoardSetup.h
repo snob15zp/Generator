@@ -89,11 +89,17 @@ extern volatile   systemticks_t BS_LastButtonPress;
 extern uint16_t button_sign;		
 extern uint8_t  SystemStatus;
 
-
+/**
+* De-initialize USART1 module
+* Set usart1 registers to default values (0)
+*/
+void usart1_deinit();
 		
 //for power
+extern uint32_t Get_button_interval(void);
 extern void BoardSetup_InSleep(void);
 extern void BoardSetup_OutSleep(void);
+
 		
 extern int BSInit(void);		
 extern uint32_t setSystemClock(void);

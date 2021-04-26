@@ -30,6 +30,7 @@ extern e_FunctionReturnState BQ28z610_AltManufacturerAccessDFWrite(uint16_t addr
 extern e_FunctionReturnState BQ28z610_AltManufacturerAccessCommand(uint16_t command,void* key);
 
 extern void BQ28z610_DriverReset(void);
+extern e_FunctionReturnState BQ28z610_DriverState(void);
 
 
 #endif /* DRIVERBQ28Z610_H_ */

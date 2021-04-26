@@ -2,6 +2,7 @@
 #define GlobalKey_h
 
 #include <stdbool.h>
+#include "BoardSetup.h"
 
 #define PowerUSE
 #define LCDUSE
@@ -22,23 +23,34 @@
 #define Flashat25sf321
 #define SPIFFS
 
+//#define D_TestOuputToUart1
 
-#define D_FileNameLength 22
+#define D_FileNameLengthFS 32 //file system
+#define D_FileNameLengthD 64  //display
+//#define D_FN_Max_Length 28
+extern const char FN_Read_Template[];
 
 void Error(char* s);
 
 typedef enum  
-{PS_Int_No
+{
+ PS_Int_No
+,PS_Int_USB_No
 ,PS_Int_USB  		//work
+,PS_Int_BLE_No 	
 ,PS_Int_BLE  						//work
 ,PS_Int_NumOfEl	
 } e_PS_Int;
 
-extern e_PS_Int PS_Int;
+//extern e_PS_Int PS_Int;
 extern bool byte_TX_DLE;
+
+
 
 #define DLE 27 //esc
 #define DTD '$'
 #define DRD '%'
+#define SMODBUSBegin 0
+#define SMODBUSEnd 1
 
 #endif

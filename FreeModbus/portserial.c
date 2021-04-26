@@ -18,9 +18,9 @@
  *
  * File: $Id$
  */
-
+#include "SuperLoop_Comm2.h"
 #include "GlobalKey.h"
-#include "Boardsetup.h"
+//#include "Boardsetup.h"
 #include "bluetooth.h"
 #include "port.h"
 
@@ -30,9 +30,12 @@
 #include "mb.h"
 #include "mbport.h"
 
+
+uint8_t USART1_RDR;
+
 unsigned long Time_Cycle = 0;   
 
-
+bool USART1_CR1_RXNEIE_Logic;
 
 /* ----------------------- static functions ---------------------------------*/
 static void prvvUARTTxReadyISR( void );
@@ -47,13 +50,16 @@ void vMBPortSerialEnable( BOOL xRxEnable, BOOL xTxEnable )
 	  switch (PS_Int)
 		{
 			case PS_Int_BLE:
+			case PS_Int_BLE_No:	
 					if( xRxEnable )
 					{
-						USART2->CR1 |= USART_CR1_RXNEIE_RXFNEIE;
+						USART_CR1_RXNEIE_Logic=true;
+						//USART2->CR1 |= USART_CR1_RXNEIE_RXFNEIE;
 					}
 					else
 					{
-						USART2->CR1 &= ~USART_CR1_RXNEIE_RXFNEIE;			
+						USART_CR1_RXNEIE_Logic=false; 
+						//USART2->CR1 &= ~USART_CR1_RXNEIE_RXFNEIE;			
 					}
 					if ( xTxEnable )
 					{
@@ -64,14 +70,15 @@ void vMBPortSerialEnable( BOOL xRxEnable, BOOL xTxEnable )
 						USART2->CR1 &= ~USART_CR1_TXEIE_TXFNFIE;			
 					}
 				break;
-			default:
+			case PS_Int_USB:
+			case PS_Int_USB_No:	
 					if( xRxEnable )
 					{
-						USART1->CR1 |= USART_CR1_RXNEIE_RXFNEIE;
+						USART1_CR1_RXNEIE_Logic=true;
 					}
 					else
 					{
-						USART1->CR1 &= ~USART_CR1_RXNEIE_RXFNEIE;			
+						USART1_CR1_RXNEIE_Logic=false;			
 					}
 					if ( xTxEnable )
 					{
@@ -81,6 +88,8 @@ void vMBPortSerialEnable( BOOL xRxEnable, BOOL xTxEnable )
 					{
 						USART1->CR1 &= ~USART_CR1_TXEIE_TXFNFIE;			
 					}
+					break;
+			default:;
 		}
 }
 
@@ -113,6 +122,8 @@ BOOL xMBPortSerialInit( UCHAR ucPORT, ULONG ulBaudRate, UCHAR ucDataBits, eMBPar
 	USART1->CR1 &= ~USART_CR1_UE;
 	USART1->BRR = USART1_PCLK/USART1_BAUDRATE;	//sets UART1 baudrate 115200 baud
 	USART1->CR3 |= USART_CR3_ONEBIT;
+	USART1->CR3 |= USART_CR3_OVRDIS;
+	USART1->CR1 |= USART_CR1_RXNEIE_RXFNEIE;
 	USART1->CR1 |= USART_CR1_TE |
 								 USART_CR1_RE;
 //USART_CR1_FIFOEN |
@@ -123,25 +134,41 @@ BOOL xMBPortSerialInit( UCHAR ucPORT, ULONG ulBaudRate, UCHAR ucDataBits, eMBPar
 	return TRUE;
 }
 
-
-
+char btSendArr[256];
+uint8_t txIrqCnt;
+	
 BOOL xMBPortSerialPutByte( CHAR ucByte )
 {
     /* Put a byte in the UARTs transmit buffer. This function is called
      * by the protocol stack if pxMBFrameCBTransmitterEmpty( ) has been
      * called. */
+	char ucBytel;
 	  switch (PS_Int)
 		{
 			case PS_Int_BLE:
-				  if (DTD==ucByte)
+			case PS_Int_BLE_No:	
+				  ucBytel=ucByte;
+				  if ((DTD==ucByte)||(DLE==ucByte))
 				  {	byte_TX_DLE = true;
 						USART2->TDR = DLE;
+#ifdef D_TestOuputToUart1
+ 						USART1->TDR = DLE;
+#endif						
+						btSendArr[txIrqCnt++]=DLE;
 						while(!(USART2->ISR&USART_ISR_TXE_TXFNF));
+						ucBytel=ucBytel-1;
 					};
-					USART2->TDR = ucByte+1;
+					USART2->TDR = ucBytel;
+#ifdef D_TestOuputToUart1
+					USART1->TDR = ucBytel;
+#endif						
+					btSendArr[txIrqCnt++]=ucBytel;
 				break;
-			default:
+			case PS_Int_USB:
+			case PS_Int_USB_No:	
 					USART1->TDR = ucByte;
+			break;
+	  	default:;
 		}
     return TRUE;
 }
@@ -155,10 +182,14 @@ BOOL xMBPortSerialGetByte( CHAR *pucByte )
 	 switch (PS_Int)
 		{
 			case PS_Int_BLE:
+			case PS_Int_BLE_No:	
 				  *pucByte = USART2_RDR;// todo ??????
 				break;
-			default:
-					*pucByte = (CHAR)USART1->RDR;
+			case PS_Int_USB:
+			case PS_Int_USB_No:	
+					*pucByte = USART1_RDR;				
+      break;			
+			default:;
 		}
     return TRUE;
 }
@@ -208,30 +239,40 @@ CHAR data;
 
 
 
+uint8_t usbChRx;
+uint8_t usbRxArr[256];
+uint8_t rxUSBCnt;
+
 
 #ifdef MODBUS
 void USART1_IRQHandler(void)
 {
-	  lastUSBTime=SystemTicks;
     if  (USART1->ISR & USART_ISR_TXE_TXFNF) 
 		{	USART1->ICR |= USART_ICR_TXFECF; 
-		//	USART1->RQR |= USART_RQR_TXFRQ;
+			USART1->RQR |= USART_RQR_TXFRQ;
 			if (USART1->CR1 & USART_CR1_TXEIE_TXFNFIE) 
 			{
         USART1->RQR |= USART_RQR_TXFRQ;
 				switch (PS_Int)
 				{
-					case PS_Int_BLE:
+          case PS_Int_BLE:
+					case PS_Int_BLE_No:						
 						break;
-					default:
+			case PS_Int_USB:
+			case PS_Int_USB_No:	
 						pxMBFrameCBTransmitterEmpty();
+			     break;
+					default:;
 				}
 					return;
       }	
 		}
 	
 		if (USART1->ISR & USART_ISR_RXNE_RXFNE) 
-		{
+		{ isUSBint =true;
+			usbChRx=USART1->RDR;
+		  usbRxArr[rxUSBCnt]=usbChRx;
+		  rxUSBCnt++;//&0xff
 			USART1->ICR |= USART_ICR_ORECF;
 			if (USART1->CR1 & USART_CR1_RXNEIE_RXFNEIE)
 			{
@@ -239,9 +280,17 @@ void USART1_IRQHandler(void)
 				switch (PS_Int)
 				{
 					case PS_Int_BLE:
+					case PS_Int_BLE_No:
 						break;
-					default:
-						pxMBFrameCBByteReceived();
+					case PS_Int_USB:
+					case PS_Int_USB_No:	
+						if (USART1_CR1_RXNEIE_Logic)
+						{
+							USART1_RDR=usbChRx;
+					    pxMBFrameCBByteReceived();
+						}
+						break;
+					default:;
 				}
 			}
 		}

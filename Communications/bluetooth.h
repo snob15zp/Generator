@@ -3,6 +3,7 @@
 
 #include "stm32g0xx.h"
 #include <stdint.h>
+#include <stdbool.h>
 #include "BoardSetup.h"
 
 #define USART2_ALT_FUNC 0x01
@@ -25,7 +26,8 @@
 #define REBOOT "R,1"
 
 extern char USART2_RDR;
-extern systemticks_t lastUSBTime;
+extern bool USART_CR1_RXNEIE_Logic;
+extern bool isBLEint;
 
 void btInit(void);
 void SLBL(void);

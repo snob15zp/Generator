@@ -17,9 +17,16 @@
       <!-- 0x7a71 ('z','r')-->
       <signature>31345</signature>
       <spm_pagesize>2048</spm_pagesize>
-      <page_count>60</page_count>
+      <page_count>56</page_count>
       <key>yHjqPDeqWIyMHOFdZqiwvQ==</key>
     </dev_gen_g070>
+    <baul>
+      <!-- 0x7a71 ('z','r')-->
+      <signature>31345</signature>
+      <spm_pagesize>2048</spm_pagesize>
+      <page_count>56</page_count>
+      <key>yHjqPDeqWIyMHOFdZqiwvQ==</key>
+    </baul>
   </devs>
 </root>
 

@@ -61,7 +61,7 @@ eMBSetSlaveID( UCHAR ucSlaveID, BOOL xIsRunning,
     /* the first byte and second byte in the buffer is reserved for
      * the parameter ucSlaveID and the running flag. The rest of
      * the buffer is available for additional data. */
-//    USBcommLastTime=SystemTicks	
+//    MODBUScommLastTime=SystemTicks	
 //		if (!SLC_FFSEnable())   //get error if FFS is busy
 //			 {   
 //					 return MB_ENORES;
@@ -106,15 +106,15 @@ eMBFuncReportSlaveID( UCHAR * pucFrame, USHORT * usLen )
 */
 extern int on_modbus_write_file(uint8_t* buf, size_t len);
 
-eMBException  
+eMBErrorCode  
 eMBFuncWriteFile( UCHAR * pucFrame, USHORT * usLen )
 {
-		USBcommLastTime=SystemTicks;
-		if (!SLC_FFSEnable())   //get error if FFS is busy
-			 {   
-					 return MB_EX_SLAVE_BUSY;
-			 };
-	
+	MODBUScommLastTime = SystemTicks;
+	if (!SLC_FFSEnable())   //get error if FFS is busy
+    {   
+			       MODBUScommLastTime = SystemTicks; 
+             return MB_ENORES;
+    }
 	
     return on_modbus_write_file(pucFrame + 9, *usLen - 9);
 }

@@ -158,7 +158,7 @@ typedef uint8_t u8_t;
 // zero-termination character, meaning maximum string of characters
 // can at most be SPIFFS_OBJ_NAME_LEN - 1.
 #ifndef SPIFFS_OBJ_NAME_LEN
-#define SPIFFS_OBJ_NAME_LEN             (17)
+#define SPIFFS_OBJ_NAME_LEN             (33)
 #endif
 
 // Maximum length of the metadata associated with an object.
@@ -179,7 +179,7 @@ typedef uint8_t u8_t;
 // Lower value generates more read/writes. No meaning having it bigger
 // than logical page size.
 #ifndef SPIFFS_COPY_BUFFER_STACK
-#define SPIFFS_COPY_BUFFER_STACK        (64)
+#define SPIFFS_COPY_BUFFER_STACK        (256)
 #endif
 
 // Enable this to have an identifiable spiffs filesystem. This will look for

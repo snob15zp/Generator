@@ -338,7 +338,7 @@
               <MiscControls></MiscControls>
               <Define>RELEASE</Define>
               <Undefine></Undefine>
-              <IncludePath>..\User\inc;..\ugfx_2.9\src\gdisp;..\ugfx_2.9\src;..\ugfx_2.9;..\ugfx_2.9\src\gos;..\ugfx_2.9\src\gwin;..\ugfx_2.9\drivers\gdisp\ILI9341;..\ugfx_2.9\src\ginput;..\ugfx_2.9\drivers\ginput\toggle\Pal;..\Display;..\ugfx_2.9\drivers\ginput\touch\FT6x06;..\DriversCommon;..\PowerModes;..\W25QXX;..\Communications;..\Player;..\acc;..\PowerModes;..\FreeModbus;..\CommModbus;..\spiffs\src;..\spiffs\src\default;..\FileIcons</IncludePath>
+              <IncludePath>..\User\inc;..\ugfx_2.9\src\gdisp;..\ugfx_2.9\src;..\ugfx_2.9;..\ugfx_2.9\src\gos;..\ugfx_2.9\src\gwin;..\ugfx_2.9\drivers\gdisp\ILI9341;..\ugfx_2.9\src\ginput;..\ugfx_2.9\drivers\ginput\toggle\Pal;..\Display;..\ugfx_2.9\drivers\ginput\touch\FT6x06;..\DriversCommon;..\PowerModes;..\W25QXX;..\Communications;..\Player;..\acc;..\PowerModes;..\FreeModbus;..\CommModbus;..\spiffs\src;..\spiffs\src\default;..\FileIcons;..\aes;..\ugfx_2.9\src\gdisp\fonts</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -360,16 +360,16 @@
             </VariousControls>
           </Aads>
           <LDads>
-            <umfTarg>1</umfTarg>
+            <umfTarg>0</umfTarg>
             <Ropi>0</Ropi>
             <Rwpi>0</Rwpi>
             <noStLib>0</noStLib>
             <RepFail>1</RepFail>
             <useFile>0</useFile>
-            <TextAddressRange>0x08000000</TextAddressRange>
+            <TextAddressRange>0x08003800</TextAddressRange>
             <DataAddressRange>0x20000000</DataAddressRange>
             <pXoBase></pXoBase>
-            <ScatterFile>.\Objects\gen-g070-release.sct</ScatterFile>
+            <ScatterFile>.\gen_47-release.sct</ScatterFile>
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
             <Misc></Misc>
@@ -441,6 +441,11 @@
               <FileName>uGFXport.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Display\uGFXport.c</FilePath>
+            </File>
+            <File>
+              <FileName>userfonts.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\User\inc\userfonts.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -536,6 +541,16 @@
               <FileName>I2C_COMMON.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\acc\I2C_COMMON.c</FilePath>
+            </File>
+            <File>
+              <FileName>BQ28z610_Data.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\acc\BQ28z610_Data.c</FilePath>
+            </File>
+            <File>
+              <FileName>TPS65987_Data.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\acc\TPS65987_Data.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -706,6 +721,31 @@
               <FileName>spiffs.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\User\src\spiffs.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>aes</GroupName>
+          <Files>
+            <File>
+              <FileName>aes.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\aes\aes.c</FilePath>
+            </File>
+            <File>
+              <FileName>aes.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\aes\aes.h</FilePath>
+            </File>
+            <File>
+              <FileName>sha256.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\aes\sha256.c</FilePath>
+            </File>
+            <File>
+              <FileName>sha256.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\aes\sha256.h</FilePath>
             </File>
           </Files>
         </Group>

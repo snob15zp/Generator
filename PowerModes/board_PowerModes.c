@@ -10,9 +10,10 @@
 #include "SuperLoop_Comm2.h"
 
 //#define SLP_WakeUpPause 500
-
+#define D_timeForButton 5000
 //static systemticks_t SLP_LastUpdateTime;
 static uint8_t SLP_state;
+static systemticks_t timeoutsleep;
 //static bool SLP_sleep;
 //static bool SLP_WakeUP;
 
@@ -31,12 +32,11 @@ void EXTI4_15_IRQHandler(void)
 
 void bPM_FSMPower_Init(void);
 
-void enterToStop(void);
+static void enterToStop(void);
 
 void SuperLoop_PowerModes_Init(void)
-	{
-    RCC->IOPENR |= RCC_IOPENR_GPIOAEN;
-		
+{
+    RCC->IOPENR |= RCC_IOPENR_GPIOAEN;		
     EXTI->IMR1 = 0;
     EXTI->EMR1 = 0;	
 		
@@ -58,16 +58,10 @@ void SuperLoop_PowerModes_Init(void)
 	EXTI->IMR1 |= EXTI_IMR1_IM7; // EXTI7 interrupts unmasked
 	//EXTI->EMR1 |= EXTI_EMR1_EM7; // EXTI7 event unmasked
 	
-	
-		
-	//NVIC_SetPriority(EXTI4_15_IRQn, 5);
-	//NVIC_EnableIRQ(EXTI4_15_IRQn);
-		
-		
-		
-  bPM_FSMPower_Init();
-    
-	}		
+	NVIC_SetPriority(EXTI4_15_IRQn, 5);
+	NVIC_EnableIRQ(EXTI4_15_IRQn);
+    bPM_FSMPower_Init();
+}		
 	
 /**
 \brief  control entering into sleep
@@ -85,9 +79,10 @@ void SuperLoop_PowerModes(void)
 
 		rplayer=	SLPl_GetPowerState();
 		rdispl=		SLD_GetPowerState();
-		racc=			SLAcc_GetPowerState();
+		racc=		SLAcc_GetPowerState();
 		rcomm=		SLC_GetPowerState();
-		return; ///RDD debug
+        
+		//return; ///RDD debug
 		switch (SLP_state)
 		{
 			case 0://work mode
@@ -96,30 +91,47 @@ void SuperLoop_PowerModes(void)
 						SLPl_SetSleepState(true);
 						SLD_SetSleepState(true);
 						SLAcc_SetSleepState(true);
+						SLC_SetSleepState(true);
 						SLP_state++;
 					}
 				break;
 			case 1:	//wait transition for sleep
-					if (!(rdispl&&racc&&rplayer&&rcomm)) SLP_state= 3;
+					if (!(rdispl&&racc&&rplayer&&rcomm)) 
+						          SLP_state= 3;
 					if ((e_PS_ReadySleep==rplayer)
 						&&(e_PS_ReadySleep==rdispl)
 					  &&(e_PS_ReadySleep==racc)
+					  &&(e_PS_ReadySleep==rcomm)
 				     ) 
 					  SLP_state++;
 				break;
-			case 2:
-				    Communication_InSleep();
-				    BoardSetup_InSleep();
-			      //DBG->CR|= DBG_CR_DBG_STOP;
-            enterToStop();
-			      BoardSetup_OutSleep(); 
- 			      Communication_OutSleep(); 
+			case 2://prepare sleep, stage A
+				    Communication_InSleep();//14 mA
 			      SLP_state=3;
-              break;			
-			case 3: //weakup
+              break;		
+      case 3://prepare sleep, stage B		
+				    BoardSetup_InSleep();//13.5 mA
+			      //DBG->CR|= DBG_CR_DBG_STOP;
+            enterToStop();  //13.2 mA
+			      BoardSetup_OutSleep(); 
+			      timeoutsleep=SystemTicks;
+			      SLP_state=4;
+			      //break;
+			case 4:// 	weakup, stage B
+				    if (button_sign) 
+							SLP_state=5; 
+			      if ((Get_button_interval()==0) && (D_timeForButton <(SystemTicks-timeoutsleep))) 
+							SLP_state=3;
+			      break;
+			case 5: //weakup stage A
+ 			      Communication_OutSleep(); 
+			      SLP_state=6; //13.4mA   9.5mA with USB 0 mA second times
+		        //break;
+			case 6: //weakup 
 						SLAcc_SetSleepState(false);	
             SLD_SetSleepState(false);	
             SLPl_SetSleepState(false);	
+			      SLC_SetSleepState(false);
 			      SLP_state=0;
 				break;	
 			default: 	SLP_state=0;
@@ -131,90 +143,45 @@ PWR_CR1->FPD_STOP: Flash memory powered down during Stop mode
 PWR_CR4->VBE:	 0: VBAT battery charging disable
 	 
 */	 
-void enterToStop(void)
+static void enterToStop(void)
 {
     while (GPIOA->IDR & GPIO_IDR_ID5);
 
   
-  NVIC_DisableIRQ(TIM3_IRQn);
+    NVIC_DisableIRQ(TIM3_IRQn);
 	NVIC_DisableIRQ(I2C2_IRQn);
 	NVIC_DisableIRQ(I2C1_IRQn);
 	NVIC_DisableIRQ(USART1_IRQn);
-	
-
-	
 	RCC->CSR |= RCC_CSR_LSION;
-  
-//	SysTick->CTRL  &= ~(SysTick_CTRL_CLKSOURCE_Msk |
-//                   SysTick_CTRL_TICKINT_Msk   |
-//                   SysTick_CTRL_ENABLE_Msk);
-	
-	TIM3->CR1 &= ~TIM_CR1_CEN;
-	TIM3->DIER = 0;
-	
-  //PM_ClearPendingButton;  
-  //PM_ClearPendingTPSIRQ;
-  
-
-	TIM3->SR=0x0000;
-		__DSB();
-	__ISB();
-	NVIC->ICPR[0]=0xffffffff;
-		__DSB();
-	__ISB();
-	__NVIC_ClearPendingIRQ(TIM3_IRQn);
-		__DSB();
-	__ISB();
-	
-	//NVIC_SetPriority(EXTI4_15_IRQn, 5);
-	//NVIC_EnableIRQ(EXTI4_15_IRQn);
+    
 
     
-	GPIOB->BSRR = GPIO_BSRR_BS10;
-	
-	SET_BIT(SCB->SCR, ((uint32_t)SCB_SCR_SEVONPEND_Msk));
-	
-	PWR->CR1 |= PWR_CR1_LPR 		// the regulator is switched from main mode (MR) to low-power mode
-	         | PWR_CR1_FPD_STOP //RDD
-	         | PWR_CR1_LPMS_0; 	// select Stop 1 low-power mode
+	GPIOB->BSRR = GPIO_BSRR_BR10; //11.1 mA
+	PWR->CR1 |= PWR_CR1_LPR |	// the regulator is switched from main mode (MR) to low-power mode
+				PWR_CR1_LPMS_0; // select Stop 1 low-power mode
 	__DMB();
 	SysTick->CTRL &= ~SysTick_CTRL_TICKINT_Msk;
 	__DMB();
 
 	SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk; // Set SLEEPDEEP bit of Cortex System Control Register
-//while (!(( EXTI->RPR1 & EXTI_RPR1_RPIF5) || (EXTI->FPR1 & EXTI_FPR1_FPIF7)))
-{
+
 	__DSB();
 	__ISB();
 
-  __SEV();
-	
-
-__WFE();
-__WFE();	
-}
-
-
-   //__WFI();
+	__WFI();
 
 	SCB->SCR &= ~SCB_SCR_SLEEPDEEP_Msk; // reset SLEEPDEEP bit of Cortex System Control Register
-	PWR->CR1 &= ~(PWR_CR1_LPMS_Msk | PWR_CR1_LPR); // the regulator is switched from low-power mode to main mode (MR)
 	SysTick->CTRL |= SysTick_CTRL_TICKINT_Msk;
-	
-//	NVIC_DisableIRQ(EXTI4_15_IRQn);
-	
-	setSystemClock();
-	
-	
-	
-	tim3Init();
+	PWR->CR1 &= ~(PWR_CR1_LPMS_Msk | PWR_CR1_LPR); // the regulator is switched from low-power mode to main mode (MR)
+	setSystemClock(); //11.3mA
+    tim3Init();
 
-	GPIOB->BSRR = GPIO_BSRR_BR10;
+
+	GPIOB->BSRR = GPIO_BSRR_BS10; //13.4mA
 	NVIC_EnableIRQ(USART1_IRQn);
 	NVIC_EnableIRQ(I2C2_IRQn);
 	NVIC_EnableIRQ(I2C1_IRQn);
-	NVIC_EnableIRQ(TIM3_IRQn);
-    
+	NVIC_EnableIRQ(TIM3_IRQn);	
 }	 
 	 
 	
