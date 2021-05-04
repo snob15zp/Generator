@@ -48,7 +48,7 @@ cut-off = 110
 //
 #define BatteryC (5500)
 #define BatteryIChargeCutOff (130)
-#define BatteryImax 2350
+#define BatteryImax 1000 //2350
 
 typedef enum  {e_BatteryState_Charge,e_BatteryState_Rest} e_BatteryState;
 
