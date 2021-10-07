@@ -541,6 +541,12 @@ int spiffs_init()
     return res;
 }
    
+
+void spiffs_rm_fw()
+{
+     SPIFFS_remove(&fs, "fw.bf");  
+}
+
 /**
 * Callback from write file method in freemodbus
 * @param buf Input data

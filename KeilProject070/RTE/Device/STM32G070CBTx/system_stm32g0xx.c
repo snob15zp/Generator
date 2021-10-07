@@ -176,6 +176,16 @@ void SystemInit(void)
 #endif
 }
 
+#define 	RCC_CFGR_SWS_HSI   0x0
+ 
+#define 	RCC_CFGR_SWS_HSE   0x1
+ 
+#define 	RCC_CFGR_SWS_PLL   0x2
+ 
+#define 	RCC_CFGR_SWS_LSI   0x3
+ 
+#define 	RCC_CFGR_SWS_LSE   0x4
+
 /**
   * @brief  Update SystemCoreClock variable according to Clock Register Values.
   *         The SystemCoreClock variable contains the core clock (HCLK), it can
