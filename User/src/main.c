@@ -152,8 +152,6 @@ SLP_init();
   PM_OnOffPWR(PM_Player,false );	
 	PM_OnOffPWR(PM_Communication,false );
     
-    spiffs_rm_fw();
-    
 	//getUID();
 	
   while(1){

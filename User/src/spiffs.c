@@ -537,15 +537,14 @@ int spiffs_init()
 #ifdef FILE_SHA_TEST
     sha_file_test();
 #endif
-    
+
+    SPIFFS_remove(&fs, "fw.bf");  
+    SPIFFS_remove(&fs, "/fw.bf");  
+
     return res;
 }
    
 
-void spiffs_rm_fw()
-{
-     SPIFFS_remove(&fs, "fw.bf");  
-}
 
 /**
 * Callback from write file method in freemodbus

@@ -78,8 +78,4 @@ void spiffs_on_flash_format(fwrite_done_cb_t cb);
 */
 int spiffs_format_flash();
 
-/**
-* Remove 'fw.bf' if it found
-*/
-void spiffs_rm_fw();
 #endif //__FS_H_
