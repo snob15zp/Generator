@@ -13,6 +13,9 @@
 #include "BoardSetup.h"
 #include "spiffs.h"
 #include "SuperLoop_Comm2.h"
+#include "superloopDisplay.h"
+
+volatile t_fpgaFlags SLPl_fpgaFlags;
 
 uint16_t SLPl_ui16_NumOffiles;///\todo global variable one time initialiseted
 
@@ -176,7 +179,7 @@ void TIM3_IRQHandler(void)
 	if(TIM3->SR & TIM_SR_UIF){
 		TIM3->SR = ~TIM_SR_UIF;
 		tim3TickCounter--;
-		if(fpgaFlags.clockStart==1){
+		if(SLPl_fpgaFlags.clockStart==1){
 			playClk++;
 			durTimeMs++;
 		}
@@ -271,7 +274,7 @@ void fpgaConfig(void)											//
 		if(GPIOC->IDR & GPIO_IDR_ID6)
 			{byteBuff[0]=0;
 			spi2Transmit(byteBuff, 1);
-			fpgaFlags.fpgaConfigComplete=1;
+			SLPl_fpgaFlags.fpgaConfigComplete=1;
 			FPGA_CS_H;
 			SPI2->CR1 &= ~SPI_CR1_SPE;
 			SPI2->CR1 &= ~SPI_CR1_LSBFIRST;
@@ -295,7 +298,7 @@ void fpgaConfig(void)											//
 	SPI2->CR1 &= ~SPI_CR1_LSBFIRST;
 	SPI2->CR1 |= SPI_CR1_SPE;
 
-	fpgaFlags.fpgaConfigComplete=0;
+	SLPl_fpgaFlags.fpgaConfigComplete=0;
 	SPIFFS_close(&fs, fpga_file);
 }
 
@@ -582,7 +585,7 @@ void setInitFreq(void)
 void calcFreq(void)
 {
 	if(playParamArr[1]==playParamArr[2]){	//is offset == onset
-		fpgaFlags.endOfFile=1;
+		SLPl_fpgaFlags.endOfFile=1;
 		return;
 	}
 	
@@ -871,7 +874,7 @@ void setTotalTimer(void)
 //		totalTimeArr[7]=totalSec%10;
 //		timeToString(totalTimeArr);
 //		
-////		fpgaFlags.timeUpdate=1;
+////		SLPl_fpgaFlags.timeUpdate=1;
 //	}
 //	
 //}
@@ -929,12 +932,12 @@ __inline bool SLPl_FFSFree(void)
 //---------------------------------- For display-----------------------------------------------
 void SLPl_Start(uint32_t nof)
 {
-	fpgaFlags.playStart=1;
+	SLPl_fpgaFlags.playStart=1;
 	playFileSector=nof;
 };
 void SLPl_Stop()
 {
-	fpgaFlags.playStop=1;
+	SLPl_fpgaFlags.playStop=1;
 };
 
 
@@ -962,17 +965,17 @@ void SLP(void)
 	switch(curState){
 		//file list initialization
 		case SLPl_FSM_InitialWait:
-//			if(fpgaFlags.fileListUpdate==1){
+//			if(SLPl_fpgaFlags.fileListUpdate==1){
 //				//if(!W25qxx_IsEmptySector(fileSect,0))
 //					{
 /////rdd debug					spi1FifoClr();
 //					//W25qxx_ReadSector((uint8_t*)fileName,fileSect,FILE_NAME_SHIFT,FILE_NAME_BYTES);
-//					fpgaFlags.addListItem=1;
+//					SLPl_fpgaFlags.addListItem=1;
 //				}
 //				if(fileSect>=MAX_FILES_NUM){
 //					fileSect=0;
-//					fpgaFlags.fileListUpdate=0;
-//					fpgaFlags.addListItem=0;
+//					SLPl_fpgaFlags.fileListUpdate=0;
+//					SLPl_fpgaFlags.addListItem=0;
 //					curState=1;
 //				}
 //				else{
@@ -985,9 +988,9 @@ void SLP(void)
 		
 		//waiting for start 
 		case SLPl_FSM_off:
-			if(fpgaFlags.playStart==1)
+			if(SLPl_fpgaFlags.playStart==1)
 			{
-				fpgaFlags.playStart=0;
+				SLPl_fpgaFlags.playStart=0;
 				if (!SLC_SPIFFS_State())
 				{
 					SetStatusString("Сan't play when comm");
@@ -1003,13 +1006,13 @@ void SLP(void)
 			PM_OnOffPWR(PM_Player,true );//RDD ON POWER
 		  initSpi_2();
 			spi2FifoClr();
-//			fpgaFlags.fpgaConfig=1;
-////			fpgaFlags.progBarClkStart=1;
+//			SLPl_fpgaFlags.fpgaConfig=1;
+////			SLPl_fpgaFlags.progBarClkStart=1;
 			fpgaConfig();
-////			fpgaFlags.progBarClkStart=0;
-////			fpgaFlags.fpgaConfigComplete=1;	//for debug
-			fpgaFlags.labelsUpdate=1;
-			if(fpgaFlags.fpgaConfigComplete==1)
+////			SLPl_fpgaFlags.progBarClkStart=0;
+////			SLPl_fpgaFlags.fpgaConfigComplete=1;	//for debug
+			SLPl_fpgaFlags.labelsUpdate=1;
+			if(SLPl_fpgaFlags.fpgaConfigComplete==1)
 			{
 //				playFileSector=playFileInList;
 				playFileSectorBegin=playFileSector;
@@ -1020,9 +1023,9 @@ void SLP(void)
 				loadFreqToFpga();
 				loadMultToFpga();
 				startFpga();
-				fpgaFlags.clockStart=1;
-				fpgaFlags.playBegin=1;
-				fpgaFlags.labelsUpdate=1;
+				SLPl_fpgaFlags.clockStart=1;
+				SLPl_fpgaFlags.playBegin=1;
+				SLPl_fpgaFlags.labelsUpdate=1;
 				curState=SLPl_FSM_On;
 				SetStatusString("Config OK");
 				durTimeS=0;
@@ -1050,8 +1053,9 @@ void SLP(void)
 ///rdd debug				spi1FifoClr();
 				spi2FifoClr();
 				
-				if(fpgaFlags.endOfFile==1)
-					{
+				if(SLPl_fpgaFlags.endOfFile==1)
+					{ SLPl_fpgaFlags.endOfFile=0;
+						SLD_fpgaFlags.endOfFile=1;
 						playFileSector++;
 						if(playFileSector>=SLPl_ui16_NumOffiles) 
 						{	
@@ -1069,12 +1073,12 @@ void SLP(void)
 				loadFreqToFpga();
 				startFpga();
 		  }	
-			if ((fpgaFlags.playStop==1)||(!SLC_SPIFFS_State()))
+			if ((SLPl_fpgaFlags.playStop==1)||(!SLC_SPIFFS_State()))
 			{
-				fpgaFlags.playStop=0;
-				fpgaFlags.fpgaConfigComplete=0;
-				fpgaFlags.playBegin=0;
-				fpgaFlags.clockStart=0;
+				SLPl_fpgaFlags.playStop=0;
+				SLPl_fpgaFlags.fpgaConfigComplete=0;
+				SLPl_fpgaFlags.playBegin=0;
+				SLPl_fpgaFlags.clockStart=0;
 				PM_OnOffPWR(PM_Player,false );//RDD OFF POWER
 				
 			  totalSec=0;
@@ -1137,7 +1141,7 @@ void CalcTimers(void)
 		else{
 			totalSec--;
 		}
-		fpgaFlags.timeUpdate=1;
+		SLD_fpgaFlags.timeUpdate=1;
 	}
 };
 

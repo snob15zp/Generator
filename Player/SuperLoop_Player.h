@@ -7,7 +7,7 @@
 #include "GlobalKey.h"
 #include "PowerModes_Defs.h"
 #include "SuperLoop_Comm2.h"
-#include "superloopDisplay.h"
+//#include "superloopDisplay.h"
 #include "I2C_COMMON1.h"
 
 
@@ -51,7 +51,7 @@ typedef struct {
 	uint32_t timeUpdate						:1;
 } t_fpgaFlags;
 
-extern volatile t_fpgaFlags fpgaFlags;
+//extern volatile t_fpgaFlags fpgaFlags;
 
 extern uint16_t SLPl_ui16_NumOffiles;
 

@@ -422,7 +422,7 @@ int SLDwACC(void)
 
 
 
-volatile t_fpgaFlags fpgaFlags;
+volatile t_fpgaFlags SLD_fpgaFlags;
 
 uint8_t spiDispCapture;	//0 - free, 1 - busy
 uint8_t totalTimeArr[]={'0','0',':','0','0',':','0','0',0};
@@ -966,12 +966,12 @@ int SLDw(void)
 			      gwinSetText(ghLabel4,"Start",gFalse);
 
 			  Stop();
-	      if ((fpgaFlags.endOfFile==1)||(PlStateOld!=Get_SLPl_FSM_State()))
+	      if ((SLD_fpgaFlags.endOfFile==1)||(PlStateOld!=Get_SLPl_FSM_State()))
         	{
         		DisplaySelectedFile(playFileSector);
 						fileNameRead(playFileSector);
 						gwinSetText(ghLabel5,(char*)filename1,gFalse);//
-        		fpgaFlags.endOfFile=0;
+        		SLD_fpgaFlags.endOfFile=0;
         	}
 			
 			break;
@@ -987,9 +987,9 @@ int SLDw(void)
 
 	DisplayStatusString();
 	 
-	if (1==fpgaFlags.timeUpdate)
+	if (1==SLD_fpgaFlags.timeUpdate)
 	{
-		fpgaFlags.timeUpdate=0;
+		SLD_fpgaFlags.timeUpdate=0;
 		DisplayTimers();
 	};
 	
