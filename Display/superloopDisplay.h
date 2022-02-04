@@ -4,7 +4,7 @@
 #include <stdbool.h>
 //#include "stm32g0xx.h"
 #include "gfx.h"
-//#include "SuperLoop_Player.h"
+#include "SuperLoop_Player.h"
 //#include "SuperLoop_Comm.h"
 #include "PowerModes_Defs.h"
 
@@ -14,6 +14,8 @@ typedef struct {
 	uint32_t fileListUp   				:1;
 	uint32_t fileListDown					:1;
 } t_DisplayFlags;
+
+extern volatile t_fpgaFlags SLD_fpgaFlags;
 
 void SetStatusString(char* s);
 //extern t_DisplayFlags DisplayFlags;
