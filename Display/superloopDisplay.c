@@ -27,6 +27,9 @@
 #include "SL_CommModbus.h"
 #include "version.h"
 
+
+
+
 //extern uint16_t SLPl_ui16_NumOffiles;
 
  #define D_statusstring_Length 50
@@ -329,6 +332,75 @@ int SLD_DisplReInit(void)
 
 
 ////------------------------Display control objects--------------------------------------------
+const bool SLPl_ButtonColour[SLPl_FSM_NumOfElements]=
+{false      						//SLPl_FSM_InitialWait
+,false						//SLPl_FSM_off
+,true									//SLPl_FSM_OnTransition
+,true									//SLPl_FSM_On
+,false									//SLPl_FSM_OffTransition
+};
+
+const GWidgetStyle GreenStyle = {
+	HTML2COLOR(0xFFFFFF),			// window background
+	HTML2COLOR(0x2A8FCD),			// focused
+ 
+	// enabled color set
+	{
+		HTML2COLOR(0x000000),		// text
+		HTML2COLOR(0x404040),		// edge
+		HTML2COLOR(0x33ff33),		// fill
+		HTML2COLOR(0x00E000)		// progress - active area
+	},
+ 
+	// disabled color set
+	{
+		HTML2COLOR(0xC0C0C0),		// text
+		HTML2COLOR(0x808080),		// edge
+		HTML2COLOR(0xE0E0E0),		// fill
+		HTML2COLOR(0xC0E0C0)		// progress - active area
+	},
+ 
+	// pressed color set
+	{
+		HTML2COLOR(0x404040),		// text
+		HTML2COLOR(0x404040),		// edge
+		HTML2COLOR(0x808080),		// fill
+		HTML2COLOR(0x00E000)		// progress - active area
+	}
+};
+
+const GWidgetStyle RedStyle = {
+	HTML2COLOR(0xFFFFFF),			// window background
+	HTML2COLOR(0x2A8FCD),			// focused
+ 
+	// enabled color set
+	{
+		HTML2COLOR(0x000000),		// text
+		HTML2COLOR(0x404040),		// edge
+		HTML2COLOR(0xff3333),		// fill
+		HTML2COLOR(0x00E000)		// progress - active area
+	},
+ 
+	// disabled color set
+	{
+		HTML2COLOR(0xC0C0C0),		// text
+		HTML2COLOR(0x808080),		// edge
+		HTML2COLOR(0xE0E0E0),		// fill
+		HTML2COLOR(0xC0E0C0)		// progress - active area
+	},
+ 
+	// pressed color set
+	{
+		HTML2COLOR(0x404040),		// text
+		HTML2COLOR(0x404040),		// edge
+		HTML2COLOR(0x808080),		// fill
+		HTML2COLOR(0x00E000)		// progress - active area
+	}
+};
+
+
+
+
 GListener	gl;
 GHandle	ghLabel1, ghLabel2, ghLabel3, ghLabel4, ghLabel5, ghLabel6, ghLabel7;
 GHandle ghLabel8, ghLabel9, ghLabel10, ghLabel11, ghLabel12,ghLabel13_RSOC, ghLabel14, ghLabelVersion;
@@ -438,6 +510,20 @@ uint16_t playFileInList;
 //uint8_t fileName[50];
 
 //--------------------create uGFX Objects------------------------
+static void SetButtonColour(bool first)
+{
+	static bool last;
+	static bool b1;
+	b1=SLPl_ButtonColour[Get_SLPl_FSM_State()];
+  if (first || (b1!=last) )
+	{if(b1)
+	    {gwinSetStyle(ghButton1,&GreenStyle);gwinSetStyle(ghButton2,&WhiteWidgetStyle);}
+			else
+	    {gwinSetStyle(ghButton2,&RedStyle);  gwinSetStyle(ghButton1,&WhiteWidgetStyle);};
+	};		
+	last=b1;
+};
+
 
 static void createButtons(void) {
 	GWidgetInit	wi;
@@ -454,6 +540,8 @@ static void createButtons(void) {
 	wi.text = "Start";
 	ghButton1 = gwinButtonCreate(0, &wi);
 	
+
+	
 	// Apply the STOP button parameters
 	wi.g.width = 100;
 	wi.g.height = 30;
@@ -461,6 +549,8 @@ static void createButtons(void) {
 	wi.g.x = 130;
 	wi.text = "Stop";
 	ghButton2 = gwinButtonCreate(0, &wi);
+	
+	gwinSetStyle(ghButton2,&RedStyle);
 	
 	// Apply the PREW button parameters
 	wi.g.width = 35;
@@ -479,6 +569,7 @@ static void createButtons(void) {
 	ghButton4 = gwinButtonCreate(0, &wi);
 }
 
+	
 static void createLabels(void) {
 	GWidgetInit	wi;
 	
@@ -757,6 +848,7 @@ gfxInit();
 
 	// create the widgets
 	createButtons();
+	SetButtonColour(true);
 	createLists();
 	createLabels();
 	createImage_batCharging();
@@ -982,6 +1074,7 @@ int SLDw(void)
 			
 	};
 	PlStateOld=Get_SLPl_FSM_State();
+	SetButtonColour(false);
 	
 	
 
