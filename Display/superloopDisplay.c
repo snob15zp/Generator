@@ -397,6 +397,63 @@ const GWidgetStyle RedStyle = {
 		HTML2COLOR(0x00E000)		// progress - active area
 	}
 };
+const GWidgetStyle GreenTextStyle = {
+	HTML2COLOR(0xFFFFFF),			// window background
+	HTML2COLOR(0x2A8FCD),			// focused
+ 
+	// enabled color set
+	{
+		HTML2COLOR(0x33ff33),		// text
+		HTML2COLOR(0x404040),		// edge
+		HTML2COLOR(0xE0E0E0),		// fill
+		HTML2COLOR(0x00E000)		// progress - active area
+	},
+
+	// disabled color set
+	{
+		HTML2COLOR(0xC0C0C0),		// text
+		HTML2COLOR(0x808080),		// edge
+		HTML2COLOR(0xE0E0E0),		// fill
+		HTML2COLOR(0xC0E0C0)		// progress - active area
+	},
+
+	// pressed color set
+	{
+		HTML2COLOR(0x404040),		// text
+		HTML2COLOR(0x404040),		// edge
+		HTML2COLOR(0x808080),		// fill
+		HTML2COLOR(0x00E000)		// progress - active area
+	}
+};
+
+const GWidgetStyle RedTextStyle = {
+	HTML2COLOR(0xFFFFFF),			// window background
+	HTML2COLOR(0x2A8FCD),			// focused
+ 
+	// enabled color set
+	{
+		HTML2COLOR(0xff3333),		// text
+		HTML2COLOR(0x404040),		// edge
+		HTML2COLOR(0xE0E0E0),		// fill
+		HTML2COLOR(0x00E000)		// progress - active area
+	},
+
+	// disabled color set
+	{
+		HTML2COLOR(0xC0C0C0),		// text
+		HTML2COLOR(0x808080),		// edge
+		HTML2COLOR(0xE0E0E0),		// fill
+		HTML2COLOR(0xC0E0C0)		// progress - active area
+	},
+
+	// pressed color set
+	{
+		HTML2COLOR(0x404040),		// text
+		HTML2COLOR(0x404040),		// edge
+		HTML2COLOR(0x808080),		// fill
+		HTML2COLOR(0x00E000)		// progress - active area
+	}
+};
 
 
 
@@ -409,7 +466,7 @@ GHandle ghImage1;
 GHandle ghProgBarWin;
 GHandle ghProgBar;
 
-static GHandle  ghButton1, ghButton2, ghButton3, ghButton4;
+static GHandle  ghButton1, /*ghButton2,*/ ghButton3, ghButton4;
 
 static	GEvent* pe;
 //static const gOrientation	orients[] = { gOrientation0, gOrientation90, gOrientation180, gOrientation270 };
@@ -517,9 +574,9 @@ static void SetButtonColour(bool first)
 	b1=SLPl_ButtonColour[Get_SLPl_FSM_State()];
   if (first || (b1!=last) )
 	{if(b1)
-	    {gwinSetStyle(ghButton1,&GreenStyle);gwinSetStyle(ghButton2,&WhiteWidgetStyle);}
+	    {gwinSetStyle(ghButton1,&RedStyle);gwinSetText(ghButton1,"Stop",gFalse); gwinSetStyle(ghLabel4,&GreenTextStyle);}
 			else
-	    {gwinSetStyle(ghButton2,&RedStyle);  gwinSetStyle(ghButton1,&WhiteWidgetStyle);};
+	    {gwinSetStyle(ghButton1,&GreenStyle);gwinSetText(ghButton1,"Start",gFalse); gwinSetStyle(ghLabel4,&RedTextStyle);};
 	};		
 	last=b1;
 };
@@ -536,21 +593,21 @@ static void createButtons(void) {
 	wi.g.width = 100;
 	wi.g.height = 30;
 	wi.g.y = 280;
-	wi.g.x = 10;
+	wi.g.x = 70;
 	wi.text = "Start";
 	ghButton1 = gwinButtonCreate(0, &wi);
 	
 
 	
 	// Apply the STOP button parameters
-	wi.g.width = 100;
-	wi.g.height = 30;
-	wi.g.y = 280;
-	wi.g.x = 130;
-	wi.text = "Stop";
-	ghButton2 = gwinButtonCreate(0, &wi);
-	
-	gwinSetStyle(ghButton2,&RedStyle);
+//	wi.g.width = 100;
+//	wi.g.height = 30;
+//	wi.g.y = 280;
+//	wi.g.x = 130;
+//	wi.text = "Stop";
+//	ghButton2 = gwinButtonCreate(0, &wi);
+//	
+//	gwinSetStyle(ghButton2,&RedStyle);
 	
 	// Apply the PREW button parameters
 	wi.g.width = 35;
@@ -588,7 +645,7 @@ static void createLabels(void) {
 	ghLabel8 = gwinLabelCreate(0, &wi);
 	
 	wi.g.width = 110; wi.g.height = 20; wi.g.x = 120, wi.g.y = 173;
-	wi.text = "Stop";
+	wi.text = "Stopped";
 	ghLabel4 = gwinLabelCreate(0, &wi);
 //	gwinLabelSetAttribute(ghLabel4,100,"Status:");
 	
@@ -848,19 +905,17 @@ gfxInit();
 
 	// create the widgets
 	createButtons();
-	SetButtonColour(true);
 	createLists();
 	createLabels();
 	createImage_batCharging();
 //	createProgBar();
-
 	// We want to listen for widget events
 	geventListenerInit(&gl);
 	gwinAttachListener(&gl);
 	gdispSetBacklight(50);
 	
 	fileListInitStart();
-	
+	SetButtonColour(true);
 return 0;	
 };
 
@@ -909,7 +964,7 @@ void GetEvent()
 	{
 		case GEVENT_GWIN_BUTTON:
 			ButtonFlags.playStart|=(((GEventGWinButton*)pe)->gwin == ghButton1);
-		  ButtonFlags.playStop|=(((GEventGWinButton*)pe)->gwin == ghButton2);
+		 // ButtonFlags.playStop|=(((GEventGWinButton*)pe)->gwin == ghButton2);
 		  ButtonFlags.fileListUp|=(((GEventGWinButton*)pe)->gwin == ghButton3);
 		  ButtonFlags.fileListDown|=(((GEventGWinButton*)pe)->gwin == ghButton4);
 		break;
@@ -943,7 +998,7 @@ void FileListUpDown()
 void DisplayPlayStop()
 {
 		gwinSetText(ghLabel3,"Init OK",gFalse);
-		gwinSetText(ghLabel4,"Stop",gFalse);
+		gwinSetText(ghLabel4,"Stopped",gFalse);
 		gwinSetText(ghLabel5,"Not selected",gFalse);
 		gwinSetText(ghLabel6,"00:00:00",gFalse);
 		gwinSetText(ghLabel7,"00:00:00",gFalse);
@@ -976,9 +1031,9 @@ void Start(void)
 
 void Stop(void)
 {
-    if (ButtonFlags.playStop)
+    if (ButtonFlags.playStart)
     { 
-        ButtonFlags.playStop=0;
+        ButtonFlags.playStart=0;
         //DisplayPlayStop();
         SLPl_Stop();
     };
@@ -1055,7 +1110,7 @@ int SLDw(void)
 			break;
 		case  SLPl_FSM_On:
 		    if (PlStateOld!=Get_SLPl_FSM_State())
-			      gwinSetText(ghLabel4,"Start",gFalse);
+			      gwinSetText(ghLabel4,"Running",gFalse);
 
 			  Stop();
 	      if ((SLD_fpgaFlags.endOfFile==1)||(PlStateOld!=Get_SLPl_FSM_State()))
